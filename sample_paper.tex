@@ -40,19 +40,43 @@
 \end{abstract}
 
 \section{INTRODUCTION}
-In computational chemistry and physics, Hartree-Fock is a method used to get the density matrix for a given molecule. The density matrix describes the molecule and the probability distribution of the location of the electrons. Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant. The electrons or orbitals are described with a combination of Gaussian functions.
+% Hatree-Fock intro
+In computational chemistry and physics, Hartree-Fock is a method used to get an approximation 
+of electronic distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process and can be quite tedious and time consuming for large molecules especially if you want to get an accurate description of the orbitals. Speeding up the Hatree-Fock would enable us to deal with larger molecules and perhaps use it to study biochemical reaction which usually has very large systems. In essence, speeding up the Hatree-Fock algorithm will save computational cost for solving quantum chemical problems. 
 
-The Hartree-Fock method is an iterative process and can be quite tedious and time consuming for large molecules especially if you want to use more Gaussian functions to get a more accurate description of the orbitals. Speeding up the Hatree-Fock would enable us to deal with larger molecules and perhaps use it to study biochemical reaction which usually has very large systems. In essence speeding up the Hatree-Fock algorithm will save computational cost for solving quantum chemical problems. 
-
-In this paper, we conduct an interdisciplinary research to introduce an innovative technique - imitation learning to speed up the Hartree-Fock process. Imitation learning is an algorithm that learn from expert demonstrations in order to become capable of performing particular tasks. Ross (cite:Ross et al.[2011]) proposed the dataset aggregation algorithm (DAgger), which was proven to have stable performance and faster learning rate. (cite:Andreas Vlachos, An investigation of imitation learning algorithms for structured prediction) 
-
-The present work therefore intends to treat the Hartree-Fock process as an expert demonstration, and we apply DAgger algorithm to imitate the process for learning a fast-forward version of Hartree-Fock.
+% Parameters
+Matteus et al, \cite{Matteus}, proposed a way to embed the parameters.....
 
 
-introducing “parameter" into HF  turn it to Machine learning problem.
-adjust the parameter that make it happend
+The parameters give us the flexibility to control the behaviour of the Hatree-Fock method. With this flexibility, we can try to let each of the Hatree-fock iteration make more progress. In particular, we'd to make single iteration of Hatree-fock with parameters get as much progress as two or even more iterations of the original Hatree-fock.
+
+% How to do that? (Imitation learning)
+This idea can be achieved by imitation learning which is an algorithm that learns from expert demonstrations in order to become capable of performing particular tasks. By imitation learning, we can make Hatree-fock with parameters learns from original Hatree-Fock, and finally make it capable to gain two iterations or more progress in one single iteration.
+
+% Problem encountered   %%%%%
+However, imitation learning may yield poor performance in theory and practice  since the learner's prediction and action affects future input observations and states during execution of the learned policy. It obvious violates the common i.i.d. assumption made in most statistical learning approaches. \cite{Ross}.
+
+% The recipe (DAgger)
+Ross et al,\cite{DAgger} proposed the dataset aggregation algorithm (DAgger) which learns a stationary deterministic policy guaranteed to perform well under its induced distribution of states is a remedy to the poor performance in imitation learning.
+
+
+In this paper, 
+we conduct an interdisciplinary research to introduce an innovative technique - imitation learning to speed up the Hartree-Fock process.  Ross (cite:Ross et al.[2011]) proposed the dataset aggregation algorithm (DAgger), which was proven to have stable performance and faster learning rate. \cite{DAggerCompare}
+
+%The present work therefore intends to treat the Hartree-Fock process as an expert demonstration, and we apply DAgger algorithm to imitate the process for learning a fast-forward version of Hartree-Fock.
+
+
+%introducing “parameter" into HF  turn it to Machine learning problem.
+%adjust the parameter that make it happend
 
 \section{BACKGROUND}
+
+if you want to use more Gaussian functions to get a more accurate description of the orbitals. 
+
+Hartree-Fock is a method used to get the density matrix for a given molecule. The density matrix describes the molecule and the probability distribution of the location of the electrons.
+
+ Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant. The electrons or orbitals are described with a combination of Gaussian functions.
+
 Hatree-Fock
 density matrix
 Gaussian  , wave function, basis
@@ -274,5 +298,29 @@ D.C.: Spartan Books.
 
 G.~Tesauro (1989). Neurogammon wins computer Olympiad.  {\it Neural
   Computation} {\bf 1}(3):321-323.
+
+\begin{thebibliography}{9}
+\bibitem{Matteus}
+  Matteus Tanha, Shiva Kaul, Alex Cappiello, Geoffrey J. Gordon, David J. Yaron.
+  \emph{Embedding parameters in ab initio theory to develop well-controlled approximations based on molecular similarity}.
+  Technical report arXiv:1311.3440.
+  
+  \bibitem{DAgger}
+  Stephane Ross, Geoffrey J. Gordon, J. Andrew Bagnell.
+  \emph{A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning}.
+  Technical report arXiv:1011.0686, arXiv, 2011.
+  
+  \bibitem{DAggerCompare}
+  Andreas Vlachos.
+  \emph{An investigation of imitation learning algorithms for structured prediction}.
+  
+  \bibitem{Ross}
+    Ross and J. A. Bagnell.
+  \emph{Efficient reductions for imitation
+learning.} Proceedings of the 13th International
+Conference on Artificial Intelligence and Statistics (AISTATS),
+2010.
+  
+\end{thebibliography}
 
 \end{document}
