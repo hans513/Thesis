@@ -1,5 +1,6 @@
 \documentclass[twoside]{article}
 \usepackage{aistats2014}
+\usepackage{braket}
 
 % If your paper is accepted, change the options for the package
 % aistats2014 as follows:
@@ -71,16 +72,37 @@ we conduct an interdisciplinary research to introduce an innovative technique - 
 
 \section{BACKGROUND}
 
-if you want to use more Gaussian functions to get a more accurate description of the orbitals. 
+In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant[ref]. The general notation for getting the energy in quantum chemistry is as shown below:
 
-Hartree-Fock is a method used to get the density matrix for a given molecule. The density matrix describes the molecule and the probability distribution of the location of the electrons.
+%$H\Psi = E\Psi$
 
- Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant. The electrons or orbitals are described with a combination of Gaussian functions.
+E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
-Hatree-Fock
-density matrix
-Gaussian  , wave function, basis
-Slater determinant
+where H is the hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The general form of the Hamiltonian consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator. The Hamiltonian is approximated to the Fock operator which is shown below:
+
+
+F = $KE + sum_A EN_A + [2*J - K]$,
+
+where KE is the kinetic energy operator, $EN_A$ is the electron-nuclear interaction operator for atom A and J and K are components of the electron-electron interaction operator.
+
+
+The electrons or orbitals are usually described with a combination of Gaussian functions, and the cost of the algorithm scales as N\textsuperscript{p} where: 
+
+N = Number of basis functions (features) 
+
+ = n Natoms  (n = basis functions/atom)  
+
+p  = depending on the accuracy model between 3.5 and 8 
+
+
+%Hartree-Fock is a method used to get the density matrix for a given molecule. The density matrix describes the molecule and the probability distribution of the location of the electrons.
+
+ 
+
+%Hatree-Fock
+%density matrix
+%Gaussian  , wave function, basis
+%Slater determinant
 
 DAgger algorithm
 
