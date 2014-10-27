@@ -133,9 +133,9 @@ Accelerating Hartree-Fock convergence has previously been explored in the matter
 
 \subsection{Speeding up Hatree-Fock as an imitation learning problem}
 
-The Hatree-Fock method is an iterative process which is pretty time consuming especially if you want to get an accurate approximation for a large molecular system. Each iteration may cost hours or even days of computation. 
+The Hatree-Fock method is an iterative process which is pretty time-consuming. Especially if one wants to get an accurate approximation for a large molecular system, each iteration may take  hours or even days of computation. 
 
-Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}.  \\
+Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next one\cite{Pulay1980}.  \\
 .....The drawback of previous research......
 
 
@@ -151,19 +151,19 @@ Accelerating Hartree-Fock convergence has previously been explored in the matter
 
 %How to map the Hatree-Fock to imitation learning problem.
 % The idea is simple
-Hatree-Fock is an iterative process. Given an initial density matrix $d_0$ as an input, after first iteration we'll get the output density matrix $d_1$. In the second iteration, the previous output density matrix will then become the input, thus use $d_1$ as the input, we can get the output density matrix $d_2$. We'll keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
+Hatree-Fock is an iterative process. Given an initial density matrix $d_0$ as an input, after first iteration we will get the output density matrix $d_1$. In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
 
-An approach to speed up the process would be improving the procedure, make each iteration more productive so that we can achieve the same goal with less iterations. 
+An approach to speeding up the process would be improving the procedure, making each iteration more productive so that we can achieve the same goal with less iterations. 
 
-We can think the whole n iterations of the Hatree-Fock process as a sequence, from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1 d_2 ...... d_{n-1}$ , then finally get the converged output $d_{n}$ just like a film playing frame by frame. 
+We can think the whole n iterations of the Hatree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1 d_2 ...... d_{n-1}$ and then finally get the converged output $d_{n}$ just like a film playing frame by frame. 
 
-It's intuitive to think of a "2X fast forward" version of sequence which would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this fast forward version, we'll only need $frac{n}{2}$ iterations, thus the computation is roughly cut into half.
+It is intuitive to think of a "2X fast forward" version of the sequence which would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this fast forward version, we will only need $\frac{n}{2}$ iterations, thus cutting the computation into half.
 
 With imitation learning,
-we can treat the Hatree-Fock iteration as the expert demonstration. However, instead of learning the original Hatree-Fock process, we would like to learn the "Fast forward" version of Hatree-Fock. We can always try to make the output density matrix match the ideal output in our expert demonstration by the extra flexibility which is offered by the embedded parameters .
+we can treat the Hatree-Fock iteration as the expert demonstration. However, instead of learning the original Hatree-Fock process, we would like to learn the "Fast forward" version of Hatree-Fock. We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility which is offered by the embedded parameters .
 
 
-Our goal here is to learn a Hatree-Fock with parameter which can make more progress in one iteration, thus converge with less iterations, say half or even less iterations.  
+Our goal here is to learn a Hatree-Fock with parameters to allow more progress in one iteration, therefore converging with less iterations, say half or even less iterations.  
 
 %The present work therefore intends to treat the Hartree-Fock process as an expert demonstration, and we apply DAgger algorithm to imitate the process for learning a fast-forward version of Hartree-Fock.
 
