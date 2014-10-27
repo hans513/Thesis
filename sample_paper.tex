@@ -46,7 +46,7 @@ In computational chemistry and physics, Hartree-Fock is a method used to get an 
 of electronic distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process and can be quite tedious and time consuming for large molecules especially if you want to get an accurate description of the orbitals. Speeding up the Hatree-Fock would enable us to deal with larger molecules and perhaps use it to study biochemical reaction which usually has very large systems. In essence, speeding up the Hatree-Fock algorithm will save computational cost for solving quantum chemical problems. 
 
 % Parameters
-Matteus et al, \cite{Matteus}, proposed a way to embed the parameters.....
+Matteus et al, \cite{Matteus}, proposed a way to embed the parameters in the hamiltonian. This model is constructed to find the similarities in molecules. The hamiltonian is partitioned into kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters for on atom and for bonds.
 
 
 The parameters give us the flexibility to control the behaviour of the Hatree-Fock method. With this flexibility, we can try to let each of the Hatree-fock iteration make more progress. In particular, we'd to make single iteration of Hatree-fock with parameters get as much progress as two or even more iterations of the original Hatree-fock.
@@ -80,24 +80,24 @@ E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
 where H is the hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The general form of the Hamiltonian consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator. The Hamiltonian is approximated to the Fock operator which is shown below:
 
+$\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$,
 
-F = $KE + sum_A EN_A + [2*J - K]$,
+where $\hat{h_1}$ is the one electron hamiltoninan containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. The wave function is approximated to a density matrix with a set of gaussian functions for each atom in the molecular system, which is denoted as C. The core equation in the Hartree-Fock algorithm is as following:
 
-where KE is the kinetic energy operator, $EN_A$ is the electron-nuclear interaction operator for atom A and J and K are components of the electron-electron interaction operator.
+FC = SC$\epsilon$,
 
+where S is the overlap matrix and $\epsilon$ is a diagonal matrix of the orbital energies. This is similar to an eigenvalue equation with the exception of the existence of the S matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution this equation has to be done iteratively. In other words you need to have the Fock-orbitals to get the Fock operator. 
+To solve this equation you start with an arbitrary guess density and then solve for the fock operator and then get the new density which you again will use to solve to get the new Fock operator and so on. 
 
-The electrons or orbitals are usually described with a combination of Gaussian functions, and the cost of the algorithm scales as N\textsuperscript{p} where: 
+The cost of the methods based on Hartree-Fock algorithm scales as N\textsuperscript{p} where: 
 
 N = Number of basis functions (features) 
 
- = n Natoms  (n = basis functions/atom)  
+= n Natoms  (n = basis functions/atom)  
 
-p  = depending on the accuracy model between 3.5 and 8 
+p  = depending on the accuracy model between 3.5 and 8\cite{Fisch1996}
 
-
-%Hartree-Fock is a method used to get the density matrix for a given molecule. The density matrix describes the molecule and the probability distribution of the location of the electrons.
-
- 
+Reducing the the number of iterations of Hartree-Fock algorithm has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay}. We are exploring a different method where to find parameters which are embedded in the hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
 
 %Hatree-Fock
 %density matrix
