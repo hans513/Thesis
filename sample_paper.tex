@@ -73,13 +73,13 @@ In this paper,  we introduce the imitation learning technique to speed up the Ha
 \section{BACKGROUND}
 \subsection{Hatree-Fock}
 
-In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant[ref]. The general notation for getting the energy in quantum chemistry is as shown below:
+In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant. The general notation for getting the energy in quantum chemistry is as shown below:
 
 %$H\Psi = E\Psi$
 
 E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
-where H is the hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The general form of the Hamiltonian consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator. The Hamiltonian is approximated to the Fock operator which is shown below:
+where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The wave function is function describing any given quantum system containing one or more particles. The general form of the Hamiltonian consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator. The Hamiltonian is approximated to the Fock operator which is shown below:
 
 $\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$,
 
