@@ -2,6 +2,8 @@
 \usepackage{aistats2014}
 \usepackage{braket}
 \usepackage[]{algorithm2e}
+\usepackage{multirow}
+
 % If your paper is accepted, change the options for the package
 % aistats2014 as follows:
 %
@@ -197,9 +199,29 @@ The simplest DAgger algorithm may proceed as follows.
  \caption{DAgger algorithms}
 \end{algorithm}
 
+
 \section{LEARNING EMBEDDED PARAMETERS}
 
 
+
+
+
+\begin{table*}[t]
+\begin{tabular}{|l|l|l|l|l|l|l|l|}
+\hline
+& \multicolumn{7}{l|}{Hatree-Fock iterations (with step size 2)}                                                                                                                    \\ \hline
+\multirow{10}{*}{\begin{tabular}[c]{@{}l@{}}DAgger\\ iterations\end{tabular}} &                         &                       & iter 1                  & iter 2                   & iter 3                     &  & iter n                                     \\ \cline{2-8} 
+                                                                              & \multirow{2}{*}{iter 1} & Objective             & $d_0 \rightarrow d_2$   & $d_2 \rightarrow d_4$    & $d_4 \rightarrow d_6$      &  & $d_{2(n-1)} \rightarrow d_{2n}$            \\ \cline{3-8} 
+                                                                              &                         & Result after training & $d_0 \rightarrow d_2'$ & $d_2 \rightarrow d_4'$   & $d_4 \rightarrow d_6'$    &  & $d_{2(n-1)} \rightarrow d_{2n}'$          \\ \cline{2-8} 
+                                                                              & \multirow{2}{*}{iter 2} & New objective         &                         & $d_2' \rightarrow d_4$   & $d_4' \rightarrow d_6$     &  & $d_{2(n-1)}' \rightarrow d_{2n}$          \\ \cline{3-8} 
+                                                                              &                         & Result after training &                         & $d_2' \rightarrow d_4''$ & $d_4' \rightarrow d_6''$   &  & $d_{2(n-1)}' \rightarrow d_{2n}''$        \\ \cline{2-8} 
+                                                                              & \multirow{2}{*}{iter 3} & New objective         &                         &                          & $d_4'' \rightarrow d_6$    &  & $d_{2(n-1)}'' \rightarrow d_{2n}$         \\ \cline{3-8} 
+                                                                              &                         & Result after training &                         &                          & $d_4'' \rightarrow d_6'''$ &  & $d_{2(n-1)}'' \rightarrow d_{2n}'''$      \\ \cline{2-8} 
+                                                                              &                         &                       &                         &                          &                            &  &                                            \\ \cline{2-8} 
+                                                                              & \multirow{2}{*}{iter n} & New objective         &                         &                          &                            &  & $d_{2(n-1)}^{n-1} \rightarrow d_{2n}$     \\ \cline{3-8} 
+                                                                              &                         & Result after training &                         &                          &                            &  & $d_{2(n-1)}^{n-1} \rightarrow d_{2n}^{n}$ \\ \hline
+\end{tabular}
+\end{table*}
 
 \section{EXPERIMENTS}
 
