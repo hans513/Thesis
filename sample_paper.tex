@@ -1,7 +1,7 @@
 \documentclass[twoside]{article}
 \usepackage{aistats2014}
 \usepackage{braket}
-
+\usepackage[]{algorithm2e}
 % If your paper is accepted, change the options for the package
 % aistats2014 as follows:
 %
@@ -42,35 +42,36 @@
 
 \section{INTRODUCTION}
 % Hatree-Fock intro
-In computational chemistry and physics, Hartree-Fock is a method used to get an approximation 
-of electronic distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process and can be quite tedious and time consuming for large molecules especially if you want to get an accurate description of the orbitals. Speeding up the Hatree-Fock would enable us to deal with larger molecules and perhaps use it to study biochemical reaction which usually has very large systems. In essence, speeding up the Hatree-Fock algorithm will save computational cost for solving quantum chemical problems. 
+In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electronic distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be quite tedious and time-consuming for large molecules especially if we want to get an accurate description of the electron distribution. Speeding up the Hatree-Fock would thus enable us to deal with larger molecules, which can in turn be utilized to study biochemical reaction with very large systems. In essence, speeding up the Hatree-Fock algorithm will save computational cost to solve quantum chemical problems. 
+
+
 
 % Parameters
 Matteus et al, \cite{Matteus}, proposed a way to embed the parameters in the hamiltonian. This model is constructed to find the similarities in molecules. The hamiltonian is partitioned into kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters for on atom and for bonds.
 
 
-The parameters give us the flexibility to control the behaviour of the Hatree-Fock method. With this flexibility, we can try to let each of the Hatree-fock iteration make more progress. In particular, we'd to make single iteration of Hatree-fock with parameters get as much progress as two or even more iterations of the original Hatree-fock.
+The parameters give us the flexibility to control the behaviour of the Hatree-Fock method. This flexibility allows us to let each of the Hatree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hatree-Fock with parameters achieve as much progress as two or even more iterations of the original Hatree-Fock.
+
 
 % How to do that? (Imitation learning)
-This idea can be achieved by imitation learning which is an algorithm that learns from expert demonstrations in order to become capable of performing particular tasks. By imitation learning, we can make Hatree-fock with parameters learns from original Hatree-Fock, and finally make it capable to gain two iterations or more progress in one single iteration.
+This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing particular tasks. By imitation learning, we can make Hatree-Fock with parameters learn from the original Hatree-Fock, which finally enables it to gain two iterations or more progress in one single iteration.
+
 
 % Problem encountered   %%%%%
-However, imitation learning may yield poor performance in theory and practice  since the learner's prediction and action affects future input observations and states during execution of the learned policy. It obvious violates the common i.i.d. assumption made in most statistical learning approaches. \cite{Ross}.
+However, naive imitation learning may yield poor performance in theory and practice since the learner's prediction and action affect future input observations and states during the execution of the learned policy. It obviously violates the common i.i.d. assumption made in most statistical learning approaches. \cite{Ross}.
+
 
 % The recipe (DAgger)
-Ross et al,\cite{DAgger} proposed the dataset aggregation algorithm (DAgger) which learns a stationary deterministic policy guaranteed to perform well under its induced distribution of states is a remedy to the poor performance in imitation learning.
+Fortunately, Ross et al,\cite{DAgger} proposed that the dataset aggregation algorithm (DAgger), which learns a stationary deterministic policy guaranteed to perform well under its induced distribution of states, is a remedy to the poor performance in imitation learning.
 
 
-In this paper, 
-we conduct an interdisciplinary research to introduce an innovative technique - imitation learning to speed up the Hartree-Fock process.  Ross (cite:Ross et al.[2011]) proposed the dataset aggregation algorithm (DAgger), which was proven to have stable performance and faster learning rate. \cite{DAggerCompare}
-
-%The present work therefore intends to treat the Hartree-Fock process as an expert demonstration, and we apply DAgger algorithm to imitate the process for learning a fast-forward version of Hartree-Fock.
-
+In this paper,  we introduce the imitation learning technique to speed up the Hartree-Fock process with dataset aggregation algorithm (DAgger) \cite{DAgger}, which was proven to have stable performance and fast learning rate. \cite{DAggerCompare}
 
 %introducing “parameter" into HF  turn it to Machine learning problem.
 %adjust the parameter that make it happend
 
 \section{BACKGROUND}
+\subsection{Hatree-Fock}
 
 In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant[ref]. The general notation for getting the energy in quantum chemistry is as shown below:
 
@@ -97,22 +98,118 @@ N = Number of basis functions (features)
 
 p  = depending on the accuracy model between 3.5 and 8\cite{Fisch1996}
 
-Reducing the the number of iterations of Hartree-Fock algorithm has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay}. We are exploring a different method where to find parameters which are embedded in the hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
+Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay}. We are exploring a different method where to find parameters which are embedded in the hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
 
 %Hatree-Fock
 %density matrix
 %Gaussian  , wave function, basis
 %Slater determinant
 
-DAgger algorithm
 
-\section{PROPOSED ALGORITHM}
+\subsection{Speeding up as imitation learning}
+% Description of the original iterative Hatree-Fock
+Description of the original iterative Hatree-Fock \\
+
+
+The whole Hatree-Fock process is pretty time consuming especially for large molecular system, each iteration may cost hours of computation. 
+
+% The difficulty of (speeding up the whole process)parallelling the whole procedure, therefore, we'd like to speed up single iteration 
+In general, we can think of two approaches to speed up a process. The first approach would be paralleled the whole procedure.
+The whole process is hard to paralleled, since the input of each iteration depend on the output of previous iteration.
+
+
+The second approach would be improving the procedure, make each iteration more productive so that we can achieve the same goal with less iterations. 
+
+%How to map the Hatree-Fock to imitation learning problem.
+% The idea is simple
+Hatree-Fock is an iterative process. Given an initial density matrix $d_0$ as an input to the Hatree-Fock process, after first iteration we'll get the output density matrix $d_1$. In the second iteration, the previous output density matrix will then become the input, thus feeding in $d_1$ we can get the output density matrix $d_2$. We'll keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
+
+As a result, we can think whole n iterations of original Hatree-Fock process as a step by step flow, from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1 d_2 ...... d_{n-1}$ , then finally get the converged output $d_{n}$ just like a film playing frame by frame. 
+
+With imitation learning,
+we can treat the original Hatree-Fock iteration as the expert demonstration. However, instead of learning the original Hatree-Fock process, we would like to learn a "Fast forward" version of Hatree-Fock. We can always try to make the output density matrix match the ideal output in our training data.
+
+It's intuitive to think of a "2X fast forward" version of Hatree-Fock which would be dropping the odd numbered frame, thus the procedure will become mapping $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this fast forward version,
+we'll only need $frac{n}{2}$ iterations, thus the computation is roughly cut into half.
+
+With embedded parameters and the extra flexibility,
+our goal here is to learn a Hatree-Fock with parameter which can make more progress in one iteration, thus converge with less iterations, say half or even less iterations.  
+
+%The present work therefore intends to treat the Hartree-Fock process as an expert demonstration, and we apply DAgger algorithm to imitate the process for learning a fast-forward version of Hartree-Fock.
+
+
+%if you want to use more Gaussian functions to get a more accurate description of the orbitals. 
+
+%Hartree-Fock is a method used to get the density matrix for a given molecule. The density matrix describes the molecule and the probability distribution of the location of the electrons.
+
+ %Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant. The electrons or orbitals are described with a combination of Gaussian functions.
+
+%Hatree-Fock
+%density matrix
+%Gaussian  , wave function, basis
+%Slater determinant
+
+
+\subsection{DAgger algorithm}
+% sovle the naive imitation learning problem
+DAgger is an iterative algorithm that learns expert demonstration iteratively. In each iteration, it was trained under the states that may be induced by both the expert and the learner itself. It builds up the set of inputs that the learned policy is likely to encounter based on previous training iterations, thus it's possible to correct the error made by previous iteration. This is a remedy to the problem in naive imitation learning that the result may become unpredictable and poor because of the policy is trained under a different state distribution. Thus the error may keep growing iteration by iteration.
+
+The simplest DAgger algorithm may proceed as follows.
+
+
+... Rough Algorithm Description goes here.....
+
+%Rough Algorithm Description
+%by iteratively training the policy in states induced by all previously learned policies.
+
+
+%For example, during training one
+%can use a “mixture oracle” that at times takes an action given by the previous learned policy [11].
+%Alternatively, at each iteration one can learn a policy from trajectories generated by all previous policies [3].
+
+
+
+
+
+\begin{algorithm}[htb]
+ \KwData{}
+ \KwResult{Best $\hat{\pi}_i$ on validation }
+ Initialized $D \leftarrow \emptyset$ \\
+ Initialized $\hat{\pi}_1$ to any policy in $\Pi$ \\
+ \For{i=1 to N }{
+	Let $\pi_i$ = $\beta_{i}\pi^* + (1-\beta)\hat{\pi_i}$ \\
+	Sample T-step trajectories using $\pi_i$ \\
+	Get dataset $D_i$ = \{(s, $\pi^*$(s))\} of visited states by $\pi_i$ and actions given by expert. \\
+	Aggregate datasets: $D \leftarrow D \cup D_i$ \\
+	Train classifier $\hat{\pi}_{i+1}$ on $D$\\
+ }
+ \caption{DAgger algorithms}
+\end{algorithm}
+
+\section{LEARNING EMBEDDED PARAMETERS}
+
 
 
 \section{EXPERIMENTS}
+
+
+%1 etot 
+%2 convergence rate (L1 norm with previous iteration)
+\subsection{Experiment settings}
+
+	
+What is the dataset ??\\
+Training dataset, Testing dataset.... \\
+
 How to evaluate the result?
-Experiment setting.
-Experiment result.
+What is "etot" \\
+What is convergence rate \\
+
+	
+
+\subsection{Experiment result}
+
+
 
 \section{GENERAL FORMATTING INSTRUCTIONS}
 
