@@ -73,13 +73,29 @@ In this paper,  we introduce the imitation learning technique to speed up the Ha
 \section{BACKGROUND}
 \subsection{Hatree-Fock}
 
-In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant. The general notation for getting the energy in quantum chemistry is as shown below:
+In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant.  The wave function is a function describing any given quantum system containing one or more particles. 
+
+\begin{eqnarray}
+\Psi=
+\frac{1}{\sqrt{N!}}\left|
+\begin{array}{cccc}
+\chi_1(x_1)&\chi_2(x_1)&..&\chi_N(x_1)\\
+\chi_1(x_2)&\chi_2(x_2)&\chi_3(x_2)&.\\
+\chi_1(x_3)&\chi_2(x_3)&\chi_3(x_3)&.\\
+.&.&.&.\\
+.&.&.&.\\
+\chi_1(x_N)&.&.&\chi_N(x_N)\\
+\end{array}
+\right|
+\end{eqnarray}
+
+Equation 1 gives the wave function ($\psi$) described as a slater determinant. The general notation for getting the energy in quantum chemistry is as shown below:
 
 %$H\Psi = E\Psi$
 
 E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
-where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The wave function is function describing any given quantum system containing one or more particles. The general form of the Hamiltonian consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator. The Hamiltonian is approximated to the Fock operator which is shown below:
+where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The general form of the Hamiltonian consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator. The Hamiltonian is approximated to the Fock operator which is shown below:
 
 $\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$,
 
@@ -88,7 +104,7 @@ where $\hat{h_1}$ is the one electron hamiltoninan containing the kinetic energy
 FC = SC$\epsilon$,
 
 where S is the overlap matrix and $\epsilon$ is a diagonal matrix of the orbital energies. This is similar to an eigenvalue equation with the exception of the existence of the S matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution this equation has to be done iteratively. In other words you need to have the Fock-orbitals to get the Fock operator. 
-To solve this equation you start with an arbitrary guess density and then solve for the fock operator and then get the new density which you again will use to solve to get the new Fock operator and so on. 
+To solve this equation you start with an arbitrary guess density and then solve for the Fock operator and then get the new density which you again will use to solve to get the new Fock operator and so on. 
 
 The cost of the methods based on Hartree-Fock algorithm scales as N\textsuperscript{p} where: 
 
@@ -97,6 +113,8 @@ N = Number of basis functions (features)
 = n Natoms  (n = basis functions/atom)  
 
 p  = depending on the accuracy model between 3.5 and 8\cite{frisch1996exploring}
+
+The density of the orbitals are described using gaussian functions which are called basis functions here. The larger the basis set, the more gaussian functions and the more accurate result you can attain.
 
 Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}. We are exploring a different method where to find parameters which are embedded in the hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
 
