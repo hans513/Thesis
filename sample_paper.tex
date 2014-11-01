@@ -43,20 +43,20 @@
 \end{abstract}
 
 \section{INTRODUCTION}
-% Hatree-Fock intro
-In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electronic distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be quite tedious and time-consuming for large molecules especially if we want to get an accurate description of the electron distribution. Speeding up the Hatree-Fock would thus enable us to deal with larger molecules, which can in turn be utilized to study biochemical reaction with very large systems. In essence, speeding up the Hatree-Fock algorithm will save computational cost to solve quantum chemical problems. 
+% Hartree-Fock intro
+In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electronic distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be quite tedious and time-consuming for large molecules especially if we want to get an accurate description of the electron distribution. Speeding up the Hartree-Fock would thus enable us to deal with larger molecules, which can in turn be utilized to study biochemical reaction with very large systems. In essence, speeding up the Hartree-Fock algorithm will save computational cost to solve quantum chemical problems. 
 
 
 
-Matteus et al, \cite{Matteus}, proposed a way to embed the parameters in the Hartree-Fock model. This method is constructed to find the similarities in molecules. The Model is partitioned into kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters for on atom and for bonded.
+Tanha et al, \cite{Matteus}, proposed a way to embed the parameters in the Hartree-Fock model. This method is constructed to find the similarities in molecules. The Model is partitioned into kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters for on atom and for bonded.
 
 
 
-The parameters give us the flexibility to control the behaviour of the Hatree-Fock method. This flexibility allows us to let each of the Hatree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hatree-Fock with parameters achieve as much progress as two or even more iterations of the original Hatree-Fock.
+The parameters give us the flexibility to control the behaviour of the Hartree-Fock method. This flexibility allows us to let each of the Hartree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hartree-Fock with parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
 
 
 % How to do that? (Imitation learning)
-This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing particular tasks. By imitation learning, we can make Hatree-Fock with parameters learn from the original Hatree-Fock, which finally enables it to gain two iterations or more progress in one single iteration.
+This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing particular tasks. By imitation learning, we can make Hartree-Fock with parameters learn from the original Hartree-Fock, which finally enables it to gain two iterations or more progress in one single iteration.
 
 
 % Problem encountered   %%%%%
@@ -74,9 +74,23 @@ In this paper,  we introduce the imitation learning technique to speed up the Ha
 
 \section{BACKGROUND}
 
-\subsection{Hatree-Fock}
+\subsection{Hartree-Fock}
 
-In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant.  The wave function is a function describing any given quantum system containing one or more particles. 
+In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation 
+%  Schrödinger (Need to explain)
+
+where it assumes that the wave function can be approximated by a single Slater determinant.  
+%  Slater determinant (Need to explain)
+
+The wave function is a function describing any given quantum system containing one or more particles. 
+% Should introduce Wave function before Schrödinger
+% Difference of the Wave function and density matrix
+
+% The wave function/density matrx for the entire system is exponentially large
+% Talk aobut difference level of summarization
+% => the wave function of a single electron
+% => 1 electron or 2 electrons density matrices  => basis
+
 
 \begin{eqnarray}
 \Psi=
@@ -91,20 +105,43 @@ In the area of theoretical chemistry the main objective is to find a method to c
 \end{array}
 \right|
 \end{eqnarray}
+% Why (Slater) determint is relevant 
+
 
 Equation 1 gives the wave function ($\psi$) described as a slater determinant. The general notation for getting the energy in quantum chemistry is as shown below:
 
-
-%$H\Psi = E\Psi$
+% Worth metion the time invariant stead state $H\Psi = E\Psi$
 
 E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
-where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The general form of the Hamiltonian consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator. The Hamiltonian is approximated to the Fock operator which is shown below:
+where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The general form of the Hamiltonian 
+% Hamiltonian (Need to explain)
+% A operator which give you the energy and
+% split the source of energy and location of energy
+
+consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator.
+% we don't have nuclear-nuclear interaction term??
+
+ The Hamiltonian is approximated to the Fock operator which is shown below:
 
 
 $\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$,
 
-where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. The core equation in the Hartree-Fock algorithm is as following:
+where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving 
+% Elaborate more about Fock operator
+the the Hartree-Fock algorithm. The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. The core equation in the Hartree-Fock algorithm is as following:
+
+% Pseudo code of Hartree Fock
+% Make claer what  the input and oput are
+% single electron density matrix is the input and output 
+
+% Some intuition about these matrices
+% 
+% 
+% Run Hartree to get the eigen states of h2. 
+% show the first few eigen states (Schrödinger) of the h2 molecules and describe how the density matrices correspond to that plot (picture) to make things more concrete 
+
+% Visualize the fock operator and individual eigen state
 
 FC = SC$\epsilon$,
 
@@ -120,20 +157,26 @@ N = Number of basis functions (features)
 
 p  = depending on the accuracy model between 3.5 and 8\cite{frisch1996exploring}
 
+
+% Basis function and Gaussian function are not the same
+% Each basis is a linear combination of Gaussian 
+% For computations complexity
+% We can represent the basis function every way we want as long as we can perform integrals. it's really convenient to be the linear combinations of Gaussians
+
 The density of the orbitals are described using gaussian functions which are called basis functions here. The larger the basis set, the more gaussian functions and the more accurate result you can attain.
 
 Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}. We are exploring a different method where to find parameters which are embedded in the hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
 
 
-%Hatree-Fock
+%Hartree-Fock
 %density matrix
 %Gaussian  , wave function, basis
 %Slater determinant
 
 
-\subsection{Speeding up Hatree-Fock as an imitation learning problem}
+\subsection{Speeding up Hartree-Fock as an imitation learning problem}
 
-The Hatree-Fock method is an iterative process which is pretty time-consuming. Especially if one wants to get an accurate approximation for a large molecular system, each iteration may take  hours or even days of computation. 
+The Hartree-Fock method is an iterative process which is pretty time-consuming. Especially if one wants to get an accurate approximation for a large molecular system, each iteration may take  hours or even days of computation. 
 
 Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next one\cite{Pulay1980}.  \\
 .....The drawback of previous research......
@@ -146,24 +189,23 @@ Accelerating Hartree-Fock convergence has previously been explored in the matter
 %% In general, we can think of two approaches to speed up a process. The first approach would be paralleled the whole procedure.  The whole process is hard to paralleled, since the input of each iteration depend on the output of previous iteration.
 
 
-% Description of the original iterative Hatree-Fock
+% Description of the original iterative Hartree-Fock 
+% This part (Should go earlier under the description of Hartree-Fock)
 
-
-%How to map the Hatree-Fock to imitation learning problem.
-% The idea is simple
-Hatree-Fock is an iterative process. Given an initial density matrix $d_0$ as an input, after first iteration we will get the output density matrix $d_1$. In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
+%How to map the Hartree-Fock to imitation learning problem.
+Hartree-Fock is an iterative process. Given an initial density matrix $d_0$ as an input, after first iteration we will get the output density matrix $d_1$. In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
 
 An approach to speeding up the process would be improving the procedure, making each iteration more productive so that we can achieve the same goal with less iterations. 
 
-We can think the whole n iterations of the Hatree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1 d_2 ...... d_{n-1}$ and then finally get the converged output $d_{n}$ just like a film playing frame by frame. 
+We can think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1 d_2 ...... d_{n-1}$ and then finally get the converged output $d_{n}$ just like a film playing frame by frame. 
 
 It is intuitive to think of a "2X fast forward" version of the sequence which would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this fast forward version, we will only need $\frac{n}{2}$ iterations, thus cutting the computation into half.
 
 With imitation learning,
-we can treat the Hatree-Fock iteration as the expert demonstration. However, instead of learning the original Hatree-Fock process, we would like to learn the "Fast forward" version of Hatree-Fock. We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility which is offered by the embedded parameters .
+we can treat the Hartree-Fock iteration as the expert demonstration. However, instead of learning the original Hartree-Fock process, we would like to learn the "Fast forward" version of Hartree-Fock. We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility which is offered by the embedded parameters .
 
 
-Our goal here is to learn a Hatree-Fock with parameters to allow more progress in one iteration, therefore converging with less iterations, say half or even less iterations.  
+Our goal here is to learn a Hartree-Fock with parameters to allow more progress in one iteration, therefore converging with less iterations, say half or even less iterations.  
 
 %The present work therefore intends to treat the Hartree-Fock process as an expert demonstration, and we apply DAgger algorithm to imitate the process for learning a fast-forward version of Hartree-Fock.
 
@@ -174,7 +216,7 @@ Our goal here is to learn a Hatree-Fock with parameters to allow more progress i
 
  %Hartree-Fock is an approximation for solving the Schrödinger equation where it assumes that the wave function can be approximated by a single Slater determinant. The electrons or orbitals are described with a combination of Gaussian functions.
 
-%Hatree-Fock
+%Hartree-Fock
 %density matrix
 %Gaussian  , wave function, basis
 %Slater determinant
@@ -213,30 +255,33 @@ The simplest DAgger algorithm may proceed as follows.
  \caption{DAgger algorithms}
 \end{algorithm}
 
+% Connecting the symbol in algorithm to our scenario
 
 \section{LEARNING EMBEDDED PARAMETERS}
 
 
 
 
-
+\begin{center} 
 \begin{table*}[t]
 \begin{tabular}{|l|l|l|l|l|l|l|l|}
 \hline
-& \multicolumn{7}{l|}{Hatree-Fock iterations (with step size 2)}                                                                                                                    \\ \hline
-\multirow{10}{*}{\begin{tabular}[c]{@{}l@{}}DAgger\\ iterations\end{tabular}} &                         &                       & iter 1                  & iter 2                   & iter 3                     &  & iter n                                     \\ \cline{2-8} 
-                                                                              & \multirow{2}{*}{iter 1} & Objective             & $d_0 \rightarrow d_2$   & $d_2 \rightarrow d_4$    & $d_4 \rightarrow d_6$      &  & $d_{2(n-1)} \rightarrow d_{2n}$            \\ \cline{3-8} 
-                                                                              &                         & Result after training & $d_0 \rightarrow d_2'$ & $d_2 \rightarrow d_4'$   & $d_4 \rightarrow d_6'$    &  & $d_{2(n-1)} \rightarrow d_{2n}'$          \\ \cline{2-8} 
-                                                                              & \multirow{2}{*}{iter 2} & New objective         &                         & $d_2' \rightarrow d_4$   & $d_4' \rightarrow d_6$     &  & $d_{2(n-1)}' \rightarrow d_{2n}$          \\ \cline{3-8} 
-                                                                              &                         & Result after training &                         & $d_2' \rightarrow d_4''$ & $d_4' \rightarrow d_6''$   &  & $d_{2(n-1)}' \rightarrow d_{2n}''$        \\ \cline{2-8} 
-                                                                              & \multirow{2}{*}{iter 3} & New objective         &                         &                          & $d_4'' \rightarrow d_6$    &  & $d_{2(n-1)}'' \rightarrow d_{2n}$         \\ \cline{3-8} 
-                                                                              &                         & Result after training &                         &                          & $d_4'' \rightarrow d_6'''$ &  & $d_{2(n-1)}'' \rightarrow d_{2n}'''$      \\ \cline{2-8} 
-                                                                              &                         &                       &                         &                          &                            &  &                                            \\ \cline{2-8} 
-                                                                              & \multirow{2}{*}{iter n} & New objective         &                         &                          &                            &  & $d_{2(n-1)}^{n-1} \rightarrow d_{2n}$     \\ \cline{3-8} 
-                                                                              &                         & Result after training &                         &                          &                            &  & $d_{2(n-1)}^{n-1} \rightarrow d_{2n}^{n}$ \\ \hline
+& \multicolumn{7}{l|}{Hartree-Fock iterations (with step size 2)}                                                                                                                    \\ \hline
+\multirow{10}{*}{\begin{tabular}[c]{@{}l@{}}DAgger\\ iterations\end{tabular}} 
+&                &                & iter 1         & iter 2          & iter 3         & \ldots         & iter n         \\ \cline{2-8} 
+& \multirow{2}{*}{iter 1} 
+& Objective & $d_0 \rightarrow d_2$ & $d_2 \rightarrow d_4$ & $d_4 \rightarrow d_6$ &  \ldots & $d_{2(n-1)} \rightarrow d_{2n}$ \\ \cline{3-8} 
+&                 & Result after training & $d_0 \rightarrow d_2'$ & $d_2 \rightarrow d_4'$   & $d_4 \rightarrow d_6'$    &  \ldots & $d_{2(n-1)} \rightarrow d_{2n}'$          \\ \cline{2-8} 
+& \multirow{2}{*}{iter 2} & New objective         &                         & $d_2' \rightarrow d_4$   & $d_4' \rightarrow d_6$     &  \ldots & $d_{2(n-1)}' \rightarrow d_{2n}$          \\ \cline{3-8} 
+&                 & Result after training &                 & $d_2' \rightarrow d_4''$ & $d_4' \rightarrow d_6''$   & \ldots & $d_{2(n-1)}' \rightarrow d_{2n}''$        \\ \cline{2-8} 
+& \multirow{2}{*}{iter 3} & New objective         &                         &                          & $d_4'' \rightarrow d_6$    &  \ldots & $d_{2(n-1)}'' \rightarrow d_{2n}$         \\ \cline{3-8} 
+&                 & Result after training &                 &                 & $d_4'' \rightarrow d_6'''$ &  \ldots & $d_{2(n-1)}'' \rightarrow d_{2n}'''$      \\ \cline{2-8} 
+& \vdots      & \vdots      &                &                &                & $\ddots$ &   \vdots \\ \cline{2-8} 
+& \multirow{2}{*}{iter n} & New objective         &                         &                          &                            &  & $d_{2(n-1)}^{[n-1]} \rightarrow d_{2n}$     \\ \cline{3-8} 
+&                & Result after training &                &                &                &  & $d_{2(n-1)}^{[n-1]} \rightarrow d_{2n}^{n}$ \\ \hline
 \end{tabular}
 \end{table*}
-
+\end{center} 
 \section{EXPERIMENTS}
 
 
