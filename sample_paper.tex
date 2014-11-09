@@ -44,19 +44,16 @@
 
 \section{INTRODUCTION}
 % Hartree-Fock intro
-In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electronic distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be quite tedious and time-consuming for large molecules especially if we want to get an accurate description of the electron distribution. Speeding up the Hartree-Fock would thus enable us to deal with larger molecules, which can in turn be utilized to study biochemical reaction with very large systems. In essence, speeding up the Hartree-Fock algorithm will save computational cost to solve quantum chemical problems. 
+In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electron distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be excessively time consuming or even infeasible if we want to get an accurate description of the electron distribution for large molecules. Speeding up the Hartree-Fock would save computational cost thus enable us to deal with more complicate molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
 
+Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters for atom and for bonded.
 
-
-Tanha et al, \cite{Matteus}, proposed a way to embed the parameters in the Hartree-Fock model. This method is constructed to find the similarities in molecules. The Model is partitioned into kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters for on atom and for bonded.
-
-
-
-The parameters give us the flexibility to control the behaviour of the Hartree-Fock method. This flexibility allows us to let each of the Hartree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hartree-Fock with parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
-
+With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
 
 % How to do that? (Imitation learning)
-This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing particular tasks. By imitation learning, we can make Hartree-Fock with parameters learn from the original Hartree-Fock, which finally enables it to gain two iterations or more progress in one single iteration.
+This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing the same tasks. 
+We can generate an illustrative sequence from the original Hartree-Fock as expert demonstrations. By imitation learning technique, we can make 
+Hartree-Fock with embedded parameters learns from the demonstrations,  which finally enables it to gain more progress in one single iteration.
 
 
 % Problem encountered   %%%%%
@@ -64,10 +61,11 @@ However, naive imitation learning may yield poor performance in theory and pract
 
 
 % The recipe (DAgger)
-Fortunately, Ross et al,\cite{DAgger} proposed that the dataset aggregation algorithm (DAgger), which learns a stationary deterministic policy guaranteed to perform well under its induced distribution of states, is a remedy to the poor performance in imitation learning.
+Fortunately, Ross et al,\cite{DAgger} proposed the dataset aggregation algorithm (DAgger), which learns a stationary deterministic policy guaranteed to perform well under its induced distribution of states, is a remedy to the poor performance in imitation learning. DAgger also was proven to have stable performance and fast learning rate. \cite{DAggerCompare}
 
+In this paper,  we introduce the imitation learning technique for speeding up the Hartree-Fock process. 
+Through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a sequence of Hartree-Fock with embedded parameters that can perform well under the induced distribution of states and also yield more progress in each iteration. 
 
-In this paper,  we introduce the imitation learning technique to speed up the Hartree-Fock process with dataset aggregation algorithm (DAgger) \cite{DAgger}, which was proven to have stable performance and fast learning rate. \cite{DAggerCompare}
 
 %introducing “parameter" into HF  turn it to Machine learning problem.
 %adjust the parameter that make it happend
@@ -76,9 +74,10 @@ In this paper,  we introduce the imitation learning technique to speed up the Ha
 
 \subsection{Hartree-Fock}
 
-In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation 
-%  Schrödinger (Need to explain)
+In the area of theoretical chemistry, the main objective is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available. While in all these cases, Hartree-Fock algorithm is the starting point.
 
+ Hartree-Fock is an approximation for solving the Schrödinger equation 
+%  Schrödinger (Need to explain)
 where it assumes that the wave function can be approximated by a single Slater determinant.  
 %  Slater determinant (Need to explain)
 
@@ -110,7 +109,7 @@ The wave function is a function describing any given quantum system containing o
 
 Equation 1 gives the wave function ($\psi$) described as a slater determinant. The general notation for getting the energy in quantum chemistry is as shown below:
 
-% Worth metion the time invariant stead state $H\Psi = E\Psi$
+% Worth metion the time invariant steady state $H\Psi = E\Psi$
 
 E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
@@ -224,15 +223,21 @@ Our goal here is to learn a Hartree-Fock with parameters to allow more progress 
 
 \subsection{DAgger algorithm}
 % sovle the naive imitation learning problem
-DAgger is an iterative algorithm that learns expert demonstration iteratively. In each iteration, it was trained under the states that may be induced by both the expert and the learner itself. It builds up the set of inputs that the learned policy is likely to encounter based on previous training iterations, which make it possible to correct the error made by previous iteration. This is a remedy to the problem in naive imitation learning that the result may become unpredictable and poor because of the policy is trained under a different state distribution. Thus the error may keep growing iteration by iteration.
+DAgger is an algorithm that learns expert demonstration iteratively. In each iteration, the model is trained under the states that was induced by both the expert and the previous learned policy. It keeps building up a set of inputs that the learner is likely to encounter based on previous training iterations. By doing so, it is possible to offset the error made by previous iterations. This is a remedy to the problem in naive imitation learning that the result may become unpredictable and poor because of the policy is trained under a different state distribution. Thus the error may keep growing iteration by iteration.
 
 The simplest DAgger algorithm may proceed as follows.
 
-
-... Rough Algorithm Description goes here.....
-
 %Rough Algorithm Description
-%by iteratively training the policy in states induced by all previously learned policies.
+%%% FROM Original paper
+In the first iteration, it uses the expert’s policy to gather
+a dataset of trajectories D and train a policy $\pi^2$ that best
+mimics the expert on those trajectories. Then at iteration
+n, it uses $\pi^n$ to collect more trajectories and adds those
+trajectories to the dataset D. The next policy $\pi^{n+1}$ is the
+policy that best mimics the expert on the whole dataset D.
+
+In other words, DAGGER proceeds by collecting a dataset
+at each iteration under the current policy and trains the next policy under the aggregate of all collected datasets. 
 
 
 %For example, during training one
@@ -259,6 +264,41 @@ The simplest DAgger algorithm may proceed as follows.
 
 \section{LEARNING EMBEDDED PARAMETERS}
 
+With Dagger we can learn 
+
+Dagger is an iterative process.
+
+For each iteration We'll learn a Hatree-Fock with parameter that best 
+
+We can visualize the whole process as a two dimension table.
+Each row represents the proceeding of Hartree-Fock.
+Each column represents the aggregating learning process of DAgger.
+
+For example, if we want to learn the best set of Hartree-Fock with parameter which can converge as twice fast as the original Hartree-Fock.
+Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_1, d_2, d_3, /ddot,$ and finally converges at $d_n$.
+Then for the first iteration of Hartree-Fock, we want to find a set of parameter that best matches density matrix $d_1$ to $d_3$.
+
+
+%In each iteration, the model is trained under the states that was induced by both the expert and the previous learned policy. I
+
+%TODO: Error of density matrix
+Say, after training with the our best set of parameters, we can match density matrix $d_1$ to $d_{3}'$
+
+Then for the iteration after first one.
+We have two sources of the training example. One from the expert's demonstration, the other one is the state which is induced by previous learned policy.
+
+In the second iteration,  we not only want to fit the expert's demonstration $d_3$ to $d_5$, but also want to fit the output of previous iteration $d_{3}'$ to $d_5$.
+
+This is the key to compensate the error made by previous iteration.
+
+It will keep aggregating the output of previous iteration.
+
+In the iteration n,  we'll fit the expert's demonstration $d_{n-2}$ to $d_n$, and also all the possible output of previous iteration $d_{n-2}'$,  $d_{n-2}''$,  $d_{n-2}^{n-1}$  to $d_n$.
+
+
+After training, for each iteration, we'll get a best set of parameter that not only mimics expert's demonstration in that iteration but also offset the error made by previous iteration.
+
+With these $\frac{n}{2}$ set of parameters, we can build up a 
 
 
 
@@ -289,8 +329,9 @@ The simplest DAgger algorithm may proceed as follows.
 %2 convergence rate (L1 norm with previous iteration)
 \subsection{Experiment settings}
 
-	
-What is the dataset ??\\
+%What is the dataset 
+We generate a few hundred molecules dataset and divide these between a training and a test data set.
+
 Training dataset, Testing dataset.... \\
 
 How to evaluate the result?
@@ -531,7 +572,11 @@ G.~Tesauro (1989). Neurogammon wins computer Olympiad.  {\it Neural
 learning.} Proceedings of the 13th International
 Conference on Artificial Intelligence and Statistics (AISTATS),
 2010.
-  
+
+  \bibitem{Pulay1980}
+   Péter Pulay,
+  \emph{Convergence acceleration of iterative sequences. The case of SCF iteration.} Chem. Phys. Lett. 73, 393 (1980).
+
 \end{thebibliography}
 
 \end{document}
