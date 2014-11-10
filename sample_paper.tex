@@ -282,12 +282,25 @@ at each iteration under the current policy and trains the next policy under the 
 
 % Connecting the symbol in algorithm to our scenario
 
+%Dagger is a powerful algorithm that can train a model which performs well in its the induced state.
+
 \section{LEARNING EMBEDDED PARAMETERS}
 
-Dagger is a powerful algorithm that can trains a model that perform well in its the induced state.
-It is a 
+Our goal here is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with only half iterations.
 
-In our case, we want to train a model for each iteration. 
+With the fast forwarded trajectories to serve as expert's demonstration, we can try to apply DAgger to learn such 
+
+However,
+Like most of the iterative algorithm, the result may oscillate dramatically in the very first few iterations then getting stable and finally become converged after a bunch of iterations. 
+
+It's obvious that in the different phrases of the iterative process, the behavior is a little different. 
+
+%Here in the Hartree-Fock process, what we really care about is the converged density matrices. 
+
+Instead of training one model for the whole process,
+training one model for different iteration that best accelerate that iteration would be a easier approach.
+
+
 
 % \Pi is the set including of all the Hartree-Fock with embedded paramter
 % The original Hartree-Fock is actually a Hartree-Fock with all-zero embedded paramter
@@ -296,40 +309,39 @@ In our case, we want to train a model for each iteration.
 % D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
 % 
 
-In each iteration, we will learn a Hatree-Fock with embedded parameter $\pi_i$ that best 
+In the other word, in our case, in each single iteration in Hartree-Fock,  we will use DAgger to learn a Hatree-Fock with embedded parameter $\pi_i$ that best speed up that iteration.  
 
 
 We can visualize the whole process as a two dimension table.
 Each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
  
-If we want to learn the best set of Hartree-Fock with embedded parameter which can converge as twice fast as the original Hartree-Fock.
+%If we want to learn the best set of Hartree-Fock with embedded parameter which can converge as twice fast as the original Hartree-Fock.
 
-Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_1, d_2, d_3, \ddot,$ and finally converges at $d_n$.
+Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0, d_1, d_2, \ddot,$ and finally converges at $d_n$.
 
-
-
-
-Then for the first iteration of Hartree-Fock, we want to find a set of parameter that best matches density matrix $d_1$ to $d_3$.
-
+Then for the first iteration of Hartree-Fock, the only thing we want to train is a set of parameter that best matches density matrix $d_0$ to $d_2$. 
 
 %In each iteration, the model is trained under the states that was induced by both the expert and the previous learned policy. I
 
 %TODO: Error of density matrix
-Say, after training with the our best set of parameters, we can match density matrix $d_1$ to $d_{3}'$
+Say, after training with the our best set of parameters, we can map density matrix $d_0$ to $d_{2}'$
 
-Then for the iteration after first one.
-We have two sources of the training example. One from the expert's demonstration, the other one is the state which is induced by the previous learned policy $\pi_2$.
+Then for the iterations afterwards, we have two sources of the training examples. 
+One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), the other one is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration).
 
-In the second iteration,  we not only want to fit the expert's demonstration $d_3$ to $d_5$, but also want to fit the output of previous iteration $d_{3}'$ to $d_5$.
+In the second iteration of Hatree-Fock, and in the first iteration of DAgger, 
+we want to train a set of parameter that best matches density matrix $d_2$ to $d_4$.
+
+However, in the second iteration of DAgger, we aggregate one more dataset that is the state induced by iteration 1,
+thus we not only want to fit the expert's demonstration $d_2$ to $d_4$, but also want to fit the output of previous iteration $d_{2}'$ to $d_4$.
 
 This is the key to compensate the error made by previous iteration.
-
 It will keep aggregating the output of previous iteration.
 
-In the iteration n,  we'll fit the expert's demonstration $d_{n-2}$ to $d_n$, and also all the possible output of previous iteration $d_{n-2}'$,  $d_{n-2}''$,  $d_{n-2}^{n-1}$  to $d_n$.
-
+In the iteration n,  we'll fit the expert's demonstration $d_{n-2}$ to $d_n$, and also all the possible output of previous iteration $d_{n-2}'$,  $d_{n-2}''$, $\ldots$,  $d_{n-2}^{n-1}$  to $d_n$.
 
 After training, for each iteration, we'll get a best set of parameter that not only mimics expert's demonstration in that iteration but also offset the error made by previous iteration.
+
 
 With these $\frac{n}{2}$ set of parameters, we can build up a 
 
