@@ -66,9 +66,7 @@ Fortunately, Ross et al,\cite{DAgger} proposed the dataset aggregation algorithm
 In this paper,  we introduce the imitation learning technique for speeding up the Hartree-Fock process. 
 Through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a sequence of Hartree-Fock with embedded parameters that can perform well under the induced distribution of states and also yield more progress in each iteration. 
 
-
 %introducing “parameter" into HF  turn it to Machine learning problem.
-%adjust the parameter that make it happend
 
 \section{BACKGROUND}
 
@@ -89,7 +87,6 @@ The wave function is a function describing any given quantum system containing o
 % Talk aobut difference level of summarization
 % => the wave function of a single electron
 % => 1 electron or 2 electrons density matrices  => basis
-
 
 \begin{eqnarray}
 \Psi=
@@ -123,7 +120,7 @@ The general form of the Hamiltonian
 consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator.
 % we don't have nuclear-nuclear interaction term??
 
- The Hamiltonian is approximated to the Fock operator which is shown below:
+ he Hamiltonian is approximated to the Fock operator which is shown below:
 
 
 $\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$,
@@ -140,8 +137,6 @@ The core equation in the Hartree-Fock algorithm is as following:
 % single electron density matrix is the input and output 
 
 % Some intuition about these matrices
-% 
-% 
 % Run Hartree to get the eigen states of h2. 
 % show the first few eigen states (Schrödinger) of the h2 molecules and describe how the density matrices correspond to that plot (picture) to make things more concrete 
 
@@ -216,11 +211,12 @@ If we think of the sequence as a film playing frame by frame. Then it is intuiti
 Under the same frame rate, the sequence of a  "2X fast forward" version would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this ideal fast forward version, we will only need half iterations to achieve the same goal, thus cutting the computation cost into half.
 
 
-With imitation learning,
-we can treat the Hartree-Fock iteration as the expert demonstration. However, instead of learning the original Hartree-Fock process, we would like to learn the "Fast forward" version of Hartree-Fock. We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility which is offered by the embedded parameters .
+This sequence can serve as a expert demonstration, and the extra flexibility offered by the embedded parameter can let us reform the Hartree-Fock process. By imitation learning,
+we would like to train a Hartree-Fock process with embedded parameter that  mimics the "Fast forward" version of the original Hartree-Fock. 
+We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility offered by the embedded parameters .
 
 
-Our goal here is to learn a Hartree-Fock with parameters to allow more progress in one iteration, therefore converging with less iterations, say half or even less iterations.  
+As a result, it allows more progress in one iteration, thus converged with less iterations, say half or even less iterations.  
 
 %The present work therefore intends to treat the Hartree-Fock process as an expert demonstration, and we apply DAgger algorithm to imitate the process for learning a fast-forward version of Hartree-Fock.
 
@@ -239,21 +235,29 @@ Our goal here is to learn a Hartree-Fock with parameters to allow more progress 
 
 \subsection{DAgger algorithm}
 % sovle the naive imitation learning problem
-DAgger is an algorithm that learns expert demonstration iteratively. In each iteration, the model is trained under the states that was induced by both the expert and the previous learned policy. It keeps building up a set of inputs that the learner is likely to encounter based on previous training iterations. By doing so, it is possible to offset the error made by previous iterations. This is a remedy to the problem in naive imitation learning that the result may become unpredictable and poor because of the policy is trained under a different state distribution. Thus the error may keep growing iteration by iteration.
+DAgger is an algorithm that learns expert demonstration iteratively. In each iteration, the model is trained under the states that was induced by both the expert and the previous learned model. It keeps aggregating a set of inputs that the model itself is likely to encounter based on previous training iterations.  
 
-The simplest DAgger algorithm may proceed as follows.
+By doing so, it is possible to offset the error made by previous learned model and thus learn a better model. This is a remedy to the problem in naive imitation learning that the result may become unpredictable and poor because of the policy is trained under a different state distribution
+%!!!!!!!!!!!!!!!!!!!!!!
+that the model is less likely to encounter. 
+
+
+Thus the error may keep growing iteration by iteration.
 
 %Rough Algorithm Description
+The simplest DAgger algorithm may proceed as follows.
 %%% FROM Original paper
+%%% TODO 
 In the first iteration, it uses the expert’s policy to gather
-a dataset of trajectories D and train a policy $\pi^2$ that best
-mimics the expert on those trajectories. Then at iteration
-n, it uses $\pi^n$ to collect more trajectories and adds those
-trajectories to the dataset D. The next policy $\pi^{n+1}$ is the
-policy that best mimics the expert on the whole dataset D.
+a dataset of trajectories D and train a policy $\pi_2$ that best
+mimics the expert on those trajectories. 
 
-In other words, DAGGER proceeds by collecting a dataset
+Then in iteration i, based on $\pi_i$, we can sample the state induced by $\pi_i$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset D. We then train the next policy $\pi_{i+1}$ , the policy that best mimics the expert on the whole dataset D. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration N.
+
+In other words, Dagger proceeds by collecting a dataset
 at each iteration under the current policy and trains the next policy under the aggregate of all collected datasets. 
+
+
 
 
 %For example, during training one
@@ -280,18 +284,31 @@ at each iteration under the current policy and trains the next policy under the 
 
 \section{LEARNING EMBEDDED PARAMETERS}
 
-With Dagger we can learn 
+Dagger is a powerful algorithm that can trains a model that perform well in its the induced state.
+It is a 
 
-Dagger is an iterative process.
+In our case, we want to train a model for each iteration. 
 
-For each iteration We'll learn a Hatree-Fock with parameter that best 
+% \Pi is the set including of all the Hartree-Fock with embedded paramter
+% The original Hartree-Fock is actually a Hartree-Fock with all-zero embedded paramter
+
+% In our scenario the 2X fast forward version of Hartree-Fock is \pi^*
+% D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
+% 
+
+In each iteration, we will learn a Hatree-Fock with embedded parameter $\pi_i$ that best 
+
 
 We can visualize the whole process as a two dimension table.
-Each row represents the proceeding of Hartree-Fock.
-Each column represents the aggregating learning process of DAgger.
+Each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
+ 
+If we want to learn the best set of Hartree-Fock with embedded parameter which can converge as twice fast as the original Hartree-Fock.
 
-For example, if we want to learn the best set of Hartree-Fock with parameter which can converge as twice fast as the original Hartree-Fock.
-Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_1, d_2, d_3, /ddot,$ and finally converges at $d_n$.
+Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_1, d_2, d_3, \ddot,$ and finally converges at $d_n$.
+
+
+
+
 Then for the first iteration of Hartree-Fock, we want to find a set of parameter that best matches density matrix $d_1$ to $d_3$.
 
 
@@ -301,7 +318,7 @@ Then for the first iteration of Hartree-Fock, we want to find a set of parameter
 Say, after training with the our best set of parameters, we can match density matrix $d_1$ to $d_{3}'$
 
 Then for the iteration after first one.
-We have two sources of the training example. One from the expert's demonstration, the other one is the state which is induced by previous learned policy.
+We have two sources of the training example. One from the expert's demonstration, the other one is the state which is induced by the previous learned policy $\pi_2$.
 
 In the second iteration,  we not only want to fit the expert's demonstration $d_3$ to $d_5$, but also want to fit the output of previous iteration $d_{3}'$ to $d_5$.
 
