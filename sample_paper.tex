@@ -113,7 +113,9 @@ Equation 1 gives the wave function ($\psi$) described as a slater determinant. T
 
 E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
-where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The general form of the Hamiltonian 
+where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. 
+
+The general form of the Hamiltonian 
 % Hamiltonian (Need to explain)
 % A operator which give you the energy and
 % split the source of energy and location of energy
@@ -128,7 +130,10 @@ $\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$,
 
 where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving 
 % Elaborate more about Fock operator
-the the Hartree-Fock algorithm. The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. The core equation in the Hartree-Fock algorithm is as following:
+the the Hartree-Fock algorithm. The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. 
+
+
+The core equation in the Hartree-Fock algorithm is as following:
 
 % Pseudo code of Hartree Fock
 % Make claer what  the input and oput are
@@ -144,7 +149,9 @@ the the Hartree-Fock algorithm. The wave function is approximated to a density m
 
 FC = SC$\epsilon$,
 
-where S is the overlap matrix and $\epsilon$ is a diagonal matrix of the orbital energies. This is similar to an eigenvalue equation with the exception of the existence of the S matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution this equation has to be done iteratively. In other words you need to have the Fock-orbitals to get the Fock operator. 
+where S is the overlap matrix and $\epsilon$ is a diagonal matrix of the orbital energies. This is similar to an eigenvalue equation with the exception of the existence of the S matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution this equation has to be done iteratively. 
+
+In other words you need to have the Fock-orbitals to get the Fock operator. 
 
 To solve this equation you start with an arbitrary guess density and then solve for the Fock operator and then get the new density which you again will use to solve to get the new Fock operator and so on. 
 
@@ -162,9 +169,7 @@ p  = depending on the accuracy model between 3.5 and 8\cite{frisch1996exploring}
 % For computations complexity
 % We can represent the basis function every way we want as long as we can perform integrals. it's really convenient to be the linear combinations of Gaussians
 
-The density of the orbitals are described using gaussian functions which are called basis functions here. The larger the basis set, the more gaussian functions and the more accurate result you can attain.
-
-Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}. We are exploring a different method where to find parameters which are embedded in the hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
+The density of the orbitals are described using Gaussian functions which are called basis functions here. The larger the basis set, the more Gaussian functions and the more accurate result you can attain. However, if one wants to get an accurate approximation for a large molecular system, the computation might be excessive long. Each iteration may take hours or even days of computation thus become infeasible. 
 
 
 %Hartree-Fock
@@ -175,10 +180,13 @@ Accelerating Hartree-Fock convergence has previously been explored in the matter
 
 \subsection{Speeding up Hartree-Fock as an imitation learning problem}
 
-The Hartree-Fock method is an iterative process which is pretty time-consuming. Especially if one wants to get an accurate approximation for a large molecular system, each iteration may take  hours or even days of computation. 
 
-Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next one\cite{Pulay1980}.  \\
+Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}. 
+
 .....The drawback of previous research......
+
+In this paper,
+we want to explore a different method where to find parameters which are embedded in the Hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
 
 
 %We are exploring a different method where to find parameters which are embedded in the Hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
@@ -192,13 +200,21 @@ Accelerating Hartree-Fock convergence has previously been explored in the matter
 % This part (Should go earlier under the description of Hartree-Fock)
 
 %How to map the Hartree-Fock to imitation learning problem.
-Hartree-Fock is an iterative process. Given an initial density matrix $d_0$ as an input, after first iteration we will get the output density matrix $d_1$. In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
+As we mentioned before,  due to the Fock operator can only be calculated iteratively, Hartree-Fock become an iterative process. Given an initial guessed density matrix $d_0$ as an input for solving Fock operator, after first iteration we will get the a new output density matrix $d_1$. 
+In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. 
 
-An approach to speeding up the process would be improving the procedure, making each iteration more productive so that we can achieve the same goal with less iterations. 
+We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
 
-We can think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1 d_2 ...... d_{n-1}$ and then finally get the converged output $d_{n}$ just like a film playing frame by frame. 
+This repeating process is quite tedious and each iteration may take hours or even days. % Shorten each iteration?
 
-It is intuitive to think of a "2X fast forward" version of the sequence which would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this fast forward version, we will only need $\frac{n}{2}$ iterations, thus cutting the computation into half.
+If we can make each iteration more productive, we can achieve the same goal with less iterations. 
+
+We can think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1$,  $d_2$,  ...... $d_{n-1}$ and then finally get the converged output $d_{n}$. However, we actually don't care about the intermediate states. What the only thing we want to know is the final converged density matrices. If we can get the final converged density matrices with less iterations or even one iteration of computation that would be the best. 
+
+
+If we think of the sequence as a film playing frame by frame. Then it is intuitive to think of a speed up version as "2X fast forward". 
+Under the same frame rate, the sequence of a  "2X fast forward" version would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this ideal fast forward version, we will only need half iterations to achieve the same goal, thus cutting the computation cost into half.
+
 
 With imitation learning,
 we can treat the Hartree-Fock iteration as the expert demonstration. However, instead of learning the original Hartree-Fock process, we would like to learn the "Fast forward" version of Hartree-Fock. We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility which is offered by the embedded parameters .
