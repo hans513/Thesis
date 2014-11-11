@@ -46,7 +46,9 @@
 % Hartree-Fock intro
 In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electron distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be excessively time consuming or even infeasible if we want to get an accurate description of the electron distribution for large molecules. Speeding up the Hartree-Fock would save computational cost thus enable us to deal with more complicate molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
 
-Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters for atom and for bonded.
+Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters 
+
+for atom and for bonded. ???
 
 With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
 
@@ -74,19 +76,26 @@ Through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a seq
 
 In the area of theoretical chemistry, the main objective is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available. While in all these cases, Hartree-Fock algorithm is the starting point.
 
- Hartree-Fock is an approximation for solving the Schrödinger equation 
-%  Schrödinger (Need to explain)
-where it assumes that the wave function can be approximated by a single Slater determinant.  
-%  Slater determinant (Need to explain)
+Hartree-Fock is an approximation for solving the Schrödinger equation 
+which is the foundation equation of quantum mechanics.
+The solutions to Schr\"{o}dinger's equation can give us a complete description of a molecular systems.
+ %  Schrödinger (Need to explain)
+A wave function describes the quantum state of a system of one or more particles, and contains all the information about the system considered in isolation.
+The Schrödinger equation provides a way to calculate the possible wave functions of a system and how they dynamically change in time. \\
 
-The wave function is a function describing any given quantum system containing one or more particles. 
-% Should introduce Wave function before Schrödinger
 % Difference of the Wave function and density matrix
 
-% The wave function/density matrx for the entire system is exponentially large
-% Talk aobut difference level of summarization
+
+% Talk about different level of summarization
+.... elaborate more here .....  \\
+the wave function of single electron \\
+The ware function for the entire system may grow exponentially large\\
+mention the time invariant steady state $H\Psi = E\Psi$ \\
 % => the wave function of a single electron
 % => 1 electron or 2 electrons density matrices  => basis
+
+In Hartree–Fock theory, the electronic wave function can be approximated by single Slater determinant.
+Equation 1 gives the wave function ($\psi$) described as a Slater determinant. 
 
 \begin{eqnarray}
 \Psi=
@@ -101,76 +110,60 @@ The wave function is a function describing any given quantum system containing o
 \end{array}
 \right|
 \end{eqnarray}
-% Why (Slater) determint is relevant 
 
-
-Equation 1 gives the wave function ($\psi$) described as a slater determinant. The general notation for getting the energy in quantum chemistry is as shown below:
-
-% Worth metion the time invariant steady state $H\Psi = E\Psi$
+The general notation for getting the energy in quantum chemistry is as shown below:
+%  Slater determinant (Need to explain)
 
 E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
-where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. 
+where H is the Hamiltonian operator that can compute the energy of the electrons and nuclei in a molecule. 
 
-The general form of the Hamiltonian 
+The general form of the Hamiltonian can be split into few different operator that representing source of energy 
 % Hamiltonian (Need to explain)
-% A operator which give you the energy and
-% split the source of energy and location of energy
+including kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator.
+$\Psi$ is a wave function for any given molecule and E is the energy of the molecule we want to know.
 
-consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator.
-% we don't have nuclear-nuclear interaction term??
+The Hamiltonian is approximated to the Fock operator which has the following form:
+$\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$, \\
 
- he Hamiltonian is approximated to the Fock operator which is shown below:
+..... Visualize the fock operator and individual eigen state ... \\
 
-
-$\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$,
-
-where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving 
+where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. \\
 % Elaborate more about Fock operator
-the the Hartree-Fock algorithm. The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. 
+
+The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. 
 
 
-The core equation in the Hartree-Fock algorithm is as following:
 
-% Pseudo code of Hartree Fock
+
+The core equation in the Hartree-Fock algorithm is as following: \\
+
+..... Pseudo code of Hartree Fock ..... \\
 % Make claer what  the input and oput are
 % single electron density matrix is the input and output 
+
 
 % Some intuition about these matrices
 % Run Hartree to get the eigen states of h2. 
 % show the first few eigen states (Schrödinger) of the h2 molecules and describe how the density matrices correspond to that plot (picture) to make things more concrete 
 
-% Visualize the fock operator and individual eigen state
-
 FC = SC$\epsilon$,
 
 where S is the overlap matrix and $\epsilon$ is a diagonal matrix of the orbital energies. This is similar to an eigenvalue equation with the exception of the existence of the S matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution this equation has to be done iteratively. 
 
-In other words you need to have the Fock-orbitals to get the Fock operator. 
-
-To solve this equation you start with an arbitrary guess density and then solve for the Fock operator and then get the new density which you again will use to solve to get the new Fock operator and so on. 
+In other words you need to have the Fock-orbitals to get the Fock operator. To solve this equation you start with an arbitrary guess density and then solve for the Fock operator and then get the new density which you again will use to solve to get the new Fock operator and so on. 
 
 The cost of the methods based on Hartree-Fock algorithm scales as N\textsuperscript{p} where: 
-
 N = Number of basis functions (features) 
+%= n atoms  (n = basis functions/atom)  
+p  = depending on the accuracy of model between 3.5 and 8\cite{frisch1996exploring}
 
-= n Natoms  (n = basis functions/atom)  
+The density of the orbitals are described using basis functions. We can represent the basis function by every way we want as long as it can be integrated. However, it's really convenient and computation efficient to use the linear combinations of Gaussian to represent the basis function.
 
-p  = depending on the accuracy model between 3.5 and 8\cite{frisch1996exploring}
-
-
-% Basis function and Gaussian function are not the same
-% Each basis is a linear combination of Gaussian 
-% For computations complexity
-% We can represent the basis function every way we want as long as we can perform integrals. it's really convenient to be the linear combinations of Gaussians
-
-The density of the orbitals are described using Gaussian functions which are called basis functions here. The larger the basis set, the more Gaussian functions and the more accurate result you can attain. However, if one wants to get an accurate approximation for a large molecular system, the computation might be excessive long. Each iteration may take hours or even days of computation thus become infeasible. 
+The larger the basis set, the more Gaussian functions and the more accurate result we can attain. However, if one wants to get an accurate approximation for a large molecular system, the computation might be excessive long. Each iteration may take hours or even days of computation thus become infeasible. 
 
 
-%Hartree-Fock
 %density matrix
-%Gaussian  , wave function, basis
-%Slater determinant
 
 
 \subsection{Speeding up Hartree-Fock as an imitation learning problem}
@@ -178,7 +171,7 @@ The density of the orbitals are described using Gaussian functions which are cal
 
 Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}. 
 
-.....The drawback of previous research......
+.....The drawback of the research......
 
 In this paper,
 we want to explore a different method where to find parameters which are embedded in the Hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
