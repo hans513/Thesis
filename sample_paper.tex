@@ -46,11 +46,9 @@
 % Hartree-Fock intro
 In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electron distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be excessively time consuming or even infeasible if we want to get an accurate description of the electron distribution for large molecules. Speeding up the Hartree-Fock would save computational cost thus enable us to deal with more complicate molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
 
-Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters 
+Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters to make the whole process converge faster and output the correct density matrix.
 
-for atom and for bonded. ???
-
-With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
+With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration make more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
 
 % How to do that? (Imitation learning)
 This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing the same tasks. 
@@ -126,7 +124,9 @@ $\Psi$ is a wave function for any given molecule and E is the energy of the mole
 The Hamiltonian is approximated to the Fock operator which has the following form:
 $\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$, \\
 
+
 ..... Visualize the fock operator and individual eigen state ... \\
+
 
 where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. \\
 % Elaborate more about Fock operator
@@ -188,7 +188,9 @@ we want to explore a different method where to find parameters which are embedde
 % This part (Should go earlier under the description of Hartree-Fock)
 
 %How to map the Hartree-Fock to imitation learning problem.
-As we mentioned before,  due to the Fock operator can only be calculated iteratively, Hartree-Fock become an iterative process. Given an initial guessed density matrix $d_0$ as an input for solving Fock operator, after first iteration we will get the a new output density matrix $d_1$. 
+As we mentioned before,  because of the Fock operator can only be calculated iteratively, Hartree-Fock is also an iterative process that  approaches the steady density matrix we want.
+
+Given an initial guessed density matrix $d_0$ as an input for solving Fock operator, after first iteration we will get the a new output density matrix $d_1$. 
 In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. 
 
 We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
@@ -197,14 +199,13 @@ This repeating process is quite tedious and each iteration may take hours or eve
 
 If we can make each iteration more productive, we can achieve the same goal with less iterations. 
 
-We can think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1$,  $d_2$,  ...... $d_{n-1}$ and then finally get the converged output $d_{n}$. However, we actually don't care about the intermediate states. What the only thing we want to know is the final converged density matrices. If we can get the final converged density matrices with less iterations or even one iteration of computation that would be the best. 
+We can think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1$,  $d_2$,  ...... $d_{n-1}$ and then finally get the steady converged output $d_{n}$. However, we indeed don't care about the intermediate density matrices. What the only thing we want to know is the final converged density matrix. If we can get the final converged density matrices with less iterations or even one iteration of computation that would greatly shorten the computation time and thus speed up the whole process. 
 
-
-If we think of the sequence as a film playing frame by frame. Then it is intuitive to think of a speed up version as "2X fast forward". 
+If we think of the sequence of density matrices as a film playing frame by frame. Then it is intuitive to think of a 2X speeding up version 
 Under the same frame rate, the sequence of a  "2X fast forward" version would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this ideal fast forward version, we will only need half iterations to achieve the same goal, thus cutting the computation cost into half.
 
 
-This sequence can serve as a expert demonstration, and the extra flexibility offered by the embedded parameter can let us reform the Hartree-Fock process. By imitation learning,
+This sequence can serve as an expert demonstration, and the extra flexibility offered by the embedded parameter can let us reform the Hartree-Fock process. By imitation learning,
 we would like to train a Hartree-Fock process with embedded parameter that  mimics the "Fast forward" version of the original Hartree-Fock. 
 We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility offered by the embedded parameters .
 
@@ -241,15 +242,22 @@ Thus the error may keep growing iteration by iteration.
 The simplest DAgger algorithm may proceed as follows.
 %%% FROM Original paper
 %%% TODO 
-In the first iteration, it uses the expert’s policy to gather
+In the first iteration, it uses the expert’s policy $\pi^*$ to gather
 a dataset of trajectories D and train a policy $\pi_2$ that best
 mimics the expert on those trajectories. 
 
 Then in iteration i, based on $\pi_i$, we can sample the state induced by $\pi_i$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset D. We then train the next policy $\pi_{i+1}$ , the policy that best mimics the expert on the whole dataset D. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration N.
 
-In other words, Dagger proceeds by collecting a dataset
-at each iteration under the current policy and trains the next policy under the aggregate of all collected datasets. 
+In other words, Dagger proceeds by aggregating a dataset
+at each iteration under the current policy and trains the next policy under the all collected datasets. 
 
+
+In general, there are two different strategies to learn the policy. Either we can try to learn a single policy that imitate the expert's demonstration under all circumstances, or we train multiple policies that approximate expert's demonstration in which each policy best mimic expert's demonstration under different scenario.
+It's obvious that using multiple policies gives us more flexibility, thus in the following section, we would like to introduce how we train a sequence of Hartree-Fock with embedded parameters, in which each set of parameter can best speed up a correspondent iteration.
+
+
+
+%However, Like most of the iterative algorithm, the result may oscillate dramatically in the very first few iterations then getting stable and finally become converged after a bunch of iterations. 
 
 
 
@@ -259,8 +267,9 @@ at each iteration under the current policy and trains the next policy under the 
 
 
 \begin{algorithm}[htb]
- \KwData{}
+ \KwData{ }
  \KwResult{Best $\hat{\pi}_i$ on validation }
+ $\pi^*$  is the expert’s policy \\
  Initialized $D \leftarrow \emptyset$ \\
  Initialized $\hat{\pi}_1$ to any policy in $\Pi$ \\
  \For{i=1 to N }{
@@ -279,20 +288,7 @@ at each iteration under the current policy and trains the next policy under the 
 
 \section{LEARNING EMBEDDED PARAMETERS}
 
-Our goal here is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with only half iterations.
-
-With the fast forwarded trajectories to serve as expert's demonstration, we can try to apply DAgger to learn such 
-
-However,
-Like most of the iterative algorithm, the result may oscillate dramatically in the very first few iterations then getting stable and finally become converged after a bunch of iterations. 
-
-It's obvious that in the different phrases of the iterative process, the behavior is a little different. 
-
-%Here in the Hartree-Fock process, what we really care about is the converged density matrices. 
-
-Instead of training one model for the whole process,
-training one model for different iteration that best accelerate that iteration would be a easier approach.
-
+Our goal is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with less iterations, say half or even fewer.
 
 
 % \Pi is the set including of all the Hartree-Fock with embedded paramter
@@ -302,14 +298,11 @@ training one model for different iteration that best accelerate that iteration w
 % D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
 % 
 
-In the other word, in our case, in each single iteration in Hartree-Fock,  we will use DAgger to learn a Hatree-Fock with embedded parameter $\pi_i$ that best speed up that iteration.  
-
+With the fast forwarded trajectories to serve as expert's demonstration, in each single iteration $i$ in Hartree-Fock, we will use DAgger to learn a Hatree-Fock with embedded parameter $\pi_{i+1}$ that best speed up that iteration.  
 
 We can visualize the whole process as a two dimension table.
 Each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
  
-%If we want to learn the best set of Hartree-Fock with embedded parameter which can converge as twice fast as the original Hartree-Fock.
-
 Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0, d_1, d_2, \ddot,$ and finally converges at $d_n$.
 
 Then for the first iteration of Hartree-Fock, the only thing we want to train is a set of parameter that best matches density matrix $d_0$ to $d_2$. 
@@ -317,27 +310,33 @@ Then for the first iteration of Hartree-Fock, the only thing we want to train is
 %In each iteration, the model is trained under the states that was induced by both the expert and the previous learned policy. I
 
 %TODO: Error of density matrix
-Say, after training with the our best set of parameters, we can map density matrix $d_0$ to $d_{2}'$
+Say, after training, with the best set of parameters learned, we can map density matrix $d_0$ to $d_{2}'$
 
 Then for the iterations afterwards, we have two sources of the training examples. 
-One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), the other one is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration).
+One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), the other one is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration). Thus we can introduced DAgger to learn a best Hartree-Fock with embedded parameters for each iteration afterword.
 
-In the second iteration of Hatree-Fock, and in the first iteration of DAgger, 
-we want to train a set of parameter that best matches density matrix $d_2$ to $d_4$.
+In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training objective is from expert's demonstration, we want to train a set of parameter that best matches density matrix $d_2$ to $d_4$.
 
-However, in the second iteration of DAgger, we aggregate one more dataset that is the state induced by iteration 1,
-thus we not only want to fit the expert's demonstration $d_2$ to $d_4$, but also want to fit the output of previous iteration $d_{2}'$ to $d_4$.
+However, in the second DAgger iteration, we'll sample the trajectories using $\pi_{i-1,j-1}$, thus will get the dataset $D_i$ = $d_2'$ to $d_4$. Then the dataset is added into D.
+%We then aggregate dataset that is the state induced by iteration 1,
+Next step is training a policy that best fit D.
+Thus we not only want to fit the expert's demonstration $d_2$ to $d_4$, but also want to fit the output of previous iteration $d_{2}'$ to $d_4$. The result of this policy then is the best policy that mimic the expert's demonstration in Hartree-Fock iterations two.
 
 This is the key to compensate the error made by previous iteration.
 It will keep aggregating the output of previous iteration.
 
-In the iteration n,  we'll fit the expert's demonstration $d_{n-2}$ to $d_n$, and also all the possible output of previous iteration $d_{n-2}'$,  $d_{n-2}''$, $\ldots$,  $d_{n-2}^{n-1}$  to $d_n$.
+In the Hartree-Fock iteration i,  we'll apply DAgger algorithm to train a policy that best fit that iteration.
+Thus in Dagger iteration j, j<i, we'll first sample the trajectories using $\pi_{i-1,j-1}$. That is the result after training in HF iter i-1, Dagger j-1. We then add the sample into the aggregated dataset D.
+We want to train a policy that best fit all the density matrices in D to the true training objective.
+As a result
+we'll fit the expert's demonstration $d_{n-2}$ to $d_n$, and also all the possible output of previous iteration $d_{n-2}'$,  $d_{n-2}''$, $\ldots$,  $d_{n-2}^{n-1}$  to the true training objective$d_n$.
 
 After training, for each iteration, we'll get a best set of parameter that not only mimics expert's demonstration in that iteration but also offset the error made by previous iteration.
 
 
+% 
 With these $\frac{n}{2}$ set of parameters, we can build up a 
-
+Use correspondent policy in each iterations.
 
 
 \begin{center} 
@@ -363,21 +362,70 @@ With these $\frac{n}{2}$ set of parameters, we can build up a
 \section{EXPERIMENTS}
 
 
+
+\subsection{Experiment Dataset}
+
+The data consists of the electronic structure of a hydrocarbon with varying geometries in a range of environments. 
+
+[data is generate]
+
+Random geometries are obtained by perturbing the equilibrium geometry with random distortions. 
+
+These distortions are generated using a z-matrix that defines the molecular geometry in terms of bond  lengths, angles, and dihedrals. 
+% What is z-matrix ??
+
+
+% Do we need this one??
+A random number is then added to each value in the z-matrix, using a uniform random distribution with a width of ±0.15 Å for bond lengths, ±6o for bond angles, and ±7o for dihedral angles. Bond angles that are not explicitly included in the z-matrix thus have a range that is up to twice that of the angles included in the z-matrix. 
+
+
+For ethane, the random variable is chosen to span the full range for the internal rotation angle. The environment perturbs the electronic structure of the fragment in a manner that explores the types of perturbations that will be present in large molecules. 
+
+
+This includes perturbations from external electrostatic potentials, due to other portions of the molecule or from solvent, and inductive effects from acceptors and donors. 
+
+
+The environments consist of a cube, each corner of which holds a point charge. The length of each side of the cube is 12Å for methane and ethane and 14Å for propane and butane, with the molecule placed at its center. 
+
+% Point charges
+The magnitudes of the point charges are randomly generated using a uniform distribution between -25 and 25 amu, chosen to induce variations in the Mulliken charges on the C and H in methane and ethane that are similar to the charges induced on the methyl group in CF3CH3 (~0.2 amu).  
+
+
+For each pairing of a molecular configuration with an environment, we generate expectation values of each operator that appears in the Hamiltonian (total kinetic energy, interaction of the electron density with each nucleus, and total two-electron repulsion energy).
+
+% DATA SET
+Each data set consists of 10 configurations in 10 environments, corresponding to 100 calculations. Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
+
+% Goal
+The goal of the model fitting is to get the 1000 values generated from the ML-LL model to agree  with those from the HL theory.
+
+
+% 30 iterations
+
+
+%What is the dataset 
+%We generate a few hundred molecules dataset and divide these between a training and a test data set.
+
+
 %1 etot 
 %2 convergence rate (L1 norm with previous iteration)
 \subsection{Experiment settings}
 
-%What is the dataset 
-We generate a few hundred molecules dataset and divide these between a training and a test data set.
+We split the whole dataset into two part evenly. The odd numbered data serve as training data, on the other hand the even numbered data serve as testing data. \\
 
-Training dataset, Testing dataset.... \\
+In our dataset, every training example contains density  within 30 iterations. So
+After training on training data, we'll get 15 set of parameters 
+
+We then test these parameters on the testing data.
+
+The lower the energy the better?
+We can also plot the difference between this iteration and previous iteration to observe the converge rate.
+
+
 
 How to evaluate the result?
-What is "etot" \\
+What is "etot"  and Energy\\
 What is convergence rate \\
-
-	
-
 \subsection{Experiment result}
 
 
