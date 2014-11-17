@@ -3,6 +3,8 @@
 \usepackage{braket}
 \usepackage[]{algorithm2e}
 \usepackage{multirow}
+\usepackage{mathrsfs}
+\usepackage[Symbol]{upgreek}
 
 % If your paper is accepted, change the options for the package
 % aistats2014 as follows:
@@ -242,11 +244,11 @@ Thus the error may keep growing iteration by iteration.
 The simplest DAgger algorithm may proceed as follows.
 %%% FROM Original paper
 %%% TODO 
+$\Pi$ is the class of policies the learner is considering.
 In the first iteration, it uses the expert’s policy $\pi^*$ to gather
-a dataset of trajectories D and train a policy $\pi_2$ that best
-mimics the expert on those trajectories. 
+a dataset of trajectories D and train a policy $\hat{\pi_2}$ that best mimics the expert on those trajectories. 
 
-Then in iteration i, based on $\pi_i$, we can sample the state induced by $\pi_i$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset D. We then train the next policy $\pi_{i+1}$ , the policy that best mimics the expert on the whole dataset D. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration N.
+Then in iteration $i$, we can sample the state induced by $\hat{\pi_i}$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset D. We then train the next policy $\hat{\pi_{i+1}}$ , the policy that best mimics the expert on the whole dataset D. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration N.
 
 In other words, Dagger proceeds by aggregating a dataset
 at each iteration under the current policy and trains the next policy under the all collected datasets. 
@@ -288,51 +290,67 @@ It's obvious that using multiple policies gives us more flexibility, thus in the
 
 \section{LEARNING EMBEDDED PARAMETERS}
 
-Our goal is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with less iterations, say half or even fewer.
+Our goal is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with less iterations, say half or even less.  
 
 
-% \Pi is the set including of all the Hartree-Fock with embedded paramter
 % The original Hartree-Fock is actually a Hartree-Fock with all-zero embedded paramter
 
 % In our scenario the 2X fast forward version of Hartree-Fock is \pi^*
 % D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
 % 
 
-With the fast forwarded trajectories to serve as expert's demonstration, in each single iteration $i$ in Hartree-Fock, we will use DAgger to learn a Hatree-Fock with embedded parameter $\pi_{i+1}$ that best speed up that iteration.  
+With the fast forwarded trajectories to serve as expert's demonstration, in each single iteration $i$ in Hartree-Fock, we would like to apply DAgger to learn a Hatree-Fock with embedded parameter $\uppi_i$ that best speed up i-th iteration.   
+
+In our case, $\Pi$ is the class of all the Hartree-Fock with embedded parameters. $\pi^*$ is the expert's demonstration, given by original Hartree-Fock. 
 
 We can visualize the whole process as a two dimension table.
 Each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
- 
-Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0, d_1, d_2, \ddot,$ and finally converges at $d_n$.
 
-Then for the first iteration of Hartree-Fock, the only thing we want to train is a set of parameter that best matches density matrix $d_0$ to $d_2$. 
+ 
+Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0, d_1, d_2,\ldots,$ and finally converges at $d_{2n}$. The expert's demonstration will then be $d_0, d_2, d_4, \ldots, d_{2n}$
+% expert demonstration.
+
+Then for the first iteration of Hartree-Fock, we only has one DAgger iteration, since there is no previous Hartree-Fock iteration. 
+
+The only objective is we want to train a set of parameter that best matches density matrix $d_0 \rightarrow d_2$. 
 
 %In each iteration, the model is trained under the states that was induced by both the expert and the previous learned policy. I
 
 %TODO: Error of density matrix
-Say, after training, with the best set of parameters learned, we can map density matrix $d_0$ to $d_{2}'$
+Say, after training, we got policy $\hat{\pi}_{(1,2)}$.
+With $\hat{\pi}_{1,2}$, we can map density matrix $d_0 \rightarrow d_{2}'$
 
 Then for the iterations afterwards, we have two sources of the training examples. 
-One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), the other one is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration). Thus we can introduced DAgger to learn a best Hartree-Fock with embedded parameters for each iteration afterword.
+One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), the other one is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration). Thus we can introduced DAgger to learn a best Hartree-Fock with embedded parameters for each iteration afterwards.
 
-In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training objective is from expert's demonstration, we want to train a set of parameter that best matches density matrix $d_2$ to $d_4$.
+In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training objective is from expert's demonstration, we want to train a set of parameter that best matches density matrix $d_2 \rightarrow d_4$.
 
-However, in the second DAgger iteration, we'll sample the trajectories using $\pi_{i-1,j-1}$, thus will get the dataset $D_i$ = $d_2'$ to $d_4$. Then the dataset is added into D.
+However, in the second DAgger iteration, we'll sample the trajectories using $\hat{\pi}_{1,2}$, thus will get the dataset $D_i$ = $d_2' \rightarrow d_4$. Then the dataset is added into D.
 %We then aggregate dataset that is the state induced by iteration 1,
-Next step is training a policy that best fit D.
-Thus we not only want to fit the expert's demonstration $d_2$ to $d_4$, but also want to fit the output of previous iteration $d_{2}'$ to $d_4$. The result of this policy then is the best policy that mimic the expert's demonstration in Hartree-Fock iterations two.
+Next step is training a policy that best fit the aggregated dataset D. Thus we not only want to fit the expert's demonstration $d_2 \rightarrow d_4$, but also want to fit the output of previous iteration $d_{2}' \rightarrow d_4$. 
+%The result of this policy then is the best policy that mimic the expert's demonstration in Hartree-Fock iterations two.
 
 This is the key to compensate the error made by previous iteration.
 It will keep aggregating the output of previous iteration.
 
-In the Hartree-Fock iteration i,  we'll apply DAgger algorithm to train a policy that best fit that iteration.
-Thus in Dagger iteration j, j<i, we'll first sample the trajectories using $\pi_{i-1,j-1}$. That is the result after training in HF iter i-1, Dagger j-1. We then add the sample into the aggregated dataset D.
+%In the Hartree-Fock iteration $i$,  we'll apply DAgger algorithm to train a policy that best fit that iteration. Thus in Dagger iteration j, $j<i$, we'll first sample the trajectories using $\hat{\pi}_{i-1,j}$. That is the result after training in Hartree-Fock iteration $i-1$, Dagger iteration $j-1$. 
+
+When apply DAgger in Hartree-Fock iteration $i$,  we initialize $\pi_{(i,1)}$ equal to $\pi^*$. We'll then generate a sequence of policies $\hat{\pi}_{(i,2)} , \hat{\pi}_{(i,3)} ..... \hat{\pi}_{(i,i+1)}$. The policy $\uppi_i$,  is the best policy on validation among $\hat{\pi}_{(i,*)}$. 
+
+$\hat{\pi}_{(i,j)}$  represents the policy trained in the Hartree-Fock iteration $i$ and Dagger iteration $j-1$.
+
+
+Then $\hat{\pi_{i,i+1}}$ is the last policy we can get in the Hartree-Fock iteration $i$.
+
+% Why train \pi_{i,j} need \pi{i-1, j-1}
+Since in our case, we'll have a sequence of policies, $\uppi_1, \uppi_2, \ldots, \uppi_n$. The idea of DAgger is to train the policy under the induced state of previous policy. Therefore, when training policy $\pi_{(i,j)}$ in Hartree-Fock iteration $i$, the previous policy is $\hat{\pi}_{i-1,j-1}$ instead of  $\pi_{(i,j-1)}$.
+we'll  sample the trajectories using $\hat{\pi}_{i-1,j-1}$. 
+We then add the sample into the aggregated dataset D.
 We want to train a policy that best fit all the density matrices in D to the true training objective.
-As a result
-we'll fit the expert's demonstration $d_{n-2}$ to $d_n$, and also all the possible output of previous iteration $d_{n-2}'$,  $d_{n-2}''$, $\ldots$,  $d_{n-2}^{n-1}$  to the true training objective$d_n$.
+
+As a result, we'll fit the expert's demonstration $d_{2(i-1)}$ to $d_{2i}$, and also all the possible output of previous iteration $d_{2(i-1)}'$,  $d_{2(i-1)}''$, $\ldots$,  $d_{2(i-1)}^{[n-1]}$  to the true training objective $d_{2i}$.
 
 After training, for each iteration, we'll get a best set of parameter that not only mimics expert's demonstration in that iteration but also offset the error made by previous iteration.
-
 
 % 
 With these $\frac{n}{2}$ set of parameters, we can build up a 
@@ -361,19 +379,18 @@ Use correspondent policy in each iterations.
 \end{center} 
 \section{EXPERIMENTS}
 
-
-
 \subsection{Experiment Dataset}
 
 The data consists of the electronic structure of a hydrocarbon with varying geometries in a range of environments. 
 
-[data is generate]
+[how data is generated??]
 
 Random geometries are obtained by perturbing the equilibrium geometry with random distortions. 
 
 These distortions are generated using a z-matrix that defines the molecular geometry in terms of bond  lengths, angles, and dihedrals. 
-% What is z-matrix ??
 
+[What is z-matrix??]
+% What is z-matrix ??
 
 % Do we need this one??
 A random number is then added to each value in the z-matrix, using a uniform random distribution with a width of ±0.15 Å for bond lengths, ±6o for bond angles, and ±7o for dihedral angles. Bond angles that are not explicitly included in the z-matrix thus have a range that is up to twice that of the angles included in the z-matrix. 
@@ -381,9 +398,7 @@ A random number is then added to each value in the z-matrix, using a uniform ran
 
 For ethane, the random variable is chosen to span the full range for the internal rotation angle. The environment perturbs the electronic structure of the fragment in a manner that explores the types of perturbations that will be present in large molecules. 
 
-
 This includes perturbations from external electrostatic potentials, due to other portions of the molecule or from solvent, and inductive effects from acceptors and donors. 
-
 
 The environments consist of a cube, each corner of which holds a point charge. The length of each side of the cube is 12Å for methane and ethane and 14Å for propane and butane, with the molecule placed at its center. 
 
@@ -396,8 +411,7 @@ For each pairing of a molecular configuration with an environment, we generate e
 % DATA SET
 Each data set consists of 10 configurations in 10 environments, corresponding to 100 calculations. Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
 
-% Goal
-The goal of the model fitting is to get the 1000 values generated from the ML-LL model to agree  with those from the HL theory.
+
 
 
 % 30 iterations
@@ -411,21 +425,26 @@ The goal of the model fitting is to get the 1000 values generated from the ML-LL
 %2 convergence rate (L1 norm with previous iteration)
 \subsection{Experiment settings}
 
-We split the whole dataset into two part evenly. The odd numbered data serve as training data, on the other hand the even numbered data serve as testing data. \\
+We split the whole dataset into two part evenly. The odd numbered instances serve as training data, on the other hand the even numbered instances serve as testing data. \\
 
-In our dataset, every training example contains density  within 30 iterations. So
-After training on training data, we'll get 15 set of parameters 
+In our dataset, every training example converged within 30 iterations. 
+So
 
-We then test these parameters on the testing data.
+% Goal
+The goal is to train 15 Hartree-Fock with embedded parameters that best approximate 30 iterations of original Hartree-Fock.
+
+After training on training dataset, we'll apply these 15 Hartree-Fock with embedded parameters on testing dataset to evaluate the performance.
+
+How  it converges
 
 The lower the energy the better?
+
+%What is convergence rate \\
 We can also plot the difference between this iteration and previous iteration to observe the converge rate.
 
 
-
-How to evaluate the result?
 What is "etot"  and Energy\\
-What is convergence rate \\
+
 \subsection{Experiment result}
 
 
