@@ -44,18 +44,19 @@
 
 \section{INTRODUCTION}
 % Hartree-Fock intro
-In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electron distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be excessively time consuming or even infeasible if we want to get an accurate description of the electron distribution for large molecules. Speeding up the Hartree-Fock would save computational cost thus enable us to deal with more complicate molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
+In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electronic distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be quite tedious and time-consuming for large molecules especially if we want to get an accurate description of the electron distribution. Speeding up the Hartree-Fock would thus enable us to deal with larger molecules, which can in turn be utilized to study biochemical reaction with very large systems. In essence, speeding up the Hartree-Fock algorithm will save computational cost to solve quantum chemical problems. 
 
-Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters 
 
-for atom and for bonded. ???
 
-With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
+Tanha et al, \cite{Matteus}, proposed a way to embed the parameters in the Hartree-Fock model. This method is constructed to find the similarities in molecules. The Model is partitioned into kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters. The model also has different parameters for on atom and for bonded.
+
+
+
+The parameters give us the flexibility to control the behaviour of the Hartree-Fock method. This flexibility allows us to let each of the Hartree-Fock iteration makes more progress. In particular, we would like to make single iteration of Hartree-Fock with parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
+
 
 % How to do that? (Imitation learning)
-This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing the same tasks. 
-We can generate an illustrative sequence from the original Hartree-Fock as expert demonstrations. By imitation learning technique, we can make 
-Hartree-Fock with embedded parameters learns from the demonstrations,  which finally enables it to gain more progress in one single iteration.
+This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing particular tasks. By imitation learning, we can make Hartree-Fock with parameters learn from the original Hartree-Fock, which finally enables it to gain two iterations or more progress in one single iteration.
 
 
 % Problem encountered   %%%%%
@@ -63,121 +64,112 @@ However, naive imitation learning may yield poor performance in theory and pract
 
 
 % The recipe (DAgger)
-Fortunately, Ross et al,\cite{DAgger} proposed the dataset aggregation algorithm (DAgger), which learns a stationary deterministic policy guaranteed to perform well under its induced distribution of states, is a remedy to the poor performance in imitation learning. DAgger also was proven to have stable performance and fast learning rate. \cite{DAggerCompare}
+Fortunately, Ross et al,\cite{DAgger} proposed that the dataset aggregation algorithm (DAgger), which learns a stationary deterministic policy guaranteed to perform well under its induced distribution of states, is a remedy to the poor performance in imitation learning.
 
-In this paper,  we introduce the imitation learning technique for speeding up the Hartree-Fock process. 
-Through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a sequence of Hartree-Fock with embedded parameters that can perform well under the induced distribution of states and also yield more progress in each iteration. 
+
+In this paper,  we introduce the imitation learning technique to speed up the Hartree-Fock process with dataset aggregation algorithm (DAgger) \cite{DAgger}, which was proven to have stable performance and fast learning rate. \cite{DAggerCompare}
 
 %introducing “parameter" into HF  turn it to Machine learning problem.
+%adjust the parameter that make it happend
 
 \section{BACKGROUND}
 
 \subsection{Hartree-Fock}
 
-In the area of theoretical chemistry, the main objective is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available. While in all these cases, Hartree-Fock algorithm is the starting point.
+In the area of theoretical chemistry the main objective is to find a method to calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the fundamental challenges of chemistry. Algorithms with sufficient accuracy are now available, where in all these cases Hartree-Fock algorithm is the initial starting point. Hartree-Fock is an approximation for solving the Schrödinger equation 
+%  Schrödinger (Need to explain)
 
-Hartree-Fock is an approximation for solving the Schrödinger equation 
-which is the foundation equation of quantum mechanics.
-The solutions to Schr\"{o}dinger's equation can give us a complete description of a molecular systems.
- %  Schrödinger (Need to explain)
-A wave function describes the quantum state of a system of one or more particles, and contains all the information about the system considered in isolation.
-The Schrödinger equation provides a way to calculate the possible wave functions of a system and how they dynamically change in time. \\
+where it assumes that the wave function can be approximated by a single Slater determinant.  
+%  Slater determinant (Need to explain)
 
+The wave function is a function describing any given quantum system containing one or more particles. 
+% Should introduce Wave function before Schrödinger
 % Difference of the Wave function and density matrix
 
-
-% Talk about different level of summarization
-.... elaborate more here .....  \\
-the wave function of single electron \\
-The ware function for the entire system may grow exponentially large\\
-mention the time invariant steady state $H\Psi = E\Psi$ \\
+% The wave function/density matrx for the entire system is exponentially large
+% Talk aobut difference level of summarization
 % => the wave function of a single electron
 % => 1 electron or 2 electrons density matrices  => basis
+1. Inital guess of density $\rho = \rho_0$
 
-In Hartree–Fock theory, the electronic wave function can be approximated by single Slater determinant.
-Equation 1 gives the wave function ($\psi$) described as a Slater determinant. 
+2. Calculate the Fock operator F($\rho$) = $h_1 + G(\rho)$
 
-\begin{eqnarray}
-\Psi=
-\frac{1}{\sqrt{N!}}\left|
-\begin{array}{cccc}
-\chi_1(x_1)&\chi_2(x_1)&..&\chi_N(x_1)\\
-\chi_1(x_2)&\chi_2(x_2)&\chi_3(x_2)&.\\
-\chi_1(x_3)&\chi_2(x_3)&\chi_3(x_3)&.\\
-.&.&.&.\\
-.&.&.&.\\
-\chi_1(x_N)&.&.&\chi_N(x_N)\\
-\end{array}
-\right|
-\end{eqnarray}
+3. Solve for HFR by solving FC = SC$\epsilon$ to get $\epsilon$
 
-The general notation for getting the energy in quantum chemistry is as shown below:
-%  Slater determinant (Need to explain)
+4. get new density $\rho_1$
+
+Equation 1 gives the wave function ($\psi$) described as a slater determinant. The general notation for getting the energy in quantum chemistry is as shown below:
+
+% Worth metion the time invariant stead state $H\Psi = E\Psi$
 
 E = $\Bra{\Psi}H\Ket{\Psi}$ ,
 
-where H is the Hamiltonian operator that can compute the energy of the electrons and nuclei in a molecule. 
-
-The general form of the Hamiltonian can be split into few different operator that representing source of energy 
+where H is the Hamiltonian operator, $\Psi$ is a wave function for any given molecule and E is the energy of the molecule. The general form of the Hamiltonian 
 % Hamiltonian (Need to explain)
-including kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator.
-$\Psi$ is a wave function for any given molecule and E is the energy of the molecule we want to know.
+% A operator which give you the energy and
+% split the source of energy and location of energy
 
-The Hamiltonian is approximated to the Fock operator which has the following form:
-$\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$, \\
+consists of kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator.
+% we don't have nuclear-nuclear interaction term??
 
-..... Visualize the fock operator and individual eigen state ... \\
+ The Hamiltonian is approximated to the Fock operator which is shown below:
 
-where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. \\
+
+$\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$,
+
+where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving 
 % Elaborate more about Fock operator
+the the Hartree-Fock algorithm. The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. The core equation in the Hartree-Fock algorithm is as following:
 
-The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. 
-
-
-
-
-The core equation in the Hartree-Fock algorithm is as following: \\
-
-..... Pseudo code of Hartree Fock ..... \\
+% Pseudo code of Hartree Fock
 % Make claer what  the input and oput are
 % single electron density matrix is the input and output 
 
-
 % Some intuition about these matrices
+% 
+% 
 % Run Hartree to get the eigen states of h2. 
 % show the first few eigen states (Schrödinger) of the h2 molecules and describe how the density matrices correspond to that plot (picture) to make things more concrete 
 
+% Visualize the fock operator and individual eigen state
+
 FC = SC$\epsilon$,
 
-where S is the overlap matrix and $\epsilon$ is a diagonal matrix of the orbital energies. This is similar to an eigenvalue equation with the exception of the existence of the S matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution this equation has to be done iteratively. 
+where S is the overlap matrix and $\epsilon$ is a diagonal matrix of the orbital energies. This is similar to an eigenvalue equation with the exception of the existence of the S matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution this equation has to be done iteratively. In other words you need to have the Fock-orbitals to get the Fock operator. 
 
-In other words you need to have the Fock-orbitals to get the Fock operator. To solve this equation you start with an arbitrary guess density and then solve for the Fock operator and then get the new density which you again will use to solve to get the new Fock operator and so on. 
+To solve this equation you start with an arbitrary guess density and then solve for the Fock operator and then get the new density which you again will use to solve to get the new Fock operator and so on. 
 
 The cost of the methods based on Hartree-Fock algorithm scales as N\textsuperscript{p} where: 
+
 N = Number of basis functions (features) 
-%= n atoms  (n = basis functions/atom)  
-p  = depending on the accuracy of model between 3.5 and 8\cite{frisch1996exploring}
 
-The density of the orbitals are described using basis functions. We can represent the basis function by every way we want as long as it can be integrated. However, it's really convenient and computation efficient to use the linear combinations of Gaussian to represent the basis function.
+= n Natoms  (n = basis functions/atom)  
 
-The larger the basis set, the more Gaussian functions and the more accurate result we can attain. However, if one wants to get an accurate approximation for a large molecular system, the computation might be excessive long. Each iteration may take hours or even days of computation thus become infeasible. 
+p  = depending on the accuracy model between 3.5 and 8\cite{frisch1996exploring}
 
 
-%density matrix
+% Basis function and Gaussian function are not the same
+% Each basis is a linear combination of Gaussian 
+% For computations complexity
+% We can represent the basis function every way we want as long as we can perform integrals. it's really convenient to be the linear combinations of Gaussians
+
+The density of the orbitals are described using gaussian functions which are called basis functions here. The larger the basis set, the more gaussian functions and the more accurate result you can attain.
+
+Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}. We are exploring a different method where to find parameters which are embedded in the hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
+
 
 
 \subsection{Speeding up Hartree-Fock as an imitation learning problem}
 
+The Hartree-Fock method is an iterative process which is pretty time-consuming. Especially if one wants to get an accurate approximation for a large molecular system, each iteration may take  hours or even days of computation. 
 
-Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}. 
+Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next one\cite{Pulay1980}.  \\
 
-.....The drawback of the research......
-
-In this paper,
-we want to explore a different method where to find parameters which are embedded in the Hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
+%Matteus
+.....The drawback of previous research......
 
 
-%We are exploring a different method where to find parameters which are embedded in the Hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
+%We are exploring a different method where to find parameters which are embedded in the Hamiltonian that can speed this iterative algorith9m. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
 
 
 % The difficulty of (speeding up the whole process)parallelling the whole procedure, therefore, we'd like to speed up single iteration 
@@ -188,28 +180,19 @@ we want to explore a different method where to find parameters which are embedde
 % This part (Should go earlier under the description of Hartree-Fock)
 
 %How to map the Hartree-Fock to imitation learning problem.
-As we mentioned before,  due to the Fock operator can only be calculated iteratively, Hartree-Fock become an iterative process. Given an initial guessed density matrix $d_0$ as an input for solving Fock operator, after first iteration we will get the a new output density matrix $d_1$. 
-In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. 
+Hartree-Fock is an iterative process. Given an initial density matrix $d_0$ as an input, after first iteration we will get the output density matrix $d_1$. In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
 
-We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
+An approach to speeding up the process would be improving the procedure, making each iteration more productive so that we can achieve the same goal with less iterations. 
 
-This repeating process is quite tedious and each iteration may take hours or even days. % Shorten each iteration?
+We can think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1 d_2 ...... d_{n-1}$ and then finally get the converged output $d_{n}$ just like a film playing frame by frame. 
 
-If we can make each iteration more productive, we can achieve the same goal with less iterations. 
+It is intuitive to think of a "2X fast forward" version of the sequence which would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this fast forward version, we will only need $\frac{n}{2}$ iterations, thus cutting the computation into half.
 
-We can think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1$,  $d_2$,  ...... $d_{n-1}$ and then finally get the converged output $d_{n}$. However, we actually don't care about the intermediate states. What the only thing we want to know is the final converged density matrices. If we can get the final converged density matrices with less iterations or even one iteration of computation that would be the best. 
-
-
-If we think of the sequence as a film playing frame by frame. Then it is intuitive to think of a speed up version as "2X fast forward". 
-Under the same frame rate, the sequence of a  "2X fast forward" version would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this ideal fast forward version, we will only need half iterations to achieve the same goal, thus cutting the computation cost into half.
+With imitation learning,
+we can treat the Hartree-Fock iteration as the expert demonstration. However, instead of learning the original Hartree-Fock process, we would like to learn the "Fast forward" version of Hartree-Fock. We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility which is offered by the embedded parameters .
 
 
-This sequence can serve as a expert demonstration, and the extra flexibility offered by the embedded parameter can let us reform the Hartree-Fock process. By imitation learning,
-we would like to train a Hartree-Fock process with embedded parameter that  mimics the "Fast forward" version of the original Hartree-Fock. 
-We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility offered by the embedded parameters .
-
-
-As a result, it allows more progress in one iteration, thus converged with less iterations, say half or even less iterations.  
+Our goal here is to learn a Hartree-Fock with parameters to allow more progress in one iteration, therefore converging with less iterations, say half or even less iterations.  
 
 %The present work therefore intends to treat the Hartree-Fock process as an expert demonstration, and we apply DAgger algorithm to imitate the process for learning a fast-forward version of Hartree-Fock.
 
@@ -228,29 +211,15 @@ As a result, it allows more progress in one iteration, thus converged with less 
 
 \subsection{DAgger algorithm}
 % sovle the naive imitation learning problem
-DAgger is an algorithm that learns expert demonstration iteratively. In each iteration, the model is trained under the states that was induced by both the expert and the previous learned model. It keeps aggregating a set of inputs that the model itself is likely to encounter based on previous training iterations.  
+DAgger is an iterative algorithm that learns expert demonstration iteratively. In each iteration, it was trained under the states that may be induced by both the expert and the learner itself. It builds up the set of inputs that the learned policy is likely to encounter based on previous training iterations, which make it possible to correct the error made by previous iteration. This is a remedy to the problem in naive imitation learning that the result may become unpredictable and poor because of the policy is trained under a different state distribution. Thus the error may keep growing iteration by iteration.
 
-By doing so, it is possible to offset the error made by previous learned model and thus learn a better model. This is a remedy to the problem in naive imitation learning that the result may become unpredictable and poor because of the policy is trained under a different state distribution
-%!!!!!!!!!!!!!!!!!!!!!!
-that the model is less likely to encounter. 
+The simplest DAgger algorithm may proceed as follows.
 
 
-Thus the error may keep growing iteration by iteration.
+... Rough Algorithm Description goes here.....
 
 %Rough Algorithm Description
-The simplest DAgger algorithm may proceed as follows.
-%%% FROM Original paper
-%%% TODO 
-In the first iteration, it uses the expert’s policy to gather
-a dataset of trajectories D and train a policy $\pi_2$ that best
-mimics the expert on those trajectories. 
-
-Then in iteration i, based on $\pi_i$, we can sample the state induced by $\pi_i$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset D. We then train the next policy $\pi_{i+1}$ , the policy that best mimics the expert on the whole dataset D. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration N.
-
-In other words, Dagger proceeds by collecting a dataset
-at each iteration under the current policy and trains the next policy under the aggregate of all collected datasets. 
-
-
+%by iteratively training the policy in states induced by all previously learned policies.
 
 
 %For example, during training one
@@ -275,68 +244,8 @@ at each iteration under the current policy and trains the next policy under the 
 
 % Connecting the symbol in algorithm to our scenario
 
-%Dagger is a powerful algorithm that can train a model which performs well in its the induced state.
-
 \section{LEARNING EMBEDDED PARAMETERS}
 
-Our goal here is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with only half iterations.
-
-With the fast forwarded trajectories to serve as expert's demonstration, we can try to apply DAgger to learn such 
-
-However,
-Like most of the iterative algorithm, the result may oscillate dramatically in the very first few iterations then getting stable and finally become converged after a bunch of iterations. 
-
-It's obvious that in the different phrases of the iterative process, the behavior is a little different. 
-
-%Here in the Hartree-Fock process, what we really care about is the converged density matrices. 
-
-Instead of training one model for the whole process,
-training one model for different iteration that best accelerate that iteration would be a easier approach.
-
-
-
-% \Pi is the set including of all the Hartree-Fock with embedded paramter
-% The original Hartree-Fock is actually a Hartree-Fock with all-zero embedded paramter
-
-% In our scenario the 2X fast forward version of Hartree-Fock is \pi^*
-% D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
-% 
-
-In the other word, in our case, in each single iteration in Hartree-Fock,  we will use DAgger to learn a Hatree-Fock with embedded parameter $\pi_i$ that best speed up that iteration.  
-
-
-We can visualize the whole process as a two dimension table.
-Each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
- 
-%If we want to learn the best set of Hartree-Fock with embedded parameter which can converge as twice fast as the original Hartree-Fock.
-
-Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0, d_1, d_2, \ddot,$ and finally converges at $d_n$.
-
-Then for the first iteration of Hartree-Fock, the only thing we want to train is a set of parameter that best matches density matrix $d_0$ to $d_2$. 
-
-%In each iteration, the model is trained under the states that was induced by both the expert and the previous learned policy. I
-
-%TODO: Error of density matrix
-Say, after training with the our best set of parameters, we can map density matrix $d_0$ to $d_{2}'$
-
-Then for the iterations afterwards, we have two sources of the training examples. 
-One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), the other one is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration).
-
-In the second iteration of Hatree-Fock, and in the first iteration of DAgger, 
-we want to train a set of parameter that best matches density matrix $d_2$ to $d_4$.
-
-However, in the second iteration of DAgger, we aggregate one more dataset that is the state induced by iteration 1,
-thus we not only want to fit the expert's demonstration $d_2$ to $d_4$, but also want to fit the output of previous iteration $d_{2}'$ to $d_4$.
-
-This is the key to compensate the error made by previous iteration.
-It will keep aggregating the output of previous iteration.
-
-In the iteration n,  we'll fit the expert's demonstration $d_{n-2}$ to $d_n$, and also all the possible output of previous iteration $d_{n-2}'$,  $d_{n-2}''$, $\ldots$,  $d_{n-2}^{n-1}$  to $d_n$.
-
-After training, for each iteration, we'll get a best set of parameter that not only mimics expert's demonstration in that iteration but also offset the error made by previous iteration.
-
-
-With these $\frac{n}{2}$ set of parameters, we can build up a 
 
 
 
@@ -367,9 +276,8 @@ With these $\frac{n}{2}$ set of parameters, we can build up a
 %2 convergence rate (L1 norm with previous iteration)
 \subsection{Experiment settings}
 
-%What is the dataset 
-We generate a few hundred molecules dataset and divide these between a training and a test data set.
-
+	
+What is the dataset ??\\
 Training dataset, Testing dataset.... \\
 
 How to evaluate the result?
@@ -610,11 +518,7 @@ G.~Tesauro (1989). Neurogammon wins computer Olympiad.  {\it Neural
 learning.} Proceedings of the 13th International
 Conference on Artificial Intelligence and Statistics (AISTATS),
 2010.
-
-  \bibitem{Pulay1980}
-   Péter Pulay,
-  \emph{Convergence acceleration of iterative sequences. The case of SCF iteration.} Chem. Phys. Lett. 73, 393 (1980).
-
+  
 \end{thebibliography}
 
 \end{document}
