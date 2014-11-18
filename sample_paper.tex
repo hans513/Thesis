@@ -74,17 +74,13 @@ Through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a seq
 
 \subsection{Hartree-Fock}
 
-In the area of theoretical chemistry, the main objective is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available. While in all these cases, Hartree-Fock algorithm is the starting point.
+In the area of theoretical chemistry, the main objective is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available. While in all these cases, Hartree-Fock (HF) algorithm is the starting point.
 
-Hartree-Fock is an approximation for solving the Schrödinger equation 
-which is the foundation equation of quantum mechanics.
-The solutions to Schr\"{o}dinger's equation can give us a complete description of a molecular systems.
- %  Schrödinger (Need to explain)
-A wave function describes the quantum state of a system of one or more particles, and contains all the information about the system considered in isolation.
-The Schrödinger equation provides a way to calculate the possible wave functions of a system and how they dynamically change in time. \\
+The Schrödinger equation is the foundation equation of quantum mechanics, in which the solution can give us a complete description of a particle or a molecular systems. The Schrödinger equation provides a way to calculate the possible wave functions of a system and how they dynamically change in time. A wave function describes the quantum state of a system of one or more particles, and contains all the information about the system considered in isolation. A time invariant steady state form of the Schrodinger equation is shown below, which is called the time-independent Schrodinger equation.
+ $H\Psi = E\Psi$ 
+The H is the Hamiltonian which operates on the wave-function, $\psi$, to give the energy of the wave-function, E. Hartree-Fock (HF) gives us an approximation of a solution to the schrodinger equation. In HF the wave-function is described with a density matrix, which is a probability matrix of the mixed states within the system. The wave-fucntion contains more information regarding the particle or system however it is difficult to construct a wave function for a many body system but approximating it a density matrix will allow us to calculate the approximated schrodinger equation or Hartree-Fock.
 
 % Difference of the Wave function and density matrix
-
 
 % Talk about different level of summarization
 .... elaborate more here .....  \\
@@ -94,37 +90,9 @@ mention the time invariant steady state $H\Psi = E\Psi$ \\
 % => the wave function of a single electron
 % => 1 electron or 2 electrons density matrices  => basis
 
-In Hartree–Fock theory, the electronic wave function can be approximated by single Slater determinant.
-Equation 1 gives the wave function ($\psi$) described as a Slater determinant. 
-
-\begin{eqnarray}
-\Psi=
-\frac{1}{\sqrt{N!}}\left|
-\begin{array}{cccc}
-\chi_1(x_1)&\chi_2(x_1)&..&\chi_N(x_1)\\
-\chi_1(x_2)&\chi_2(x_2)&\chi_3(x_2)&.\\
-\chi_1(x_3)&\chi_2(x_3)&\chi_3(x_3)&.\\
-.&.&.&.\\
-.&.&.&.\\
-\chi_1(x_N)&.&.&\chi_N(x_N)\\
-\end{array}
-\right|
-\end{eqnarray}
-
-The general notation for getting the energy in quantum chemistry is as shown below:
-%  Slater determinant (Need to explain)
-
-E = $\Bra{\Psi}H\Ket{\Psi}$ ,
-
-where H is the Hamiltonian operator that can compute the energy of the electrons and nuclei in a molecule. 
-
-The general form of the Hamiltonian can be split into few different operator that representing source of energy 
-% Hamiltonian (Need to explain)
-including kinetic energy operator, electron-nuclear interaction operator, electron-electron interaction operator and nuclear-nuclear interaction operator.
-$\Psi$ is a wave function for any given molecule and E is the energy of the molecule we want to know.
-
+The general form of the Hamiltonian can be partitioned into two components: the one-electron operator and the two-electron operator. The one electron operator is 2 dimensional since it only considers the activity of a electron on one atom, the two-electron is 4 dimensional since it considers the interactions between two electrons on two different atoms.
 The Hamiltonian is approximated to the Fock operator which has the following form:
-$\hat{F}$ = $\hat{h_1} + \sum\limits_{i}(\hat{J_i} - \hat{K_i})$, \\
+$\hat{F(\rho)}$ = $\hat{h_1} + \hat{G(\rho)}$, \\
 
 
 ..... Visualize the fock operator and individual eigen state ... \\
@@ -135,12 +103,19 @@ where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy 
 
 The wave function is approximated to a density matrix with a set of Gaussian functions for each atom in the molecular system, which is denoted as C. 
 
-
-
-
 The core equation in the Hartree-Fock algorithm is as following: \\
 
 ..... Pseudo code of Hartree Fock ..... \\
+initiation
+set a basis set
+Get integrals for Hamiltonian (H1,H2,S)
+pick a guess density $\rho_0$ 
+while $E_i-1(\rho)-E_i(\rho) > eps$
+
+Have to input this from other computer
+
+
+ 
 % Make claer what  the input and oput are
 % single electron density matrix is the input and output 
 
