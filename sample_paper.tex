@@ -5,6 +5,7 @@
 \usepackage{multirow}
 \usepackage{mathrsfs}
 \usepackage[Symbol]{upgreek}
+\usepackage{mathtools}
 
 % If your paper is accepted, change the options for the package
 % aistats2014 as follows:
@@ -290,7 +291,7 @@ It's obvious that using multiple policies gives us more flexibility, thus in the
 
 \section{LEARNING EMBEDDED PARAMETERS}
 
-Our goal is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with less iterations, say half or even less.  
+Our goal is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with less iterations, say, half or even less.  
 
 
 % The original Hartree-Fock is actually a Hartree-Fock with all-zero embedded paramter
@@ -299,62 +300,61 @@ Our goal is to have the Hartree-Fock with embedded parameters achieve the same g
 % D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
 % 
 
-With the fast forwarded trajectories to serve as expert's demonstration, in each single iteration $i$ in Hartree-Fock, we would like to apply DAgger to learn a Hatree-Fock with embedded parameter $\uppi_i$ that best speed up i-th iteration.   
+With the fast forwarded trajectories to serve as expert's demonstration, in each single iteration $i$ in Hartree-Fock, we would like to apply DAgger to learn a Hatree-Fock with embedded parameter $\uppi_i$ that best speeds up the i-th iteration.   
 
-In our case, $\Pi$ is the class of all the Hartree-Fock with embedded parameters. $\pi^*$ is the expert's demonstration, given by original Hartree-Fock. 
+In our case, $\Pi$ is the class of all the Hartree-Fock with embedded parameters. $\pi^*$ is the expert's demonstration, given by the original Hartree-Fock. 
 
-We can visualize the whole process as a two dimension table.
+We can visualize the whole process as a two-dimension table.
 Each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
-
  
-Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0, d_1, d_2,\ldots,$ and finally converges at $d_{2n}$. The expert's demonstration will then be $d_0, d_2, d_4, \ldots, d_{2n}$
-% expert demonstration.
+Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0 \rightarrow  d_1 \rightarrow  d_2  \ldots  $ and finally converge at $d_{2n}$. The expert's demonstration will then be $d_0 \rightarrow d_2 \rightarrow  d_4 \rightarrow  \ldots \rightarrow  d_{2n}$
 
-Then for the first iteration of Hartree-Fock, we only has one DAgger iteration, since there is no previous Hartree-Fock iteration. 
+In the first iteration of Hartree-Fock, we only has one DAgger iteration, since there is no previous Hartree-Fock iteration. 
 
-The only objective is we want to train a set of parameter that best matches density matrix $d_0 \rightarrow d_2$. 
-
-%In each iteration, the model is trained under the states that was induced by both the expert and the previous learned policy. I
+Our only objective here is to train a set of parameter that best matches density matrix $d_0 \rightarrow d_2$. 
 
 %TODO: Error of density matrix
-Say, after training, we got policy $\hat{\pi}_{(1,2)}$.
-With $\hat{\pi}_{1,2}$, we can map density matrix $d_0 \rightarrow d_{2}'$
+% Geoff: define d2' in terms of pi hat(1,2)
+Say, after training, we got the policy $\hat{\pi}_{(1,2)}$: $d_0 \xrightarrow{\hat{\pi}_{(1,2)}} d_{2}'$ 
+%which in turn can map density matrix 
 
-Then for the iterations afterwards, we have two sources of the training examples. 
-One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), the other one is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration). Thus we can introduced DAgger to learn a best Hartree-Fock with embedded parameters for each iteration afterwards.
+Then for the iterations afterwards, we have two sources of the training examples.  One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), and the other  is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration). Thus we can introduced DAgger to learn a best Hartree-Fock with embedded parameters for each iteration afterwards.
 
-In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training objective is from expert's demonstration, we want to train a set of parameter that best matches density matrix $d_2 \rightarrow d_4$.
+In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training objective is from expert's demonstration, and we want to train a set of parameter that best matches density matrix $d_2 \rightarrow d_4$.
 
-However, in the second DAgger iteration, we'll sample the trajectories using $\hat{\pi}_{1,2}$, thus will get the dataset $D_i$ = $d_2' \rightarrow d_4$. Then the dataset is added into D.
+However, in the second DAgger iteration, we'll sample the trajectories using $\hat{\pi}_{(1,2)}$, thus getting the dataset $D_i$ = $d_2' \rightarrow d_4$. Then the dataset is added into D.
 %We then aggregate dataset that is the state induced by iteration 1,
-Next step is training a policy that best fit the aggregated dataset D. Thus we not only want to fit the expert's demonstration $d_2 \rightarrow d_4$, but also want to fit the output of previous iteration $d_{2}' \rightarrow d_4$. 
+Next step is to train a policy that best fit the aggregated dataset D. Thus,  not only do we want to fit the expert's demonstration $d_2 \rightarrow d_4$, but also want to fit the output of the previous iteration $d_{2}' \rightarrow d_4$. 
 %The result of this policy then is the best policy that mimic the expert's demonstration in Hartree-Fock iterations two.
 
-This is the key to compensate the error made by previous iteration.
-It will keep aggregating the output of previous iteration.
+This is the key to compensating the error made by the previous iteration. It will keep aggregating the output of the previous iterations.
 
 %In the Hartree-Fock iteration $i$,  we'll apply DAgger algorithm to train a policy that best fit that iteration. Thus in Dagger iteration j, $j<i$, we'll first sample the trajectories using $\hat{\pi}_{i-1,j}$. That is the result after training in Hartree-Fock iteration $i-1$, Dagger iteration $j-1$. 
 
-When apply DAgger in Hartree-Fock iteration $i$,  we initialize $\pi_{(i,1)}$ equal to $\pi^*$. We'll then generate a sequence of policies $\hat{\pi}_{(i,2)} , \hat{\pi}_{(i,3)} ..... \hat{\pi}_{(i,i+1)}$. The policy $\uppi_i$,  is the best policy on validation among $\hat{\pi}_{(i,*)}$. 
 
-$\hat{\pi}_{(i,j)}$  represents the policy trained in the Hartree-Fock iteration $i$ and Dagger iteration $j-1$.
+% Goeff: need a new section
 
+% Geoff: introduce validation until latter
+When applying DAgger to Hartree-Fock iteration $i$,  we initialize $\pi_{(i,1)}$ equal to $\pi^*$. We'll then generate a sequence of policies $\hat{\pi}_{(i,2)} , \hat{\pi}_{(i,3)}, \ldots, \hat{\pi}_{(i,i+1)}$. The policy $\uppi_i$  is the best policy on validation among $\hat{\pi}_{(i,*)}$. 
 
-Then $\hat{\pi_{i,i+1}}$ is the last policy we can get in the Hartree-Fock iteration $i$.
+We denote $\hat{\pi}_{(i,j)}$  the policy trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. 
+
+Then $\hat{\pi}_{(i,i+1)}$ is the last policy we can get in the Hartree-Fock iteration $i$.
 
 % Why train \pi_{i,j} need \pi{i-1, j-1}
-Since in our case, we'll have a sequence of policies, $\uppi_1, \uppi_2, \ldots, \uppi_n$. The idea of DAgger is to train the policy under the induced state of previous policy. Therefore, when training policy $\pi_{(i,j)}$ in Hartree-Fock iteration $i$, the previous policy is $\hat{\pi}_{i-1,j-1}$ instead of  $\pi_{(i,j-1)}$.
-we'll  sample the trajectories using $\hat{\pi}_{i-1,j-1}$. 
-We then add the sample into the aggregated dataset D.
-We want to train a policy that best fit all the density matrices in D to the true training objective.
+In our case, we'll have a sequence of policies $\uppi_1, \uppi_2, \ldots, \uppi_n$. The idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\pi_{(i,j)}$ in Hartree-Fock iteration $i$, the previous policy is $\hat{\pi}_{(i-1,j-1)}$ instead of  $\hat{\pi}_{((i,j-1))}$.
 
-As a result, we'll fit the expert's demonstration $d_{2(i-1)}$ to $d_{2i}$, and also all the possible output of previous iteration $d_{2(i-1)}'$,  $d_{2(i-1)}''$, $\ldots$,  $d_{2(i-1)}^{[n-1]}$  to the true training objective $d_{2i}$.
+we'll  sample the trajectories using $\hat{\pi}_{(i-1,j-1)}$. We then add the sample into the aggregated dataset D.
+We want to train a policy that best fits all the density matrices in D to the ideal training objective.
 
-After training, for each iteration, we'll get a best set of parameter that not only mimics expert's demonstration in that iteration but also offset the error made by previous iteration.
+As a result, we'll fit the expert's demonstration $d_{2(i-1)}$ to $d_{2i}$, and also  all the possible output of the previous iteration $d_{2(i-1)}'$,  $d_{2(i-1)}''$, $\ldots$,  $d_{2(i-1)}^{[n-1]}$  to the ideal training objective $d_{2i}$.
+
+After training, for each iteration, we'll get a best set of parameter $\uppi$ that not only mimics the expert's demonstration in that iteration but also offsets the error made by the previous iteration.
 
 % 
-With these $\frac{n}{2}$ set of parameters, we can build up a 
-Use correspondent policy in each iterations.
+Put these $n$ Hartree-Fock with embedded parameters $\uppi_1, \uppi_2, \ldots, \uppi_n$ in sequence, we'll have a new process that simulate the original Hatree-Fock but may get converged density matrix with only half of iterations. In this new process, the output of previous policy would become the input of next policy just like pipeline. 
+
+%Feed the initial guessed density matrix $d_0$ into $\uppi_1$, we'll get the output density matrix $d_2'$. This will then be feed into $\uppi_2$.
 
 
 \begin{center} 
