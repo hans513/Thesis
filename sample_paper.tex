@@ -91,11 +91,26 @@ mention the time invariant steady state $H\Psi = E\Psi$ \\
 % => 1 electron or 2 electrons density matrices  => basis
 
 The general form of the Hamiltonian can be partitioned into two components: the one-electron operator and the two-electron operator. The one electron operator is 2 dimensional since it only considers the activity of a electron on one atom, the two-electron is 4 dimensional since it considers the interactions between two electrons on two different atoms.
-The Hamiltonian is approximated to the Fock operator which has the following form:
+The Hamiltonian is approximated to the Fock operator which has the following form:\\
 $\hat{F(\rho)}$ = $\hat{h_1} + \hat{G(\rho)}$, \\
 
 
 ..... Visualize the fock operator and individual eigen state ... \\
+
+\begin{eqnarray}
+0 =
+\left|
+\begin{array}{cccc}
+\textbf{F}-\epsilon &\textbf{F}&..&\textbf{F}\\
+\textbf{F}&\ \textbf{F}-\epsilon &\textbf{F}&.\\
+\textbf{F}&\textbf{F}&\textbf{F}-\epsilon &.\\
+.&.&.&.\\
+.&.&.&.\\
+\textbf{F} &.&.&\textbf{F}-\epsilon \\
+\end{array}
+\right|
+\end{eqnarray}
+
 
 
 where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{J}$ and $\hat{K}$ are components of the electron-electron interaction operator given in the same dimension as the one electron operator. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. \\
@@ -106,13 +121,19 @@ The wave function is approximated to a density matrix with a set of Gaussian fun
 The core equation in the Hartree-Fock algorithm is as following: \\
 
 ..... Pseudo code of Hartree Fock ..... \\
-initiation
-set a basis set
-Get integrals for Hamiltonian (H1,H2,S)
-pick a guess density $\rho_0$ 
-while $E_i-1(\rho)-E_i(\rho) > eps$
+\textbf{initiation}\\
+Set a size of basis set\\
+Get integrals for Hamiltonian (H1,H2,S)\\
+Pick a guess density $\rho = \rho_0$ \\
+\textbf{iteration}\\
+While $E_i-1(\rho)-E_i(\rho) >$ termination criteria\\
+Calculate the Fock operator F($\rho$) = $h_1 + G(\rho)$\\
+Diagonalize the Fock matrix to get $\epsilon$\\
+Get new density $\rho_1$ = C*C\\
+Set the new density $\rho = \rho_1$\\
+\textbf{termination}\\
+Once the change in energy is small enough to fulfil the termination criteria
 
-Have to input this from other computer
 
 
  
