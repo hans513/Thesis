@@ -47,7 +47,12 @@
 
 \section{INTRODUCTION}
 % Hartree-Fock intro
-In the fields of computational chemistry and physics, Hartree-Fock is a method used to approximate the electron distribution of a molecule and the energy of the system. Hartree-Fock is an iterative process which can be excessively time consuming or even infeasible if we want to get an accurate description of the electron distribution for large molecules. Speeding up the Hartree-Fock would save computational cost thus enable us to deal with more complicate molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
+In the fields of computational chemistry, Hartree-Fock is a method used to approximate the electron distribution of a molecule and the energy of the system. It is the cornerstone of an important problem in Quantum Chemistry: the energy minimization problem in which we want to discover the equilibrium geometry of a molecular system. 
+
+%quantum chemistry studies the ground state, excited states and transition states of individual atoms and molecules, that occur during chemical reactions. 
+%By calculating the energy of the molecular system with different geometry, we can discover the equilibrium geometry which is the one with minimum energy
+
+Hartree-Fock is an iterative process which can be excessively time consuming or even infeasible if we want to get an accurate description of the electron distribution for large molecules. Speeding up the Hartree-Fock would save computational cost thus enable us to deal with more complicate molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
 
 Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters to make the whole process converge faster and output the correct density matrix.
 
@@ -302,10 +307,22 @@ Our goal is to have the Hartree-Fock with embedded parameters achieve the same g
 
 With the fast forwarded trajectories to serve as expert's demonstration, in each single iteration $i$ in Hartree-Fock, we would like to apply DAgger to learn a Hatree-Fock with embedded parameter $\uppi_i$ that best speeds up the i-th iteration.   
 
-In our case, $\Pi$ is the class of all the Hartree-Fock with embedded parameters. $\pi^*$ is the expert's demonstration, given by the original Hartree-Fock. 
+In our case, $\Pi$ is the class of all the Hartree-Fock with embedded parameters. $\pi^*$ is the expert's demonstration, given by the original Hartree-Fock. We denote $\hat{\pi}_{(i,j)}$  the policy trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. 
 
-We can visualize the whole process as a two-dimension table.
-Each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
+
+% Geoff: introduce validation until latter
+When applying DAgger to Hartree-Fock iteration $i$,  we initialize $\pi_{(i,1)}$ equal to $\pi^*$. We'll then generate a sequence of policies $\hat{\pi}_{(i,2)} , \hat{\pi}_{(i,3)}, \ldots, \hat{\pi}_{(i,i+1)}$. The policy $\uppi_i$  is the last policy in this sequence.
+
+%The policy $\uppi_i$  is the best policy on validation among $\hat{\pi}_{(i,*)}$. 
+
+
+% Why train \pi_{i,j} need \pi{i-1, j-1}
+ After training we'll have a sequence of policies $\uppi_1, \uppi_2, \ldots, \uppi_n$ in which the output of previous policy will become the input of next policy.
+
+The idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\pi_{(i,j)}$ in Hartree-Fock iteration $i$, the previous policy is $\hat{\pi}_{(i-1,j-1)}$ instead of  $\hat{\pi}_{(i,j-1)}$.
+
+We can visualize the whole process as a two-dimension table. 
+In this table, each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
  
 Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0 \rightarrow  d_1 \rightarrow  d_2  \ldots  $ and finally converge at $d_{2n}$. The expert's demonstration will then be $d_0 \rightarrow d_2 \rightarrow  d_4 \rightarrow  \ldots \rightarrow  d_{2n}$
 
@@ -318,7 +335,7 @@ Our only objective here is to train a set of parameter that best matches density
 Say, after training, we got the policy $\hat{\pi}_{(1,2)}$: $d_0 \xrightarrow{\hat{\pi}_{(1,2)}} d_{2}'$ 
 %which in turn can map density matrix 
 
-Then for the iterations afterwards, we have two sources of the training examples.  One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), and the other  is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration). Thus we can introduced DAgger to learn a best Hartree-Fock with embedded parameters for each iteration afterwards.
+Then for the iterations afterwards, we have two sources of the training examples.  One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), and the other  is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration). Thus we can introduce DAgger to learn a best Hartree-Fock with embedded parameters for each iteration afterwards.
 
 In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training objective is from expert's demonstration, and we want to train a set of parameter that best matches density matrix $d_2 \rightarrow d_4$.
 
@@ -334,15 +351,13 @@ This is the key to compensating the error made by the previous iteration. It wil
 
 % Goeff: need a new section
 
-% Geoff: introduce validation until latter
-When applying DAgger to Hartree-Fock iteration $i$,  we initialize $\pi_{(i,1)}$ equal to $\pi^*$. We'll then generate a sequence of policies $\hat{\pi}_{(i,2)} , \hat{\pi}_{(i,3)}, \ldots, \hat{\pi}_{(i,i+1)}$. The policy $\uppi_i$  is the best policy on validation among $\hat{\pi}_{(i,*)}$. 
 
-We denote $\hat{\pi}_{(i,j)}$  the policy trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. 
 
-Then $\hat{\pi}_{(i,i+1)}$ is the last policy we can get in the Hartree-Fock iteration $i$.
 
-% Why train \pi_{i,j} need \pi{i-1, j-1}
-In our case, we'll have a sequence of policies $\uppi_1, \uppi_2, \ldots, \uppi_n$. The idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\pi_{(i,j)}$ in Hartree-Fock iteration $i$, the previous policy is $\hat{\pi}_{(i-1,j-1)}$ instead of  $\hat{\pi}_{((i,j-1))}$.
+
+%Then $\hat{\pi}_{(i,i+1)}$ is the last policy we can get in the Hartree-Fock iteration $i$.
+
+
 
 we'll  sample the trajectories using $\hat{\pi}_{(i-1,j-1)}$. We then add the sample into the aggregated dataset D.
 We want to train a policy that best fits all the density matrices in D to the ideal training objective.
@@ -352,7 +367,7 @@ As a result, we'll fit the expert's demonstration $d_{2(i-1)}$ to $d_{2i}$, and 
 After training, for each iteration, we'll get a best set of parameter $\uppi$ that not only mimics the expert's demonstration in that iteration but also offsets the error made by the previous iteration.
 
 % 
-Put these $n$ Hartree-Fock with embedded parameters $\uppi_1, \uppi_2, \ldots, \uppi_n$ in sequence, we'll have a new process that simulate the original Hatree-Fock but may get converged density matrix with only half of iterations. In this new process, the output of previous policy would become the input of next policy just like pipeline. 
+Put these $n$ Hartree-Fock with embedded parameters $\uppi_1, \uppi_2, \ldots, \uppi_n$ in sequence, we'll have a new process that simulate the original Hatree-Fock but may get converged density matrix with only half of iterations. In this new process, the output of previous policy would become the input of next policy just like a pipeline. 
 
 %Feed the initial guessed density matrix $d_0$ into $\uppi_1$, we'll get the output density matrix $d_2'$. This will then be feed into $\uppi_2$.
 
@@ -379,74 +394,74 @@ Put these $n$ Hartree-Fock with embedded parameters $\uppi_1, \uppi_2, \ldots, \
 \end{center} 
 \section{EXPERIMENTS}
 
+In energy minimization, we want to discover a geometry of a particular arrangement of the atoms that corresponds to global energy minimum. This geometry is called the equilibrium structure of a molecule.
+Hartree-Fock plays a crucial role in calculating the energy of the system under different geometries. 
+
+In the experiment, we have the dataset which is 
+ a set of molecules with different geometries in a range of environments.
+ We already have the energy of each configuration in the dataset, we want to evaluate the computation time of the 
+ 
+ 
 \subsection{Experiment Dataset}
 
-The data consists of the electronic structure of a hydrocarbon with varying geometries in a range of environments. 
+The data consists of the electronic structure of a diatomic molecules/ hydrocarbon with varying geometries in a range of environments. 
 
-[how data is generated??]
+% 10 different geometry
+To generate different geometries,
+a random number is added to each value in the bond length, bond angle and dihedral angle, using a uniform random distribution with a width of ±0.2 Å for bond lengths, ±10o for bond angles, and free rotation for dihedral angles. 
 
-Random geometries are obtained by perturbing the equilibrium geometry with random distortions. 
+The random variable is chosen to span the full range for the internal rotation angle. The environment perturbs the electronic structure of the fragment in a manner that explores the types of perturbations that will be present in large molecules. 
 
-These distortions are generated using a z-matrix that defines the molecular geometry in terms of bond  lengths, angles, and dihedrals. 
+%This includes perturbations from external electrostatic potentials, due to other portions of the molecule or from solvent, and inductive effects from acceptors and donors. 
 
-[What is z-matrix??]
-% What is z-matrix ??
-
-% Do we need this one??
-A random number is then added to each value in the z-matrix, using a uniform random distribution with a width of ±0.15 Å for bond lengths, ±6o for bond angles, and ±7o for dihedral angles. Bond angles that are not explicitly included in the z-matrix thus have a range that is up to twice that of the angles included in the z-matrix. 
-
-
-For ethane, the random variable is chosen to span the full range for the internal rotation angle. The environment perturbs the electronic structure of the fragment in a manner that explores the types of perturbations that will be present in large molecules. 
-
-This includes perturbations from external electrostatic potentials, due to other portions of the molecule or from solvent, and inductive effects from acceptors and donors. 
-
+%Environment
 The environments consist of a cube, each corner of which holds a point charge. The length of each side of the cube is 12Å for methane and ethane and 14Å for propane and butane, with the molecule placed at its center. 
 
+[The relation between the geometry and environment]
+
 % Point charges
-The magnitudes of the point charges are randomly generated using a uniform distribution between -25 and 25 amu, chosen to induce variations in the Mulliken charges on the C and H in methane and ethane that are similar to the charges induced on the methyl group in CF3CH3 (~0.2 amu).  
+%The magnitudes of the point charges are randomly generated using a uniform distribution between -25 and 25 amu, chosen to induce variations in the Mulliken charges on the C and H in methane and ethane that are similar to the charges induced on the methyl group in CF3CH3 (~0.2 amu).  
 
 
 For each pairing of a molecular configuration with an environment, we generate expectation values of each operator that appears in the Hamiltonian (total kinetic energy, interaction of the electron density with each nucleus, and total two-electron repulsion energy).
 
+
 % DATA SET
 Each data set consists of 10 configurations in 10 environments, corresponding to 100 calculations. Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
 
+[]
 
 
 
 % 30 iterations
 
-
-%What is the dataset 
-%We generate a few hundred molecules dataset and divide these between a training and a test data set.
-
-
-%1 etot 
-%2 convergence rate (L1 norm with previous iteration)
 \subsection{Experiment settings}
 
-We split the whole dataset into two part evenly. The odd numbered instances serve as training data, on the other hand the even numbered instances serve as testing data. \\
 
-In our dataset, every training example converged within 30 iterations. 
-So
+%We generate a few hundred molecules dataset and divide these between a training and a test data set.
+%1 etot 
+%2 convergence rate (L1 norm with previous iteration)
+
+We split the whole dataset into two part evenly. 
+[What is the training dataset]
+[What is the testing dataset]
+%The odd numbered instances serve as training data, on the other hand the even numbered instances serve as testing data. \\
 
 % Goal
+[GOAL]
 The goal is to train 15 Hartree-Fock with embedded parameters that best approximate 30 iterations of original Hartree-Fock.
 
 After training on training dataset, we'll apply these 15 Hartree-Fock with embedded parameters on testing dataset to evaluate the performance.
 
 How  it converges
-
 The lower the energy the better?
-
 %What is convergence rate \\
 We can also plot the difference between this iteration and previous iteration to observe the converge rate.
-
 
 What is "etot"  and Energy\\
 
 \subsection{Experiment result}
-
+[CLAIM]
 
 
 \section{GENERAL FORMATTING INSTRUCTIONS}
