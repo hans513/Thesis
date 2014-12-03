@@ -54,6 +54,7 @@ In the fields of computational chemistry, Hartree-Fock is a method used to appro
 
 Hartree-Fock is an iterative process which can be excessively time consuming or even infeasible if we want to get an accurate description of the electron distribution for large molecules. Speeding up the Hartree-Fock would save computational cost thus enable us to deal with more complicate molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
 
+
 [=== No Embedded parameter now!!! ===] \\
 
 Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters to make the whole process converge faster and output the correct density matrix.
@@ -83,7 +84,6 @@ Through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a seq
 \section{BACKGROUND}
 
 \subsection{Hartree-Fock}
-
 
 % Goeff's comment
 % We are not just care about computing the whole energy
@@ -181,7 +181,9 @@ The core equation in the Hartree-Fock algorithm is as following: \\
 % show the first few eigen states (Schrödinger) of the h2 molecules and describe how the density matrices correspond to that plot (picture) to make things more concrete 
 
 
+
 In other words, we need to have the Fock-orbitals to get the Fock operator. To solve this equation, we start with an arbitrary guess density and solve for the Fock operator. We will then get the new density which we again will use it to solve the new Fock operator again. We will keep doing this process until meet the termination criteria. In large molecular system, the process is tedious and each iteration may take hours or even days of computation thus become infeasible.
+
 
 \subsection{Speeding up Hartree-Fock as an imitation learning problem}
 
