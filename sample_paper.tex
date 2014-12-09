@@ -473,7 +473,6 @@ We use the first ten instances to serve as the training dataset, and the reaming
 % Goal
 MENTION THE PURE LINEAR COMBINATION\\
 SHOULD ALSO MENTIONED TWO DIFFERENT EXPERT \\
-CLAIM \\ 
 ASSUMPTION \\
 MENTION THE CASE THAT MAY NEVER CONVERGE \\
 The goal is to train Hartree-Fock with linear combination policy that can  approach the steady density matrix faster than the original Hartree-Fock.
@@ -487,6 +486,18 @@ The lower the energy the better?
 We can also plot the difference between this iteration and previous iteration to observe the converge rate.
 
 
+\subsection{Experiment result}
+
+CLAIM \\ 
+\begin{figure}[h!]
+  \caption{Error on training dataset}
+    \includegraphics[width=220px]{DAggerResult_pen_m1-10_env3.png}
+\end{figure}
+
+\begin{figure}[h!]
+  \caption{Error on testing dataset}
+    \includegraphics[width=220px]{DAggerResult.png}
+\end{figure}
 
 
 \begin{thebibliography}{9}
