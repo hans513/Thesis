@@ -47,32 +47,66 @@
 
 \section{INTRODUCTION}
 % Hartree-Fock intro
-In the fields of computational chemistry, Hartree-Fock is a method used to approximate the electron distribution of a molecule and the energy of the system. It is the cornerstone of an important problem in Quantum Chemistry: the energy minimization problem in which we want to discover the equilibrium geometry of a molecular system. 
+In the fields of computational chemistry, Hartree-Fock is a method used to approximate the electron distribution and the energy of the system. 
 
+% The importance of the information of quantum state (electron distribution energy)
 %quantum chemistry studies the ground state, excited states and transition states of individual atoms and molecules, that occur during chemical reactions. 
-%By calculating the energy of the molecular system with different geometry, we can discover the equilibrium geometry which is the one with minimum energy
 
-Hartree-Fock is an iterative process which can be excessively time consuming or even infeasible if we want to get an accurate description of the electron distribution for large molecules. Speeding up the Hartree-Fock would save computational cost thus enable us to deal with more complicate molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
+Hartree-Fock is considered the cornerstone of all the quantum computation, since the information of the entire quantum system can be induced through the electron distribution. If we can calculate the electron distribution of a molecule under different geometries, we can solve an important issue in quantum chemistry: the energy minimization problem in which we want to discover the equilibrium geometry of a molecular system given by a position distribution of electron that gives the global minimal energy. 
 
-Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters to make the whole process converge faster and output the correct density matrix.
+ 
+ 
+The electron distribution of a system is expressed by a density matrix in Hartree-Fock.
+% Explain density matrix
+%The density matrix represents the expected value of the number of electron we will find between any pair of orbitals
+Hartree-Fock is an iterative process. In each iteration, we will input a density matrix and get the other density matrix which approaches final density matrix after computation. This process will be repeated until convergence.
 
-With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration make more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
+% The importance of speeding up Hartree-Fock
+Since Hartree-Fock is a numerical method and the computation time increases as a power of the number of atoms, the whole process grows exponentially and may become excessively time-consuming or even turns out to be infeasible very quickly.
+% if we want to get an accurate description of the electron distribution for large molecules.
+This grows into the bottleneck of all the computation in quantum chemistry which limits not only the accuracy of the results but also the size of the molecule we can deal with.
+
+Speeding up Hartree-Fock would thus facilitating the progression in quantum chemistry. It may enable us to deal with more complicated molecules, which can in turn be utilized to study biochemical reaction with very large systems. 
+
+
+
+%[=== No Embedded parameter now!!! ===] \\
+%Tanha et al \cite{Matteus}, proposed a method for finding the similarities in molecules, in which parameters are embedded into Hartree-Fock model. The model is partitioned into few parts, including  kinetic energy, electron-nuclear interaction and electron-electron interaction, where each of these components have different parameters to make the whole process converge faster and output the correct density matrix.
+
+%With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration make more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
+%[+++ No Embedded parameter now!!! +++ ] \\
+
+Accelerating Hartree-Fock hence becomes a very popular research topic among quantum chemists. For instance, Pulay \cite{Pulay1980} proposed that using the linear combination of few density matrices generated from previous iteration of Hartree-Fock may lead to faster convergence with less iteration. However, how to generate the best linear combination that may lead to the fastest convergence remains an open question. This raises our interests in finding a promising linear combination which accelerates the process. % reference?
+
+
+% others research on how to construct the linear combination, the drawbacks
+
+With the extra flexibility given by the linear combination of previous density matrices, it is possible for us to let Hartree-Fock make more progress in each iteration. 
+In particular, we would like to make single iteration of Hartree-Fock achieve as much progress as two or even more iterations of the original Hartree-Fock.
+
+
+
+%With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration make more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
 
 % How to do that? (Imitation learning)
-This idea can be realized through imitation learning, also called Learning from Demonstration, a paradigm designated to learn expert demonstrations so as to become capable of performing the same tasks. 
-We can generate an illustrative sequence from the original Hartree-Fock as expert demonstrations. By imitation learning technique, we can make 
-Hartree-Fock with embedded parameters learns from the demonstrations,  which finally enables it to gain more progress in one single iteration.
+This idea can be realized through imitation learning, a paradigm also called learning from demonstration that is designated to learn a policy from imitating an expert's demonstrations so as to become capable of performing the same tasks. 
+
+To achieve this goal, we can generate an illustrative sequence from the original Hartree-Fock sequence as the expert's demonstrations. Then, we apply imitation learning to train a policy that mimics the demonstration. 
+
+%[ No Embedded parameter] 
+%By imitation learning technique, we can make Hartree-Fock with embedded parameters learns from the demonstrations,  which finally enables it to gain more progress in one single iteration.
 
 
 % Problem encountered   %%%%%
-However, naive imitation learning may yield poor performance in theory and practice since the learner's prediction and action affect future input observations and states during the execution of the learned policy. It obviously violates the common i.i.d. assumption made in most statistical learning approaches. \cite{Ross}.
+However, naive imitation learning may yield poor performance in practice and also theory.  Since the learner's prediction and action affect future observations and states during the execution of the learned policy. It obviously violates the common i.i.d. assumption made in most statistical learning approaches. \cite{Ross}.
+
 
 
 % The recipe (DAgger)
-Fortunately, Ross et al,\cite{DAgger} proposed the dataset aggregation algorithm (DAgger), which learns a stationary deterministic policy guaranteed to perform well under its induced distribution of states, is a remedy to the poor performance in imitation learning. DAgger also was proven to have stable performance and fast learning rate. \cite{DAggerCompare}
+Fortunately, the dataset aggregation algorithm (DAgger), proposed by Ross et al., \cite{DAgger}, can learn a stationary deterministic policy guaranteed to perform well under its induced distribution of states. This in turn serves as a remedy to the poor performance in imitation learning. Besdies, DAgger also has been proven to have stable performance and fast learning rate. \cite{DAggerCompare}
 
-In this paper,  we introduce the imitation learning technique for speeding up the Hartree-Fock process. 
-Through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a sequence of Hartree-Fock with embedded parameters that can perform well under the induced distribution of states and also yield more progress in each iteration. 
+Based on these results, we introduce the idea of using imitation learning to speed up the Hartree-Fock process in the present study. By extracting an illustrative trajectory from original Hartree-Fock process
+through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a set of linear combinations that can perform well under the induced distribution of states and yield more progress in each iteration as well. 
 
 %introducing “parameter" into HF  turn it to Machine learning problem.
 
@@ -80,61 +114,92 @@ Through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a seq
 
 \subsection{Hartree-Fock}
 
-In the area of theoretical chemistry, the main objective is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available. While in all these cases, Hartree-Fock (HF) algorithm is the starting point.
 
-The Schrödinger equation is the foundation equation of quantum mechanics, in which the solution can give us a complete description of a particle or a molecular systems. The equation gives the wave functions of a system which describes the quantum state of a system of one or more particles, and contains all the information about the system considered in isolation. A time invariant steady state form of the Schrödinger equation  is shown below
+% Goeff's comment
+% We are not just care about computing the whole energy
+% We also care about the sub-region energy and electron density directly
+% The goal is to calculate the properties of the molecule such as the energy and density
+
+In the area of theoretical chemistry, the main objective is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available. In all these cases, Hartree-Fock (HF) algorithm is the starting point.
+
+% What is wave function, what is density matrix, 
+In quantum mechanics, particle can exhibit wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$ which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, the wave function is approximated by a set of basis function. According to Copenhagen interpretation, the description given by the wave function is probabilistic, thus the function should be continuous differentiable and square integrable. Previous works shows using the linear combination of Gaussian-type functions to serve as basis function is a computationally efficient choice.
+
+The more Gaussian functions per basis function the more accurate result we can attain. The larger the molecular system, the more accurate model is desired. Both will lead to the system growing exponentially large. The integrals of the these basis functions are viewed as matrices when solving the HF algorithm.
+
+
+
+% Why does Hartree-Fock work on density matrices instead of wave function
+% It's hard to describe multiple particles by wave function
+% Particles are interchangeable so we can summrize it as density matrices
+
+
+
+% Geoff's comment
+% we choose each basis element to be a linear combination of  Gaussian function (because of efficiency)
+%To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. Basis functions are best described using Slater functions/exponent. But because of the computationally difficulty of calculating the integral, approximating the the basis set by a linear combinations of Gaussian functions is more computation efficient and more commonly used. 
+
+
+The Schrödinger equation is the foundation equation of quantum mechanics, in which, given the geometry of a system, the solution gives the wave functions and also the energy of a system. 
+A time invariant steady state Schrödinger equation has the following form
 \[
 				\hat{H}\Psi = E\Psi
 \]
-The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function, $\Psi$, providing the observed energy, E. The Hamiltonian operator is given by the sum of two operators: $\hat{H} = \hat{T} + \hat{V}$,  in which $\hat{T}$ is the kinetic energy operator and $\hat{V}$ is the potential energy operator.
+The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function, $\Psi$, providing the observed energy, E. The Hamiltonian operator is given by the sum of two operators: $\hat{H} = \hat{T} + \hat{V}$,  in which $\hat{T}$ is the kinetic energy operator and $\hat{V}$ is the potential energy operator.\\
 
-Hartree-Fock (HF) gives us an approximation for a solution to the Schrödinger equation. In HF the wave-function is described with a density matrix, which is a probability matrix of the mixed states within the system. The wave-function contains more information regarding the particle or system. However, it is difficult to construct a wave function for a many body system but approximating it a density matrix will allow us to calculate the approximated Schrödinger equation or Hartree-Fock. \\  
+
+Hartree-Fock (HF) gives us an approximation for a solution to the time invariance Schrödinger equation. In HF the wave-function is described with a density matrix, which is a probability matrix of the mixed states within the system. Although the wave function contains more information regarding the particle or system, it is really difficult to construct it for a many-body system.  
+Approximating wave function by a density matrix will make the whole computation simpler and enable us to the approximated Schrödinger equation by Hartree-Fock method. \\  
 
 The general equation to formulate a density matrix is given by
 \[
-\rho = \sum\hat{p_i}\braket{\psi_i}\braket{\psi_i}
+\rho = \sum\hat{p_i}\ket{\psi_i}\bra{\psi_i}
 \]
-This is an integral to find the probability of the different states, in which $\hat{p}$ is the density operator. Another approximation of Hartree-Fock is the usage of Linear Combination of Atomic Orbitals (LCAO) in which a molecular orbital is described by a sum of atomic orbitals. $\psi(r) = \sum{c_1\chi_i(r)}$
 
-To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. Basis functions are best described using Slater functions/exponent. But because of the computationally difficulty of calculating the integral, approximating the the basis set by a linear combinations of Gaussian functions is more computation efficient and more commonly used. The more Gaussian functions per basis function the more accurate result we can attain. The larger the molecular system, the more accurate model is desired. Both will lead to the system growing exponentially large. The integrals of the these basis functions are viewed as matrices when solving the HF algorithm.
 
-A modification of the Hamiltonian is approximated to the Fock operator which has the following form:
+This is an integral to find the probability of the different states, in which $\hat{p}$ is the density operator. 
+%Another approximation of Hartree-Fock is the usage of Linear Combination of Atomic Orbitals (LCAO) in which a molecular orbital is described by a sum of atomic orbitals. $\psi(r) = \sum{c_1\chi_i(r)}$
+
+With density matrix,
+a modification of the Hamiltonian is approximated by Fock operator which has the following form:
 \[
 \hat{F}(\rho) = \hat{h_1} + \hat{G}(\rho)
 \]
-where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation. There are more develop methods based on HF that use a different models for the $\hat{G}$ operator to approximate more accurate electron correlation. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. \\ 
-The Fock matrix represented in the Roothaan equation is used to iteratively get the final density matrix.
+where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation. $\rho$ is the density matrix.
+There are more develop methods based on HF that use a different models for the $\hat{G}$ operator to approximate more accurate electron correlation. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. \\ 
+
+
+Once we have the Fock operator, the time independent Schrödinger equation
+can be turn into Roothaan equation which can get the final density matrix iteratively.
+The Roothaan equation is shown below
 \[
 FC = SC\epsilon
 \]
-where S is the overlap matrix and $\epsilon$ is a diagonal matrix of the orbital energies. This is similar to an eigenvalue equation with the exception of the existence of the S matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution, this equation has to be done iteratively. The heart of the algorithm is solving for the eigenvalues in the Fock determinant as shown below.\\
-\begin{eqnarray}
-0 =
-\left|
-\begin{array}{ccc}
-\textbf{F}-\epsilon &\textbf{F}&\textbf{F}\\
-\textbf{F}&\ \textbf{F}-\epsilon &\textbf{F}\\
-\textbf{F}&\textbf{F}&\textbf{F}-\epsilon \\
-\end{array}
-\right|
-\end{eqnarray}
+
+%Geoff's comment
+
+% We might not need to talk about how we get fock operator other than that is an function of the density matrix (Put it into Appendix) [too much details and distract]
+
+Where S is the overlap matrix which will reduce to the identity matrix if we have a orthonormalised basis set. $\epsilon$ is a diagonal matrix of the orbital energies. This is an eigenvalue equation with S become identity matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution, this equation has to be done iteratively. The heart of the algorithm then become solving for the eigenvalues in the Fock determinant.\\
+
+
 
 % Make claer what  the input and oput are
 % single electron density matrix is the input and output 
 
-The core equation in the Hartree-Fock algorithm is as following: \\
 \begin{algorithm}[htb]
- \KwData{ }
- \KwResult{Converged density matrix }
-	Set up the basis set\\
-	Get integrals for Hamiltonian (H1,H2,S)\\
-	Pick a guess density $\rho = \rho_0$ \\
-	Set $\delta$ to be termination criteria \\
- \While{ $E_i-1(\rho)-E_i(\rho) > \delta$ }{
-	Calculate the Fock operator F($\rho$) = $h_1 + G(\rho)$\\
-	Diagonalize the Fock matrix to get $\epsilon$\\
-	Get new density $\rho_i$ = C*C\\
-	Set the new density $\rho = \rho_i$\\
+ \KwData{ 3D coordinates of atomic nucleus}
+ \KwResult{Density matrix which gives minimum energy}
+	Set up the basis functions\\
+	Calculate Hamiltonian($h_1$,$G$) by input data  \\
+	Initialize $i \leftarrow	 0$ \\	
+	Pick a guess density $\rho_0$ \\
+	Initialize $\delta$ to be a small value (termination criteria) \\
+ \While{ $i=0$ or $|E(\rho_{i}) - E(\rho_{i-1})| > \delta$ }{
+	Calculate the Fock operator  $F \leftarrow h_1 + G(\rho_i)$\\
+	Diagonalize the Fock matrix to get $\epsilon$ and $C$\\
+	$\rho_{i+1} \leftarrow C*C$\\
+	$i \leftarrow i+1$ \\
  }
  \caption{Hartree-Fock algorithm}
 \end{algorithm}
@@ -145,50 +210,41 @@ The core equation in the Hartree-Fock algorithm is as following: \\
 % show the first few eigen states (Schrödinger) of the h2 molecules and describe how the density matrices correspond to that plot (picture) to make things more concrete 
 
 
-In other words you need to have the Fock-orbitals to get the Fock operator. To solve this equation you start with an arbitrary guess density and solve for the Fock operator. You will then get the new density which you again will use it to solve the new Fock operator again. You will keep doing this process until meet the termination criteria. In large molecular system, the process is tedious and each iteration may take hours or even days of computation thus become infeasible.
+In other words, we need to have the Fock-orbitals to get the Fock operator. To solve this equation, we start with an arbitrary guess density and solve for the Fock operator. We will then get the new density which we again will use it to solve the new Fock operator. We will keep doing this process until meet the termination criteria. In large molecular system, the process is tedious and each iteration may take hours or even days of computation thus become infeasible.
 
 \subsection{Speeding up Hartree-Fock as an imitation learning problem}
 
 
-Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a distribution of the result from previous iterations to predict the next\cite{Pulay1980}. 
+Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a linear combination of the density matrices from previous iterations to better approach the final density matrix in the next iteration.\cite{Pulay1980} 
 
-.....The drawback of the research......
+However, the issue of finding the best linear combination that may lead to the final density matrix faster still leaves room for further discussion.
 
 In this paper,
-we want to explore a different method where to find parameters which are embedded in the Hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
+we want to explore the linear combination by imitation learning that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which may speed this method significantly. 
 
-
-%We are exploring a different method where to find parameters which are embedded in the Hamiltonian that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which could speed this method significantly. 
-
-
-% The difficulty of (speeding up the whole process)parallelling the whole procedure, therefore, we'd like to speed up single iteration 
-%% In general, we can think of two approaches to speed up a process. The first approach would be paralleled the whole procedure.  The whole process is hard to paralleled, since the input of each iteration depend on the output of previous iteration.
-
-
-% Description of the original iterative Hartree-Fock 
-% This part (Should go earlier under the description of Hartree-Fock)
 
 %How to map the Hartree-Fock to imitation learning problem.
-As we mentioned before,  because of the Fock operator can only be calculated iteratively, Hartree-Fock is also an iterative process that  approaches the steady density matrix we want.
+As we mentioned before,  because of the Fock operator can only be calculated iteratively, Hartree-Fock approaches the steady density matrix iteration by iteration.
 
-Given an initial guessed density matrix $d_0$ as an input for solving Fock operator, after first iteration we will get the a new output density matrix $d_1$. 
-In the second iteration, the previous output density matrix will then become the input. Thus, using $d_1$ as the input, we can get the output density matrix $d_2$. 
+Given an initial guessed density matrix $d_0$ as an input for solving Fock operator, after first iteration we will get the a new output density matrix $d_1$. In the following iteration, the previous output density matrix will then become the input to the next iteration. Thus, using $d_1$ as a input in second iteration, we can get the other output density matrix $d_2$. 
 
 We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
 
-This repeating process is quite tedious and each iteration may take hours or even days. % Shorten each iteration?
+This repeating process is quite tedious and each iteration may take hours or even days. If we can make each iteration more productive, we can achieve the same goal with less iterations thus make the whole process faster.
 
-If we can make each iteration more productive, we can achieve the same goal with less iterations. 
-
-We can think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1$,  $d_2$,  ...... $d_{n-1}$ and then finally get the steady converged output $d_{n}$. However, we indeed don't care about the intermediate density matrices. What the only thing we want to know is the final converged density matrix. If we can get the final converged density matrices with less iterations or even one iteration of computation that would greatly shorten the computation time and thus speed up the whole process. 
-
-If we think of the sequence of density matrices as a film playing frame by frame. Then it is intuitive to think of a 2X speeding up version 
-Under the same frame rate, the sequence of a  "2X fast forward" version would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, ......, $d_{n-2}$ to $d_n$. In this ideal fast forward version, we will only need half iterations to achieve the same goal, thus cutting the computation cost into half.
+If we think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1$,  $d_2$,  $\ldots$ ,$d_{n-1}$ and finally ends at steady converged output $d_{n}$, we indeed don't care about the intermediate density matrices. What the only thing we want to know is the final steady density matrix. If we can get the final steady density matrices with less iterations or even one iteration of computation that would greatly shorten the computation time and thus speed up the whole process. 
 
 
-This sequence can serve as an expert demonstration, and the extra flexibility offered by the embedded parameter can let us reform the Hartree-Fock process. By imitation learning,
-we would like to train a Hartree-Fock process with embedded parameter that  mimics the "Fast forward" version of the original Hartree-Fock. 
-We can always try to make the output density matrix match the ideal output in our expert demonstration via the extra flexibility offered by the embedded parameters .
+% TODO:MOUNTAIN HIKING
+%If we think of the sequence of density matrices as a film playing frame by frame. Then it is intuitive to think of a 2X speeding up version Under the same frame rate, the sequence of a  "2X fast forward" version would be dropping the odd numbered frames, thus the sequence will become $d_0$ to $d_2$, $d_2$ to $d_4$, \ldots $d_{n-2}$ to $d_n$. In this ideal fast forward version, we will only need half iterations to achieve the same goal, thus cutting the computation cost into half.
+
+Assume we have a set of 2n density matrices generated in sequence is  $d_0 \rightarrow  d_1 \rightarrow  d_2  \ldots  $ and finally converge at $d_{2n}$. 
+We can build up a faster trajectory from this sequence and try to learn from it.
+One example can be a sequence which has a step size of 2 of the original trajectory just like,$d_0 \rightarrow d_2 \rightarrow  d_4 \rightarrow  \ldots \rightarrow  d_{2n}$. Then for this trajectory, it only takes n iteration for reaching the steady density matrix instead of 2n.
+Or we can build a even greedy trajectory that no matter what the input density matrix is, it always takes only one iteration for returning the steady density matrix. $d_0 \rightarrow d_{2n}$.
+
+
+This trajectory can serve as an expert's demonstration, and the extra flexibility offered by the linear combination can let us reform the Hartree-Fock process. By imitation learning, we would like to train a Hartree-Fock process with linear combination of density matrices from previous iteration that mimics the expert's demonstration extracted from original Hartree-Fock. We can always try to make the output density matrix match the ideal output in the demonstration via the extra flexibility offered by coefficient of linear combination .
 
 
 As a result, it allows more progress in one iteration, thus converged with less iterations, say half or even less iterations.  
@@ -205,19 +261,12 @@ As a result, it allows more progress in one iteration, thus converged with less 
 %Hartree-Fock
 %density matrix
 %Gaussian  , wave function, basis
-%Slater determinant
-
 
 \subsection{DAgger algorithm}
 % sovle the naive imitation learning problem
-DAgger is an algorithm that learns expert demonstration iteratively. In each iteration, the model is trained under the states that was induced by both the expert and the previous learned model. It keeps aggregating a set of inputs that the model itself is likely to encounter based on previous training iterations.  
+DAgger is an algorithm that learns the expert's demonstration iteratively. In each iteration, the model is trained under the states that was induced by both the expert and the previous learned model. It keeps aggregating a set of inputs that the model itself is likely to encounter based on previous training iterations.  
 
-By doing so, it is possible to offset the error made by previous learned model and thus learn a better model. This is a remedy to the problem in naive imitation learning that the result may become unpredictable and poor because of the policy is trained under a different state distribution
-%!!!!!!!!!!!!!!!!!!!!!!
-that the model is less likely to encounter. 
-
-
-Thus the error may keep growing iteration by iteration.
+By doing so, it is possible to offset the error made by previous learned model and thus learn a new policy that approaches the demonstration better. This is a remedy to the problem in naive imitation learning that the error may grow quadratically and result may become unpredictable because of the policy is trained under a different state distribution that the model may encounter. Thus the error may keep growing iteration by iteration.
 
 %Rough Algorithm Description
 The simplest DAgger algorithm may proceed as follows.
@@ -225,16 +274,14 @@ The simplest DAgger algorithm may proceed as follows.
 %%% TODO 
 $\Pi$ is the class of policies the learner is considering.
 In the first iteration, it uses the expert’s policy $\pi^*$ to gather
-a dataset of trajectories D and train a policy $\hat{\pi_2}$ that best mimics the expert on those trajectories. 
+a dataset of trajectories $D$ and train a policy $\hat{\pi_2}$ that best mimics the expert on those trajectories. 
 
-Then in iteration $i$, we can sample the state induced by $\hat{\pi_i}$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset D. We then train the next policy $\hat{\pi_{i+1}}$ , the policy that best mimics the expert on the whole dataset D. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration N.
+Then in iteration $i$, we can sample the state induced by $\hat{\pi_i}$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset $D$. We then train the next policy $\hat{\pi_{i+1}}$, the policy that best mimics the expert on the whole dataset $D$. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration $n$.
 
-In other words, Dagger proceeds by aggregating a dataset
-at each iteration under the current policy and trains the next policy under the all collected datasets. 
+In other words, Dagger proceeds by aggregating a dataset at each iteration under the current policy then trains the next policy under the all collected datasets. 
 
 
-In general, there are two different strategies to learn the policy. Either we can try to learn a single policy that imitate the expert's demonstration under all circumstances, or we train multiple policies that approximate expert's demonstration in which each policy best mimic expert's demonstration under different scenario.
-It's obvious that using multiple policies gives us more flexibility, thus in the following section, we would like to introduce how we train a sequence of Hartree-Fock with embedded parameters, in which each set of parameter can best speed up a correspondent iteration.
+%In general, there are two different strategies to learn the policy. Either we can try to learn a single policy that imitate the expert's demonstration under all circumstances, or we train multiple policies that approximate expert's demonstration in which each policy best mimic expert's demonstration under different scenario. It's obvious that using multiple policies gives us more flexibility, thus in the following section, we would like to introduce how we train a sequence of Hartree-Fock with embedded parameters, in which each set of parameter can best speed up a correspondent iteration.
 
 
 
@@ -248,7 +295,7 @@ It's obvious that using multiple policies gives us more flexibility, thus in the
 
 
 \begin{algorithm}[htb]
- \KwData{ }
+ \KwData{Expert's demonstration generated by expert's policy $\pi^*$}
  \KwResult{Best $\hat{\pi}_i$ on validation }
  $\pi^*$  is the expert’s policy \\
  Initialized $D \leftarrow \emptyset$ \\
@@ -269,7 +316,7 @@ It's obvious that using multiple policies gives us more flexibility, thus in the
 
 \section{LEARNING EMBEDDED PARAMETERS}
 
-Our goal is to have the Hartree-Fock with embedded parameters achieve the same goal as original Hartree-Fock with less iterations, say, half or even less.  
+Our goal is to have the Hartree-Fock with linear combination achieve the same goal with less iterations, say, half or even less.  
 
 
 % The original Hartree-Fock is actually a Hartree-Fock with all-zero embedded paramter
@@ -278,44 +325,41 @@ Our goal is to have the Hartree-Fock with embedded parameters achieve the same g
 % D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
 % 
 
-With the fast forwarded trajectories to serve as expert's demonstration, in each single iteration $i$ in Hartree-Fock, we would like to apply DAgger to learn a Hatree-Fock with embedded parameter $\uppi_i$ that best speeds up the i-th iteration.   
+With a faster trajectories serve as the expert's demonstration, we would like to learn a policy that for each single iteration of Hartree-Fock it has a set of coefficients that makes the iteration more productive.   
 
-In our case, $\Pi$ is the class of all the Hartree-Fock with embedded parameters. $\pi^*$ is the expert's demonstration, given by the original Hartree-Fock. We denote $\hat{\pi}_{(i,j)}$  the policy trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. 
-
-
-% Geoff: introduce validation until latter
-When applying DAgger to Hartree-Fock iteration $i$,  we initialize $\pi_{(i,1)}$ equal to $\pi^*$. We'll then generate a sequence of policies $\hat{\pi}_{(i,2)} , \hat{\pi}_{(i,3)}, \ldots, \hat{\pi}_{(i,i+1)}$. The policy $\uppi_i$  is the last policy in this sequence.
-
-%The policy $\uppi_i$  is the best policy on validation among $\hat{\pi}_{(i,*)}$. 
+In our case, $\Pi$ is the policy class consist of all the Hartree-Fock with linear combination. $\pi^*$ represents the expert's policy that generates the expert's demonstration. However, we don't need to have an explicit expert's policy, instead we can build up the the expert's demonstration with any Hartree-Fock trajectory from scratch. A policy here is the sets of coefficients which represents the linear combination to apply in each Hartree-Fock iteration. 
 
 
-% Why train \pi_{i,j} need \pi{i-1, j-1}
- After training we'll have a sequence of policies $\uppi_1, \uppi_2, \ldots, \uppi_n$ in which the output of previous policy will become the input of next policy.
+% ???????????
+%When applying DAgger to Hartree-Fock iteration $i$, we initialize $\pi_{(1)}$ equal to $\pi^*$. Then in during the DAgger iterations, we can generate a sequence of policies $\hat{\pi}_{(2)} , \hat{\pi}_{(3)}, \ldots, \hat{\pi}_{(i+1)}$, in which the output of previous policy will become the input of next policy.
 
-The idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\pi_{(i,j)}$ in Hartree-Fock iteration $i$, the previous policy is $\hat{\pi}_{(i-1,j-1)}$ instead of  $\hat{\pi}_{(i,j-1)}$.
+
+The main idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\hat{\pi}_{(i)}$ in Hartree-Fock iteration $i$,
+we will consider the state generated from the previous policy $\hat{\pi}_{(i-1)}$. More specifically, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ can in turn be used to train $\hat{c}_{(i+1,j+1)}$
+
+
 
 We can visualize the whole process as a two-dimension table. 
-In this table, each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
- 
-Assume the density matrices generated in the original Hartree-Fock process in sequence are  $d_0 \rightarrow  d_1 \rightarrow  d_2  \ldots  $ and finally converge at $d_{2n}$. The expert's demonstration will then be $d_0 \rightarrow d_2 \rightarrow  d_4 \rightarrow  \ldots \rightarrow  d_{2n}$
+If we use a trajectory which has a step size of two of the original trajectory to serve as the expert's demonstration, we can refer to table 1 for the training procedure.
+%,$d_0 \rightarrow d_2 \rightarrow  d_4 \rightarrow  \ldots \rightarrow  d_{2n}$. 
+In the table, each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
 
-In the first iteration of Hartree-Fock, we only has one DAgger iteration, since there is no previous Hartree-Fock iteration. 
-
-Our only objective here is to train a set of parameter that best matches density matrix $d_0 \rightarrow d_2$. 
+In the first iteration of Hartree-Fock, we only has one DAgger iteration, since there is no previous Hartree-Fock iteration. Our only objective here is to find a coefficient that best approaches the objective density matrix $d_2$ after this Hartree-Fock iteration. The objective can be denoted as $d_0 \rightarrow d_2$. 
 
 %TODO: Error of density matrix
 % Geoff: define d2' in terms of pi hat(1,2)
-Say, after training, we got the policy $\hat{\pi}_{(1,2)}$: $d_0 \xrightarrow{\hat{\pi}_{(1,2)}} d_{2}'$ 
+Say, after training, we got the coefficient $\hat{c}_{(1,2)}$: $d_0 \rightarrow d_{2}'$ 
 %which in turn can map density matrix 
 
-Then for the iterations afterwards, we have two sources of the training examples.  One from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: iter 1), and the other  is the state which is induced by the previous learned policy (The new objective which is generated after the first DAgger iteration). Thus we can introduce DAgger to learn a best Hartree-Fock with embedded parameters for each iteration afterwards.
+Then for the Hartree-Fock iterations afterwards, we have to aggregate the training datasets in each DAgger iteration. Since the induced state may not only from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: 1.) but also
+ may from the state which is induced by the previous learned policy. (The new objective which is generated after the first DAgger iteration), DAgger can thus help to learn a best set of coefficient that perform well under the state distribution induced by previous policy.
 
-In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training objective is from expert's demonstration, and we want to train a set of parameter that best matches density matrix $d_2 \rightarrow d_4$.
+In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training dataset is from the expert's demonstration, and we want to train a set of coefficient  $\hat{c}_{(2,2)}$ that best matches density matrix $(d_0,d_2) \rightarrow d_4$.
 
-However, in the second DAgger iteration, we'll sample the trajectories using $\hat{\pi}_{(1,2)}$, thus getting the dataset $D_i$ = $d_2' \rightarrow d_4$. Then the dataset is added into D.
+However, in the second DAgger iteration, we can also sample the trajectories using $\hat{c}_{(1,2)}$, thus get the training dataset $D_i$ = $(d_0, d_2') \rightarrow d_4$. This new dataset then will be added into D.
 %We then aggregate dataset that is the state induced by iteration 1,
-Next step is to train a policy that best fit the aggregated dataset D. Thus,  not only do we want to fit the expert's demonstration $d_2 \rightarrow d_4$, but also want to fit the output of the previous iteration $d_{2}' \rightarrow d_4$. 
-%The result of this policy then is the best policy that mimic the expert's demonstration in Hartree-Fock iterations two.
+Next step is to train a policy that best fit the whole aggregated dataset D. Thus, not only do we want to fit the expert's demonstration $(d_0, d_2) \rightarrow d_4$, but also want to fit the output of the previous iteration to the true objective$(d_0,d_{2}') \rightarrow d_4$. 
+
 
 This is the key to compensating the error made by the previous iteration. It will keep aggregating the output of the previous iterations.
 
@@ -325,59 +369,68 @@ This is the key to compensating the error made by the previous iteration. It wil
 % Goeff: need a new section
 
 
-
-
-
 %Then $\hat{\pi}_{(i,i+1)}$ is the last policy we can get in the Hartree-Fock iteration $i$.
 
-
-
-we'll  sample the trajectories using $\hat{\pi}_{(i-1,j-1)}$. We then add the sample into the aggregated dataset D.
+We sample the trajectories using $\hat{c}_{(i-1,j-1)}$. We then add the sample into the aggregated dataset D.
 We want to train a policy that best fits all the density matrices in D to the ideal training objective.
 
-As a result, we'll fit the expert's demonstration $d_{2(i-1)}$ to $d_{2i}$, and also  all the possible output of the previous iteration $d_{2(i-1)}'$,  $d_{2(i-1)}''$, $\ldots$,  $d_{2(i-1)}^{[n-1]}$  to the ideal training objective $d_{2i}$.
+As a result, we will fit the expert's demonstration $d_{2(i-1)}$ to $d_{2i}$, and also all the possible output state from the previous iteration $d_{2(i-1)}'$,  $d_{2(i-1)}''$, $\ldots$,  $d_{2(i-1)}^{[n-1]}$  to the ideal training objective $d_{2i}$.
 
-After training, for each iteration, we'll get a best set of parameter $\uppi$ that not only mimics the expert's demonstration in that iteration but also offsets the error made by the previous iteration.
+After training, for each iteration, we will get a best set of coefficient $\hat{c}_{(i,j)}$ that not only mimics the expert's demonstration in that iteration but also offsets the error made by the previous iteration.
 
 % 
-Put these $n$ Hartree-Fock with embedded parameters $\uppi_1, \uppi_2, \ldots, \uppi_n$ in sequence, we'll have a new process that simulate the original Hatree-Fock but may get converged density matrix with only half of iterations. In this new process, the output of previous policy would become the input of next policy just like a pipeline. 
+Put these $n$ set of coefficient $\hat{c}_{(1,1)}, \hat{c}_{(2,2)}, \ldots  \hat{c}_{(i-1,j-1)}$ in sequence, it will form the final policy that imitate the demonstration from the original Hartree-Fock but may get steady density matrix with only half of iterations. In this new process, the output of previous policy would become the input of next policy just like a pipeline. 
+
 
 %Feed the initial guessed density matrix $d_0$ into $\uppi_1$, we'll get the output density matrix $d_2'$. This will then be feed into $\uppi_2$.
 
-
 \begin{center} 
-\begin{table*}[t]
-\begin{tabular}{|l|l|l|l|l|l|l|l|}
-\hline
-& \multicolumn{7}{l|}{Hartree-Fock iterations (with step size 2)}                                                                                                                    \\ \hline
-\multirow{10}{*}{\begin{tabular}[c]{@{}l@{}}DAgger\\ iterations\end{tabular}} 
-&                &                & iter 1         & iter 2          & iter 3         & \ldots         & iter n         \\ \cline{2-8} 
-& \multirow{2}{*}{iter 1} 
-& Objective & $d_0 \rightarrow d_2$ & $d_2 \rightarrow d_4$ & $d_4 \rightarrow d_6$ &  \ldots & $d_{2(n-1)} \rightarrow d_{2n}$ \\ \cline{3-8} 
-&                 & Result after training & $d_0 \rightarrow d_2'$ & $d_2 \rightarrow d_4'$   & $d_4 \rightarrow d_6'$    &  \ldots & $d_{2(n-1)} \rightarrow d_{2n}'$          \\ \cline{2-8} 
-& \multirow{2}{*}{iter 2} & New objective         &                         & $d_2' \rightarrow d_4$   & $d_4' \rightarrow d_6$     &  \ldots & $d_{2(n-1)}' \rightarrow d_{2n}$          \\ \cline{3-8} 
-&                 & Result after training &                 & $d_2' \rightarrow d_4''$ & $d_4' \rightarrow d_6''$   & \ldots & $d_{2(n-1)}' \rightarrow d_{2n}''$        \\ \cline{2-8} 
-& \multirow{2}{*}{iter 3} & New objective         &                         &                          & $d_4'' \rightarrow d_6$    &  \ldots & $d_{2(n-1)}'' \rightarrow d_{2n}$         \\ \cline{3-8} 
-&                 & Result after training &                 &                 & $d_4'' \rightarrow d_6'''$ &  \ldots & $d_{2(n-1)}'' \rightarrow d_{2n}'''$      \\ \cline{2-8} 
-& \vdots      & \vdots      &                &                &                & $\ddots$ &   \vdots \\ \cline{2-8} 
-& \multirow{2}{*}{iter n} & New objective         &                         &                          &                            &  & $d_{2(n-1)}^{[n-1]} \rightarrow d_{2n}$     \\ \cline{3-8} 
-&                & Result after training &                &                &                &  & $d_{2(n-1)}^{[n-1]} \rightarrow d_{2n}^{n}$ \\ \hline
-\end{tabular}
-\end{table*}
+	\begin{table*}[t]
+		\caption{Applying DAgger on the Expert's demonstration with step size = 2}
+		\begin{tabular}{|l|l|l|l|l|l|l|l|}
+			\hline	& \multicolumn{7}{l|}{	Hartree-Fock iterations (with step size 2} \\ \hline	\multirow{10}{*}{
+				\begin{tabular}[c]{@{}l@{}}DAgger\\ iterations\end{tabular}}	 
+	&      iter          &                &  iter 1         & iter 2          & iter 3         & \ldots         & iter n         
+	\\ \cline{2-8} 	& \multirow{2}{*}{ 1} 
+	& Objective & $(d_0) \rightarrow d_2$ & $(d_0,d_2) \rightarrow d_4$ & $(d_0,d_2,d_4) \rightarrow d_6$ &  \ldots & $(d_{2i})_{i=0}^{n-1} \rightarrow d_{2n}$ \\ \cline{3-8} 
+	&                 & Result & ($d_0) \rightarrow d_2'$ & $(d_0,d_2)  \rightarrow d_4'$   & $(d_0,d_2,d_4) \rightarrow d_6'$    &  \ldots & $(d_{2i})_{i=0}^{n-1} \rightarrow d_{2n}'$          \\ \cline{2-8} 
+	& \multirow{2}{*}{ 2} & New objective         &                         & $(d_0,d_2')  \rightarrow d_4$   & $(d_0,d_2,d_4') \rightarrow d_6$     &  \ldots & $((d_{2i})_{i=0}^{n-2} ,d_{2(n-1)}')\rightarrow d_{2n}$          \\ \cline{3-8} 
+	&                 & Result &                 & $(d_0,d_2') \rightarrow d_4''$ & $(d_0,d_2,d_4') \rightarrow d_6''$   & \ldots & $((d_{2i})_{i=0}^{n-2} ,d_{2(n-1)}') \rightarrow d_{2n}''$        \\ \cline{2-8} 
+	& \multirow{2}{*}{ 3} & New objective         &                         &                          & $(d_0,d_2',d_4'')  \rightarrow d_6$    &  \ldots & $((d_{2i})_{i=0}^{n-3} ,(d_{2i}^{[i-(n-3)]})_{i=n-2}^{n-1}) \rightarrow d_{2n}$         \\ \cline{3-8} 
+	&                 & Result &                 &                 & $(d_0,d_2',d_4'')  \rightarrow d_6'''$ &  \ldots & $((d_{2i})_{i=0}^{n-3} ,(d_{2i}^{[i-(n-3)]})_{i=n-2}^{n-1})\rightarrow d_{2n}'''$      \\ \cline{2-8} 
+	& \vdots      & \vdots      &                &                &                & $\ddots$ &   \vdots \\ \cline{2-8} 
+	& \multirow{2}{*}{ n} & New objective         &                         &                          &                            &  & $(d_{2i}^{[i]})_{i=0}^{n-1} \rightarrow d_{2n}$     \\ \cline{3-8} 
+	&                & Result  &                &                &                &  & $(d_{2i}^{[i]})_{i=0}^{n-1}\rightarrow d_{2n}^{[n]}$ \\ \hline
+	\end{tabular}
+	\end{table*}
 \end{center} 
+
+
+
 \section{EXPERIMENTS}
 
-In energy minimization, we want to discover a geometry of a particular arrangement of the atoms that corresponds to global energy minimum. This geometry is called the equilibrium structure of a molecule.
+In energy minimization, we are interested in discovering a geometry of a particular arrangement of the atoms that corresponds to global energy minimum. This geometry is called the equilibrium structure of a molecule.
+
+A simple approach to this problem will be enumerating different geometries of a given molecule and calculate the corresponding energy of the molecule under a bunch of different geometries and find the minimum one.
+
+
 Hartree-Fock plays a crucial role in calculating the energy of the system under different geometries. 
 
 In the experiment, we have the dataset which is 
- a set of molecules with different geometries in a range of environments.
- We already have the energy of each configuration in the dataset, we want to evaluate the computation time of the 
+ a molecules with different geometries in a range of different environments. 
+ 
+We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady density matrix and the energy of the given molecular system under different geometries. 
+%Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
+
+% Define error
+We can in turn define the error $E$ of a density matrix as the error of density matrix and the error of energy.
+
+Once we have the error function, we can optimize the coefficient by minimizing the error.
  
  
 \subsection{Experiment Dataset}
 
-The data consists of the electronic structure of a diatomic molecules/ hydrocarbon with varying geometries in a range of environments. 
+The data consists of the electronic structure of a diatomic molecules/hydrocarbon with varying geometries in a range of environments. 
 
 % 10 different geometry
 To generate different geometries,
@@ -398,11 +451,9 @@ The environments consist of a cube, each corner of which holds a point charge. T
 
 For each pairing of a molecular configuration with an environment, we generate expectation values of each operator that appears in the Hamiltonian (total kinetic energy, interaction of the electron density with each nucleus, and total two-electron repulsion energy).
 
-
+[Need to consult with Matteus]
 % DATA SET
 Each data set consists of 10 configurations in 10 environments, corresponding to 100 calculations. Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
-
-[]
 
 
 
@@ -416,233 +467,27 @@ Each data set consists of 10 configurations in 10 environments, corresponding to
 %2 convergence rate (L1 norm with previous iteration)
 
 We split the whole dataset into two part evenly. 
-[What is the training dataset]
-[What is the testing dataset]
+We use the first ten instances to serve as the training dataset, and the reaming 10 instances as testing dataset.
 %The odd numbered instances serve as training data, on the other hand the even numbered instances serve as testing data. \\
 
 % Goal
-[GOAL]
-The goal is to train 15 Hartree-Fock with embedded parameters that best approximate 30 iterations of original Hartree-Fock.
+MENTION THE PURE LINEAR COMBINATION\\
+SHOULD ALSO MENTIONED TWO DIFFERENT EXPERT \\
+CLAIM \\ 
+ASSUMPTION \\
+MENTION THE CASE THAT MAY NEVER CONVERGE \\
+The goal is to train Hartree-Fock with linear combination policy that can  approach the steady density matrix faster than the original Hartree-Fock.
 
-After training on training dataset, we'll apply these 15 Hartree-Fock with embedded parameters on testing dataset to evaluate the performance.
 
-How  it converges
+After training, we will apply these Hartree-Fock with linear combination policy on testing dataset to evaluate the performance.
+
+How it converges
 The lower the energy the better?
 %What is convergence rate \\
 We can also plot the difference between this iteration and previous iteration to observe the converge rate.
 
-What is "etot"  and Energy\\
-
-\subsection{Experiment result}
-[CLAIM]
 
 
-\section{GENERAL FORMATTING INSTRUCTIONS}
-
-
-
-Both submitted and camera-ready versions of the paper are 8 pages,
-plus any additional pages needed for references.
-
-Papers are in 2 columns with the overall line width of 6.75~inches (41~picas). Each column is 3.25~inches wide (19.5~picas).  The space
-between the columns is .25~inches wide (1.5~picas).  The left margin is 1~inch (6~picas).  Use 10~point type with a vertical spacing of
-11~points. Times Roman is the preferred typeface throughout.
-
-Paper title is 16~point, caps/lc, bold, centered between 2~horizontal rules.  Top rule is 4~points thick and bottom rule is 1~point thick.
-Allow 1/4~inch space above and below title to rules.
-
-Author descriptions are center-justified, initial caps.  The lead
-author is to be listed first (left-most), and the Co-authors are set
-to follow.  If up to three authors, use a single row of author
-descriptions, each one center-justified, and all set side by side;
-with more authors or unusually long names or institutions, use more
-rows.  (But, do not include author names in the initial double-blind
-submission!  Instead leave a row of ``Anonymous Author'' descriptions
-as above.)
-
-
-One-half line space between paragraphs, with no indent.
-
-\section{FIRST LEVEL HEADINGS}
-
-First level headings are all caps, flush left, bold, and in point size
-12. One line space before the first level heading and 1/2~line space
-after the first level heading.
-
-\subsection{Second Level Heading}
-
-Second level headings are initial caps, flush left, bold, and in point
-size 10. One line space before the second level heading and 1/2~line
-space after the second level heading.
-
-\subsubsection{Third Level Heading}
-
-Third level headings are flush left, initial caps, bold, and in point
-size 10. One line space before the third level heading and 1/2~line
-space after the third level heading.
-
-\paragraph{Fourth Level Heading}
-
-Fourth level headings must be flush left, initial caps, bold, and
-Roman type.  One line space before the fourth level heading, and
-place the section text immediately after the heading with, no line
-break, but an 11 point horizontal space.
-
-\subsection{CITATIONS, FIGURES, REFERENCES}
-
-
-\subsubsection{Citations in Text}
-
-Citations within the text should include the author's last name and
-year, e.g., (Cheesman, 1985). References should follow any style that
-you are used to using, as long as their style is consistent throughout
-the paper.  Be sure that the sentence reads correctly if the citation
-is deleted: e.g., instead of ``As described by (Cheesman, 1985), we
-first frobulate the widgets,'' write ``As described by Cheesman
-(1985), we first frobulate the widgets.''  Be sure to avoid
-accidentally disclosing author identities through citations.
-
-\subsubsection{Footnotes}
-
-Indicate footnotes with a number\footnote{Sample of the first
-  footnote.} in the text. Use 8 point type for footnotes. Place the
-footnotes at the bottom of the column in which their markers appear,
-continuing to the next column if required. Precede the footnote
-section of a column with a 0.5 point horizontal rule 1~inch (6~picas)
-long.\footnote{Sample of the second footnote.}
-
-\subsubsection{Figures}
-
-All artwork must be centered, neat, clean, and legible.  All lines
-should be very dark for purposes of reproduction, and art work should
-not be hand-drawn.  Figures may appear at the top of a column, at the
-top of a page spanning multiple columns, inline within a column, or
-with text wrapped around them, but the figure number and caption
-always appear immediately below the figure.  Leave 2 line spaces
-between the figure and the caption. The figure caption is initial caps
-and each figure should be numbered consecutively.
-
-Make sure that the figure caption does not get separated from the
-figure. Leave extra white space at the bottom of the page rather than
-splitting the figure and figure caption.
-\begin{figure}[h]
-\vspace{.3in}
-\centerline{\fbox{This figure intentionally left non-blank}}
-\vspace{.3in}
-\caption{Sample Figure Caption}
-\end{figure}
-
-\subsubsection{Tables}
-
-All tables must be centered, neat, clean, and legible. Do not use hand-drawn tables. Table number and title always appear above the table.
-See Table~\ref{sample-table}.
-
-One line space before the table title, one line space after the table title, and one line space after the table. The table title must be
-initial caps and each table numbered consecutively.
-
-\begin{table}[h]
-\caption{Sample Table Title} \label{sample-table}
-\begin{center}
-\begin{tabular}{ll}
-{\bf PART}  &{\bf DESCRIPTION} \\
-\hline \\
-Dendrite         &Input terminal \\
-Axon             &Output terminal \\
-Soma             &Cell body (contains cell nucleus) \\
-\end{tabular}
-\end{center}
-\end{table}
-
-\section{SUPPLEMENTARY MATERIAL}
-
-If you need to include additional appendices during submission, you
-can include them in the supplementary material file.
-
-
-\newpage
-
-\section{INSTRUCTIONS FOR CAMERA-READY PAPERS}
-
-For the camera-ready paper, if you are using \LaTeX, please make sure
-that you follow these instructions.  (If you are not using \LaTeX,
-please make sure to achieve the same effect using your chosen
-typesetting package.)
-
-\begin{enumerate}
-    \item Install the package \texttt{fancyhdr.sty}. The
-    \texttt{aistats2014.sty} file will make use of it.
-    \item Begin your document with
-    \begin{flushleft}
-    \texttt{\textbackslash documentclass[twoside]\{article\}}\\
-    \texttt{\textbackslash usepackage[accepted]\{aistats2014\}}
-    \end{flushleft}
-    The \texttt{twoside} option for the class article allows the
-    package \texttt{fancyhdr.sty} to include headings for even and odd
-    numbered pages. The option \texttt{accepted} for the package
-    \texttt{aistats2014.sty} will write a copyright notice at the end of
-    the first column of the first page. This option will also print
-    headings for the paper.  For the \emph{even} pages, the title of
-    the paper will be used as heading and for \emph{odd} pages the
-    author names will be used as heading.  If the title of the paper
-    is too long or the number of authors is too large, the style will
-    print a warning message as heading. If this happens additional
-    commands can be used to place as headings shorter versions of the
-    title and the author names. This is explained in the next point.
-    \item  If you get warning messages as described above, then
-    immediately after $\texttt{\textbackslash
-    begin\{document\}}$, write
-    \begin{flushleft}
-    \texttt{\textbackslash runningtitle\{Provide here an alternative shorter version of the title of your
-    paper\}}\\
-    \texttt{\textbackslash runningauthor\{Provide here the surnames of the authors of your paper, all separated by
-    commas\}}
-    \end{flushleft}
-    The text that appears as argument in \texttt{\textbackslash
-      runningtitle} will be printed as a heading in the \emph{even}
-    pages. The text that appears as argument in \texttt{\textbackslash
-      runningauthor} will be printed as a heading in the \emph{odd}
-    pages.  If even the author surnames do not fit, it is acceptable
-    to give a subset of author names followed by ``et al.''
-
-    \item Use the file sample\_paper.tex as an example.
-
-    \item Both submitted and camera-ready versions of the paper are 8
-      pages, plus any additional pages needed for references.
-
-    \item If you need to include additional appendices,
-      you can include them in the supplementary
-      material file.
-
-    \item Please, don't change the layout given by the above
-      instructions and by the style file.
-
-\end{enumerate}
-
-\subsubsection*{Acknowledgements}
-
-Use unnumbered third level headings for the acknowledgements.  All
-acknowledgements go at the end of the paper.  Be sure to omit any
-identifying information in the initial double-blind submission!
-
-
-\subsubsection*{References}
-
-References follow the acknowledgements.  Use an unnumbered third level
-heading for the references section.  Any choice of citation style is
-acceptable as long as you are consistent.  Please use the same font
-size for references as for the body of the paper---remember that
-references do not count against your page length total.
-
-J.~Alspector, B.~Gupta, and R.~B.~Allen (1989). Performance of a
-stochastic learning microchip.  In D. S. Touretzky (ed.), {\it
-  Advances in Neural Information Processing Systems 1}, 748-760.  San
-Mateo, Calif.: Morgan Kaufmann.
-
-F.~Rosenblatt (1962). {\it Principles of Neurodynamics.} Washington,
-D.C.: Spartan Books.
-
-G.~Tesauro (1989). Neurogammon wins computer Olympiad.  {\it Neural
-  Computation} {\bf 1}(3):321-323.
 
 \begin{thebibliography}{9}
 \bibitem{Matteus}
