@@ -6,6 +6,7 @@
 \usepackage{mathrsfs}
 \usepackage[Symbol]{upgreek}
 \usepackage{mathtools}
+\usepackage{fancyref}
 
 % If your paper is accepted, change the options for the package
 % aistats2014 as follows:
@@ -120,14 +121,14 @@ through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a set
 % We also care about the sub-region energy and electron density directly
 % The goal is to calculate the properties of the molecule such as the energy and density
 
-In the area of theoretical chemistry, the main objective is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available. In all these cases, Hartree-Fock (HF) algorithm is the starting point.
+The main objective in the area of theoretical chemistry is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available, and Hartree-Fock (HF) algorithm is the starting point.
 
 % What is wave function, what is density matrix, 
-In quantum mechanics, particle can exhibit wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$ which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, the wave function is approximated by a set of basis function. According to Copenhagen interpretation, the description given by the wave function is probabilistic, thus the function should be continuous differentiable and square integrable. Previous works shows using the linear combination of Gaussian-type functions to serve as basis function is a computationally efficient choice.
+In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can approximate the wave function using a set of basis functions. The basis function should meet some requirements. According to Copenhagen interpretation, the description given by the wave function is probability amplitude; thus, the function should be continuously differentiable and square-integrable. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, approximating the the basis set by a linear combinations of Gaussian functions is more computationally efficient and more commonly used. 
 
-The more Gaussian functions per basis function the more accurate result we can attain. The larger the molecular system, the more accurate model is desired. Both will lead to the system growing exponentially large. The integrals of the these basis functions are viewed as matrices when solving the HF algorithm.
+%To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. 
 
-
+The more Gaussian functions are used in the basis set, the more accurate results we can attain. The larger the molecular system is, the more accurate model is desired. Both of these will make the system grow exponentially large.  \\
 
 % Why does Hartree-Fock work on density matrices instead of wave function
 % It's hard to describe multiple particles by wave function
@@ -139,19 +140,31 @@ The more Gaussian functions per basis function the more accurate result we can a
 % we choose each basis element to be a linear combination of  Gaussian function (because of efficiency)
 %To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. Basis functions are best described using Slater functions/exponent. But because of the computationally difficulty of calculating the integral, approximating the the basis set by a linear combinations of Gaussian functions is more computation efficient and more commonly used. 
 
+ CONNECTION?? \\
 
-The Schrödinger equation is the foundation equation of quantum mechanics, in which, given the geometry of a system, the solution gives the wave functions and also the energy of a system. 
-A time invariant steady state Schrödinger equation has the following form
+The Schrödinger equation is the foundation equation of quantum mechanics, in which, given the geometry and the environment of a system, the solution gives the wave functions and the energy of the system. 
+The time invariant Schrödinger equation can be represented as:
 \[
 				\hat{H}\Psi = E\Psi
 \]
-The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function, $\Psi$, providing the observed energy, E. The Hamiltonian operator is given by the sum of two operators: $\hat{H} = \hat{T} + \hat{V}$,  in which $\hat{T}$ is the kinetic energy operator and $\hat{V}$ is the potential energy operator.\\
+The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function $\Psi$. This provides the observed energy, E. The Hamiltonian operator is given by the sum of two operators as : $\hat{H} = \hat{T} + \hat{V}$,  where $\hat{T}$ and $\hat{V}$ are the kinetic energy operator and the potential energy operator respectively.
+
+ CONNECTION?? \\
+%The integrals of the these basis functions are viewed as matrices when solving the HF algorithm.
 
 
-Hartree-Fock (HF) gives us an approximation for a solution to the time invariance Schrödinger equation. In HF the wave-function is described with a density matrix, which is a probability matrix of the mixed states within the system. Although the wave function contains more information regarding the particle or system, it is really difficult to construct it for a many-body system.  
-Approximating wave function by a density matrix will make the whole computation simpler and enable us to the approximated Schrödinger equation by Hartree-Fock method. \\  
+% Some intuition about these matrices
+% Run Hartree to get the eigen states of h2. 
+% show the first few eigen states (Schrödinger) of the h2 molecules and describe how the density matrices correspond to that plot (picture) to make things more concrete 
 
-The general equation to formulate a density matrix is given by
+Hartree-Fock (HF) is an approximation to the time invariant Schrödinger equation. In HF, the wave-function is described with a density matrix, which is a probability matrix of the mixed states within the system. 
+
+%Although the wave function contains more information regarding the particle or system, it is really difficult to construct it for a many-body system. 
+Since it is really difficult to construct the wave function for a many-body system, approximating wave function by a density matrix will make the whole computation simpler and enable us to solve Schrödinger equation by Hartree-Fock method. \\  
+
+
+%The general equation to formulate a density matrix is given by
+The density matrix is formulated by
 \[
 \rho = \sum\hat{p_i}\ket{\psi_i}\bra{\psi_i}
 \]
@@ -160,17 +173,14 @@ The general equation to formulate a density matrix is given by
 This is an integral to find the probability of the different states, in which $\hat{p}$ is the density operator. 
 %Another approximation of Hartree-Fock is the usage of Linear Combination of Atomic Orbitals (LCAO) in which a molecular orbital is described by a sum of atomic orbitals. $\psi(r) = \sum{c_1\chi_i(r)}$
 
-With density matrix,
-a modification of the Hamiltonian is approximated by Fock operator which has the following form:
+With density matrix, the Hamiltonian can be approximated by Fock operator which has the following form:
 \[
 \hat{F}(\rho) = \hat{h_1} + \hat{G}(\rho)
 \]
-where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation. $\rho$ is the density matrix.
-There are more develop methods based on HF that use a different models for the $\hat{G}$ operator to approximate more accurate electron correlation. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. \\ 
+where $\hat{h_1}$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation. $\rho$ is the density matrix. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator when solving the the Hartree-Fock algorithm. %There are more develop methods based on HF that use a different models for the $\hat{G}$ operator to approximate more accurate electron correlation.  \\ 
 
 
-Once we have the Fock operator, the time independent Schrödinger equation
-can be turn into Roothaan equation which can get the final density matrix iteratively.
+Once we have the Fock operator, the time invariant Schrödinger equation will turn into Roothaan equation which can approach the final density matrix iteratively.
 The Roothaan equation is shown below
 \[
 FC = SC\epsilon
@@ -180,9 +190,15 @@ FC = SC\epsilon
 
 % We might not need to talk about how we get fock operator other than that is an function of the density matrix (Put it into Appendix) [too much details and distract]
 
-Where S is the overlap matrix which will reduce to the identity matrix if we have a orthonormalised basis set. $\epsilon$ is a diagonal matrix of the orbital energies. This is an eigenvalue equation with S become identity matrix. By preforming a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. However, since F depends on its own solution, this equation has to be done iteratively. The heart of the algorithm then become solving for the eigenvalues in the Fock determinant.\\
+Where F is the Fock operator and S is the overlap matrix which will reduce to the identity matrix if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. C is a matrix of coefficients can be used to update the density matrix $\rho$ .
 
+%This is an eigenvalue equation when S become identity matrix. 
+By performing a transformation of the basis to get to an orthogonal basis will make S vanish leading to eigenvalue equation problem. 
 
+However, since F and $\rho$ are mutual dependent on its own, this equation only can be solved iteratively. 
+%The heart of the algorithm then become solving for the eigenvalues in the Fock determinant.\\
+
+In other words, we need to have the density matrix to get the Fock operator. To solve this equation, we start with an arbitrary guess density and solve for the Fock operator. We will then get the new density which we again will use it to solve the new Fock operator. We will keep doing this process until meet the termination criteria. In large molecular system, the process is extremely time consuming and each iteration may take hours or even days of computation thus become infeasible. As a result, how to speed up the Hartree-Fock process becomes an critical issue in quantum chemistry.
 
 % Make claer what  the input and oput are
 % single electron density matrix is the input and output 
@@ -203,34 +219,27 @@ Where S is the overlap matrix which will reduce to the identity matrix if we hav
  }
  \caption{Hartree-Fock algorithm}
 \end{algorithm}
- 
 
-% Some intuition about these matrices
-% Run Hartree to get the eigen states of h2. 
-% show the first few eigen states (Schrödinger) of the h2 molecules and describe how the density matrices correspond to that plot (picture) to make things more concrete 
-
-
-In other words, we need to have the Fock-orbitals to get the Fock operator. To solve this equation, we start with an arbitrary guess density and solve for the Fock operator. We will then get the new density which we again will use it to solve the new Fock operator. We will keep doing this process until meet the termination criteria. In large molecular system, the process is tedious and each iteration may take hours or even days of computation thus become infeasible.
 
 \subsection{Speeding up Hartree-Fock as an imitation learning problem}
 
 
-Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a linear combination of the density matrices from previous iterations to better approach the final density matrix in the next iteration.\cite{Pulay1980} 
+Accelerating Hartree-Fock convergence has previously been explored in the matter of creating a linear combination of the density matrices generated from previous iterations to serve as a better input to the next iteration.\cite{Pulay1980} 
 
 However, the issue of finding the best linear combination that may lead to the final density matrix faster still leaves room for further discussion.
 
 In this paper,
-we want to explore the linear combination by imitation learning that can speed this iterative algorithm. This could perhaps also lead to finding a good initial guess density, which may speed this method significantly. 
+we want to explore the linear combination that can speed up this iterative algorithm by imitation learning. This could perhaps also lead to finding a good initial guess density, which may speed this method significantly. 
 
 
 %How to map the Hartree-Fock to imitation learning problem.
 As we mentioned before,  because of the Fock operator can only be calculated iteratively, Hartree-Fock approaches the steady density matrix iteration by iteration.
 
-Given an initial guessed density matrix $d_0$ as an input for solving Fock operator, after first iteration we will get the a new output density matrix $d_1$. In the following iteration, the previous output density matrix will then become the input to the next iteration. Thus, using $d_1$ as a input in second iteration, we can get the other output density matrix $d_2$. 
+Given an initial guessed density matrix $d_0$ as an input for solving Fock operator, after first iteration we will have the a new output density matrix $d_1$. In the following iterations, the previous output density matrix will then become the input to the next iteration. Thus, using $d_1$ as an input in second iteration, we can get the next output density matrix $d_2$. 
 
-We will keep doing this procedure until the difference between the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
+We will keep doing this procedure until the difference of the energy given by the input density matrix in the iteration $n$ $d_{n-1}$  and the output density matrix $d_n$ is less than a threshold, say $10^{-6}$. 
 
-This repeating process is quite tedious and each iteration may take hours or even days. If we can make each iteration more productive, we can achieve the same goal with less iterations thus make the whole process faster.
+This repeating process is quite tedious. If we can make each iteration more productive, we can achieve the same goal with less iterations thus make the whole process faster.
 
 If we think the whole n iterations of the Hartree-Fock process as a sequence, beginning from initial density matrix $d_0$ through n-1 intermediate density matrices $d_1$,  $d_2$,  $\ldots$ ,$d_{n-1}$ and finally ends at steady converged output $d_{n}$, we indeed don't care about the intermediate density matrices. What the only thing we want to know is the final steady density matrix. If we can get the final steady density matrices with less iterations or even one iteration of computation that would greatly shorten the computation time and thus speed up the whole process. 
 
@@ -278,7 +287,7 @@ a dataset of trajectories $D$ and train a policy $\hat{\pi_2}$ that best mimics 
 
 Then in iteration $i$, we can sample the state induced by $\hat{\pi_i}$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset $D$. We then train the next policy $\hat{\pi_{i+1}}$, the policy that best mimics the expert on the whole dataset $D$. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration $n$.
 
-In other words, Dagger proceeds by aggregating a dataset at each iteration under the current policy then trains the next policy under the all collected datasets. 
+In other words, DAgger proceeds by aggregating a dataset at each iteration under the current policy then trains the next policy under the all collected datasets. 
 
 
 %In general, there are two different strategies to learn the policy. Either we can try to learn a single policy that imitate the expert's demonstration under all circumstances, or we train multiple policies that approximate expert's demonstration in which each policy best mimic expert's demonstration under different scenario. It's obvious that using multiple policies gives us more flexibility, thus in the following section, we would like to introduce how we train a sequence of Hartree-Fock with embedded parameters, in which each set of parameter can best speed up a correspondent iteration.
@@ -312,7 +321,7 @@ In other words, Dagger proceeds by aggregating a dataset at each iteration under
 
 % Connecting the symbol in algorithm to our scenario
 
-%Dagger is a powerful algorithm that can train a model which performs well in its the induced state.
+%DAgger is a powerful algorithm that can train a model which performs well in its the induced state.
 
 \section{LEARNING EMBEDDED PARAMETERS}
 
@@ -325,24 +334,23 @@ Our goal is to have the Hartree-Fock with linear combination achieve the same go
 % D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
 % 
 
-With a faster trajectories serve as the expert's demonstration, we would like to learn a policy that for each single iteration of Hartree-Fock it has a set of coefficients that makes the iteration more productive.   
+With a faster trajectories serve as the expert's demonstration, we would like to learn a policy that for each single iteration of Hartree-Fock it forms the input of next iteration from the linear combination of previous density matrices which may make the iteration more productive.   
 
-In our case, $\Pi$ is the policy class consist of all the Hartree-Fock with linear combination. $\pi^*$ represents the expert's policy that generates the expert's demonstration. However, we don't need to have an explicit expert's policy, instead we can build up the the expert's demonstration with any Hartree-Fock trajectory from scratch. A policy here is the sets of coefficients which represents the linear combination to apply in each Hartree-Fock iteration. 
+Refer to the DAgger algorithm, in our case, $\Pi$ is the policy class consist of all the Hartree-Fock with linear combination. $\pi^*$ represents the expert's policy that generates the expert's demonstration. However, we don't need to have an explicit expert's policy, instead we can build up the the expert's demonstration with any Hartree-Fock trajectory from scratch. A policy here consist of sets of coefficients which represents the linear combination to apply in each Hartree-Fock iteration. 
 
 
 % ???????????
 %When applying DAgger to Hartree-Fock iteration $i$, we initialize $\pi_{(1)}$ equal to $\pi^*$. Then in during the DAgger iterations, we can generate a sequence of policies $\hat{\pi}_{(2)} , \hat{\pi}_{(3)}, \ldots, \hat{\pi}_{(i+1)}$, in which the output of previous policy will become the input of next policy.
 
 
-The main idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\hat{\pi}_{(i)}$ in Hartree-Fock iteration $i$,
-we will consider the state generated from the previous policy $\hat{\pi}_{(i-1)}$. More specifically, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ can in turn be used to train $\hat{c}_{(i+1,j+1)}$
+The main idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\hat{\pi}_{(i)}$ in DAgger iteration $i-1$,
+we will consider the state generated from the previous policy $\hat{\pi}_{(i-1)}$. More specifically, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ after Hartree-Fock can in turn be used to train $\hat{c}_{(i+1,j+1)}$
 
 
 
-We can visualize the whole process as a two-dimension table. 
-If we use a trajectory which has a step size of two of the original trajectory to serve as the expert's demonstration, we can refer to table 1 for the training procedure.
+We can visualize the whole process as a two-dimension table. If we use a trajectory which has a step size of two of the original trajectory to serve as the expert's demonstration, we can refer to table 1 for the training procedure.
 %,$d_0 \rightarrow d_2 \rightarrow  d_4 \rightarrow  \ldots \rightarrow  d_{2n}$. 
-In the table, each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger.
+In the table, each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger. We use $(d_x, d_y)$ to represents the linear combination of the density matrices within the parenthesis, and  $\rightarrow$ represents the Hartree-Fock process. We denote the output of the density matrix from DAgger iteration $m$ as $d_x^{[m]}$. m can also be denoted as the same amount of the prime mark. For example: $d_x^{3} = d_x^{'''}$.
 
 In the first iteration of Hartree-Fock, we only has one DAgger iteration, since there is no previous Hartree-Fock iteration. Our only objective here is to find a coefficient that best approaches the objective density matrix $d_2$ after this Hartree-Fock iteration. The objective can be denoted as $d_0 \rightarrow d_2$. 
 
@@ -363,7 +371,7 @@ Next step is to train a policy that best fit the whole aggregated dataset D. Thu
 
 This is the key to compensating the error made by the previous iteration. It will keep aggregating the output of the previous iterations.
 
-%In the Hartree-Fock iteration $i$,  we'll apply DAgger algorithm to train a policy that best fit that iteration. Thus in Dagger iteration j, $j<i$, we'll first sample the trajectories using $\hat{\pi}_{i-1,j}$. That is the result after training in Hartree-Fock iteration $i-1$, Dagger iteration $j-1$. 
+%In the Hartree-Fock iteration $i$,  we'll apply DAgger algorithm to train a policy that best fit that iteration. Thus in DAgger iteration j, $j<i$, we'll first sample the trajectories using $\hat{\pi}_{i-1,j}$. That is the result after training in Hartree-Fock iteration $i-1$, DAgger iteration $j-1$. 
 
 
 % Goeff: need a new section
@@ -409,28 +417,19 @@ Put these $n$ set of coefficient $\hat{c}_{(1,1)}, \hat{c}_{(2,2)}, \ldots  \hat
 
 \section{EXPERIMENTS}
 
-In energy minimization, we are interested in discovering a geometry of a particular arrangement of the atoms that corresponds to global energy minimum. This geometry is called the equilibrium structure of a molecule.
+In energy minimization, we are interested in discovering a geometry with a particular arrangement of the atoms that corresponds to global energy minimum. This geometry is called the equilibrium structure of a molecule.
 
-A simple approach to this problem will be enumerating different geometries of a given molecule and calculate the corresponding energy of the molecule under a bunch of different geometries and find the minimum one.
+A simple approach to this problem will be enumerating different geometries of a given molecule and calculate the energy of the system by Hartree-Fock.
 
+To evaluate the performance of different policies,
+we will test the policy on a dataset which is a molecules with different geometries in a range of different environments.
 
-Hartree-Fock plays a crucial role in calculating the energy of the system under different geometries. 
-
-In the experiment, we have the dataset which is 
- a molecules with different geometries in a range of different environments. 
- 
-We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady density matrix and the energy of the given molecular system under different geometries. 
-%Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
-
-% Define error
-We can in turn define the error $E$ of a density matrix as the error of density matrix and the error of energy.
-
-Once we have the error function, we can optimize the coefficient by minimizing the error.
  
  
 \subsection{Experiment Dataset}
 
-The data consists of the electronic structure of a diatomic molecules/hydrocarbon with varying geometries in a range of environments. 
+
+The data consist of the electronic structure of a diatomic molecules/hydrocarbon with varying geometries in a range of environments. 
 
 % 10 different geometry
 To generate different geometries,
@@ -456,48 +455,99 @@ For each pairing of a molecular configuration with an environment, we generate e
 Each data set consists of 10 configurations in 10 environments, corresponding to 100 calculations. Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
 
 
+We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady density matrix and the energy of the given molecular system under different geometries. 
+%Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
+
+% Define error
+We can in turn define the error $E$ of a density matrix as the error of density matrix and the error of energy.
+
+Once we have the error function, we can optimize the coefficient by minimizing the error.
 
 % 30 iterations
 
 \subsection{Experiment settings}
 
 
+%ASSUMPTION:
+%Assu Coefficient (linear combination) may be similar for the same molecule \\
+Although the same molecule under different geometries and different environments will have different equilibrium structure, we assume the policy that speeds up the Hartree-Fock for a certain molecule will be very similar. 
+
+As a result, for a molecule we can train the policy under a set of different geometries and environments and test it under a different set of instances.
+
+After the training, we will apply these Hartree-Fock with linear combination policies on testing dataset to evaluate the performance.
+
+
 %We generate a few hundred molecules dataset and divide these between a training and a test data set.
 %1 etot 
 %2 convergence rate (L1 norm with previous iteration)
-
-We split the whole dataset into two part evenly. 
-We use the first ten instances to serve as the training dataset, and the reaming 10 instances as testing dataset.
+There are 20 different geometries and 3 different environments.
+We split the whole dataset into two parts evenly. 
+We use the first ten instances to serve as the training dataset, and the reaming ten instances as testing dataset.
 %The odd numbered instances serve as training data, on the other hand the even numbered instances serve as testing data. \\
 
+\subsection{Approach}
 % Goal
-MENTION THE PURE LINEAR COMBINATION\\
-SHOULD ALSO MENTIONED TWO DIFFERENT EXPERT \\
-ASSUMPTION \\
-MENTION THE CASE THAT MAY NEVER CONVERGE \\
-The goal is to train Hartree-Fock with linear combination policy that can  approach the steady density matrix faster than the original Hartree-Fock.
+The goal is to train Hartree-Fock with linear combination policy that can reach the steady density matrix faster than the original Hartree-Fock.
 
 
-After training, we will apply these Hartree-Fock with linear combination policy on testing dataset to evaluate the performance.
+%MENTION THE PURE LINEAR COMBINATION
+One naive approach to build a good policy is always using all the density matrices we have to generate a linear combination that best approaches the final steady density matrix after one Hartree-Fock iteration.  For example, from guess density matrix $d_0$ we will find the best coefficient that makes the output best approaches the final objective. However, we may get some error thus the result of the first iteration is $d_1$.  In the next iteration, again we will try to find the linear combination of the $(d_0, d_1)$ that best approaches the final density matrix. we can keep doing this procedure until the output of the Hartree-Fock reaches the final steady density matrix.
+Because we already know the objective, and in each iteration we aim for the final objective directly, we can get a trajectory that reaches final density matrix much faster then original process. And also we will learn a policy from it. Let's call it the "Pure Linear Combination" policy.
 
-How it converges
-The lower the energy the better?
+%SHOULD ALSO MENTIONED TWO DIFFERENT EXPERT \\
+However, though we already aim for the final objective in each iteration, we still can try to build up a faster trajectory from it and possibly train the other policy which is faster than the original one.
+
+In the experiment, we build up two different expert's trajectories. 
+One is the trajectory that has a step size of 2 of the original trajectory. The other one is the perfect trajectory which always return the final steady matrix in one iteration.
+
+% HOW TO EVALUATE
+
+%MENTION THE CASE THAT MAY NEVER CONVERGE \\
+When iterations of Hartree-Fock converge, we can get the final steady density matrix and also the energy of the system. However, the process does not always lead to convergence. Under some strong electric field, the process may keep running and never reach convergence.
+
+ In the experiment, we will also examine the robustness of different policies.
+
+
 %What is convergence rate \\
-We can also plot the difference between this iteration and previous iteration to observe the converge rate.
+We can also plot the difference between this iteration and previous iteration to examine the rate of convergence.
 
+
+%CLAIM \\ 
+DAgger tries to learn a new policy by imitating the expert's demonstration. Since the policy space of the DAgger and also the Pure Linear Combination are the same, the result should be at least equal or be better to the Pure Linear Combination trajectory. 
+ 
+Considering DAgger trains on the dataset that aggregates new dataset iteration by iteration. As the dataset growing, it adds more diversity to the dataset and may lead to a more robust policy.
 
 \subsection{Experiment result}
 
-CLAIM \\ 
+%%%  
+
+We can evaluate the performance of each policy in terms of the error and robustness. 
+
+Figure \ref{fig:training} shows the error of each policy on training dataset for 12 iterations. The baseline is the policy that always use the average of the last two density matrices to serve as the input to the next iteration.  We can observe that all the policies seems to  converge within 10 iterations except the baseline fluctuates. The pure linear combination got the lowest error since it always aim for the final objective. On the other hand, DAgger keep aggregating datasets thus has a more diverse training data. Both the DAgger with different experts have similar performance in the first 6 iterations, and fall behinds pure linear combination after iteration 7. 
+
+Figure \ref{fig:testing} is the result  on the testing dataset.
+The baseline again fluctuates while all the other policies coverages still converges within 12 iteration. 
+Pure linear combination and DAgger got pretty similar error after 12 iterations. However, the performance of linear combination fluctuates during iteration 5 - 10 while both Dagger with different experts have pretty steady decreasing trending in all 12 iteration. Dagger with the expert that has step size of 2 got a smoother curve than other policies.
+
+
+
 \begin{figure}[h!]
   \caption{Error on training dataset}
+	\label{fig:training}
     \includegraphics[width=220px]{DAggerResult_pen_m1-10_env3.png}
 \end{figure}
 
 \begin{figure}[h!]
+
   \caption{Error on testing dataset}
+  \label{fig:testing}
     \includegraphics[width=220px]{DAggerResult.png}
 \end{figure}
+
+
+\section{CONCLUSION}
+
+Although DAgger doesn't help to gain lower error than the pure linear combination, it does train a more robust policy which has a smooth and steady decreasing trend. It is possible that because the pure linear combination and the DAgger have the same policy spac, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecule or on the case which is hard to converge.
 
 
 \begin{thebibliography}{9}
