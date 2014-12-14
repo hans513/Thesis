@@ -36,14 +36,16 @@
 
 \twocolumn[
 
-\aistatstitle{Instructions for paper submissions to AISTATS 2014}
+\aistatstitle{Speeding up Hartree-Fock by Imitation Learning}
+%title{Speeding up Hartree-Fock by Imitation Learning}
 
-\aistatsauthor{ Anonymous Author 1 \And Anonymous Author 2 \And Anonymous Author 3 }
+%\aistatsauthor{ Anonymous Author 1 \And Anonymous Author 2 \And Anonymous Author 3 }
 
-\aistatsaddress{ Unknown Institution 1 \And Unknown Institution 2 \And Unknown Institution 3 } ]
+%\aistatsaddress{ Unknown Institution 1 \And Unknown Institution 2 \And Unknown Institution 3 } 
+]
 
 \begin{abstract}
-  The Abstract paragraph.
+In quantum mechanics, Hartree-Fock is an important method for approximating the electron distribution and energy of a given molecular system. However, Hartree-Fock is excessively time-consuming or even infeasible when applied to large molecules. Besides, depending on input, it is not always guaranteed to converge to a solution. Speeding up Hartree-Fock and making it more robust would thus enable scientists to deal with more complicated molecules and study chemical reactions with larger systems. In the present work, we attempt to improve on Hartree-Fock by imitation learning: from the trajectory produced by the original Hartree-Fock, we extract an (expensive to evaluate) expert policy which converges to a solution quickly and reliably, and attempt to imitate this policy with a less-expensive policy class.  To solve the imitation learning problem, we apply the the Dataset Aggregation algorithm (DAgger), which learns a policy that is guaranteed to perform well under its induced distribution of states.
 \end{abstract}
 
 \section{INTRODUCTION}
@@ -411,9 +413,10 @@ Put these $n$ set of coefficient $\hat{c}_{(1,1)}, \hat{c}_{(2,2)}, \ldots  \hat
 
 \begin{center} 
 	\begin{table*}[t]
+	\footnotesize\setlength{\tabcolsep}{2.5pt}
 		\caption{Applying DAgger on the Expert's demonstration with step size = 2}
 		\begin{tabular}{|l|l|l|l|l|l|l|l|}
-			\hline	& \multicolumn{7}{l|}{	Hartree-Fock iterations (with step size 2} \\ \hline	\multirow{10}{*}{
+			\hline	& \multicolumn{7}{l|}{	Hartree-Fock iterations (with step size = 2)} \\ \hline	\multirow{10}{*}{
 				\begin{tabular}[c]{@{}l@{}}DAgger\\ iterations\end{tabular}}	 
 	&      iter          &                &  iter 1         & iter 2          & iter 3         & \ldots         & iter x = $\frac{n}{2}$         
 	\\ \cline{2-8} 	& \multirow{2}{*}{ 1} 
@@ -462,9 +465,8 @@ The environments consist of a cube, each corner of which holds a point charge. T
 
 For each pairing of a molecular configuration with an environment, we generate expectation values of each operator that appears in the Hamiltonian (total kinetic energy, interaction of the electron density with each nucleus, and total two-electron repulsion energy).
 
-[Need to consult with Matteus]
 % DATA SET
-Each data set consists of 10 configurations in 10 environments, corresponding to 100 instances. Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
+Each dataset consists of 10 configurations in 3 environments, corresponding to 30 instances. %Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
 
 
 We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady density matrix and the energy of the given molecular system under different geometries. 
