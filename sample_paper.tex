@@ -334,6 +334,7 @@ In other words, DAgger proceeds by aggregating a dataset at each iteration under
  \caption{DAgger algorithms}
 \end{algorithm}
 
+
 % Connecting the symbol in algorithm to our scenario
 
 %DAgger is a powerful algorithm that can train a model which performs well in its the induced state.
@@ -447,18 +448,22 @@ Under different electric filed, the equilibrium structure will also be different
  
 \subsection{Experiment Dataset}
 
-The data consist of the electronic structure of a diatomic molecules/hydrocarbon with varying geometries in a range of environments. 
+The data consist of electronic structure of varying 3-fluoro-3-methyl-1-butene geometries in a range of environments, the structure of the molecule is shown in figure \cite{fig:molecule}. The geometries are samples got from trajectories when simulating a thermal ensemble on the molecule. This will give a good and realistic alteration of the geometry, in which the bond length, bond angle and dihedral angle are all distorted. 
 
-% 10 different geometry
-To generate different geometries,
-a random number is added to each value in the bond length, bond angle and dihedral angle, using a uniform random distribution with a width of $\pm$02$\AA$ for bond lengths,  $\pm$10$^{\circ}$ for bond angles, and free rotation for dihedral angles. 
+\begin{figure}[h!]
 
-The random variable is chosen to span the full range for the internal rotation angle. The environment perturbs the electronic structure of the fragment in a manner that explores the types of perturbations that will be present in large molecules. 
+  \caption{3-fluoro-3-methyl-1-butene molecule}
+  \label{fig:molecule}
+    \centerline{\includegraphics[width=80px]{3-fluoro-3-methyl-1-butene.png}}
+\end{figure}
+
+
+%Environment
+Two different models of environments are applied, one with a grid of point charges and one with electric fields in X Y and Z direction. The point charge model is similar to the ChelpG model\cite{ChelpG} where random point charges are placed around the molecule at a certain distance. Here we set the number of point charges to 100.
+ 
 
 %This includes perturbations from external electrostatic potentials, due to other portions of the molecule or from solvent, and inductive effects from acceptors and donors. 
 
-%Environment
-The environments consist of a cube, each corner of which holds a point charge. The length of each side of the cube is 12$\AA$  for methane and ethane and 14$\AA$  for propane and butane, with the molecule placed at its center. 
 
 % Point charges
 %The magnitudes of the point charges are randomly generated using a uniform distribution between -25 and 25 amu, chosen to induce variations in the Mulliken charges on the C and H in methane and ethane that are similar to the charges induced on the methyl group in CF3CH3 (~0.2 amu).  
@@ -467,8 +472,7 @@ The environments consist of a cube, each corner of which holds a point charge. T
 For each pairing of a molecular configuration with an environment, we generate expectation values of each operator that appears in the Hamiltonian (total kinetic energy, interaction of the electron density with each nucleus, and total two-electron repulsion energy).
 
 % DATA SET
-Each dataset consists of 10 configurations in 3 environments, corresponding to 30 instances. %Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
-
+Initially the model was trained on the data set which has point charges as envirnoment. This data set has 20 configurations each in 11 different environment (1 with no environment + 10 environments). The second data set included the fields as environments, here there are the same 20 configurations with 4 enviroments(1 with no environment + 3 fields for X, Y and Z). 
 
 We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady density matrix and the energy of the given molecular system under different geometries. 
 %Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
@@ -544,19 +548,19 @@ The baseline again fluctuates while all the other policies coverages still conve
 Pure linear combination and DAgger got pretty similar error after 12 iterations. However, the performance of linear combination fluctuates during iteration 5 - 10 while both Dagger with different experts have pretty steady decreasing trending in all 12 iteration. Dagger with the expert that has step size of 2 got a smoother curve than other policies.
 
 
-
-\begin{figure}[h!]
-  \caption{Error on training dataset}
-	\label{fig:training}
-    \includegraphics[width=220px]{Dagger_beta05_training.png}
-\end{figure}
-
-\begin{figure}[h!]
-
-  \caption{Error on testing dataset}
-  \label{fig:testing}
-    \includegraphics[width=220px]{Dagger_beta05_testing.png}
-\end{figure}
+%
+%\begin{figure}[h!]
+%  \caption{Error on training dataset}
+%	\label{fig:training}
+%    \includegraphics[width=220px]{Dagger_beta05_training.png}
+%\end{figure}
+%
+%\begin{figure}[h!]
+%
+%  \caption{Error on testing dataset}
+%  \label{fig:testing}
+%    \includegraphics[width=220px]{Dagger_beta05_testing.png}
+%\end{figure}
 
 
 \section{CONCLUSION}
@@ -587,7 +591,7 @@ Conference on Artificial Intelligence and Statistics (AISTATS),
 2010.
 
   \bibitem{Pulay1980}
-   Péter Pulay,
+   P\'{e}ter Pulay,
   \emph{Convergence acceleration of iterative sequences. The case of SCF iteration.} Chem. Phys. Lett. 73, 393 (1980).
 
 \end{thebibliography}
