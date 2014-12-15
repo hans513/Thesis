@@ -45,7 +45,7 @@
 ]
 
 \begin{abstract}
-In quantum mechanics, Hartree-Fock is an important method for approximating the electron distribution and energy of a given molecular system. However, Hartree-Fock is excessively time-consuming or even infeasible when applied to large molecules. Besides, depending on input, it is not always guaranteed to converge to a solution. Speeding up Hartree-Fock and making it more robust would thus enable scientists to deal with more complicated molecules and study chemical reactions with larger systems. In the present work, we attempt to improve on Hartree-Fock by imitation learning: from the trajectory produced by the original Hartree-Fock, we extract an (expensive to evaluate) expert policy which converges to a solution quickly and reliably, and attempt to imitate this policy with a less-expensive policy class.  To solve the imitation learning problem, we apply the the Dataset Aggregation algorithm (DAgger), which learns a policy that is guaranteed to perform well under its induced distribution of states.
+In quantum mechanics, Hartree-Fock is an important method for approximating the electron distribution and energy of a given molecular system. However, Hartree-Fock is excessively time-consuming or even infeasible when applied to large molecules. Besides, depending on input, it is not always guaranteed to converge to a solution. Speeding up Hartree-Fock and making it more robust would thus enable scientists to deal with more complicated molecules and study chemical reactions with larger systems. In the present work, we attempt to improve on Hartree-Fock by imitation learning: from the trajectory produced by the original Hartree-Fock, we extract an (expensive to evaluate) expert policy which converges to a solution quickly and reliably, and attempt to imitate this policy with a less-expensive policy class.  To solve the imitation learning problem, we apply the Dataset Aggregation algorithm (DAgger), which learns a policy that is guaranteed to perform well under its induced distribution of states.
 \end{abstract}
 
 \section{INTRODUCTION}
@@ -94,19 +94,19 @@ In particular, we would like to make single iteration of Hartree-Fock achieve as
 % How to do that? (Imitation learning)
 This idea can be realized through imitation learning, a paradigm also called learning from demonstration that is designated to learn a policy from imitating an expert's demonstrations so as to become capable of performing the same tasks. 
 
-To achieve this goal, we can generate an illustrative sequence from the original Hartree-Fock sequence as the expert's demonstrations. Then, we apply imitation learning to train a policy that mimics the demonstration. 
+To achieve this goal, we can generate an illustrative trajectory from the other Hartree-Fock trajectory as the expert's demonstrations. Then, we apply imitation learning to train a policy that mimics the demonstration. 
 
 %[ No Embedded parameter] 
 %By imitation learning technique, we can make Hartree-Fock with embedded parameters learns from the demonstrations,  which finally enables it to gain more progress in one single iteration.
 
 
 % Problem encountered   %%%%%
-However, naive imitation learning may yield poor performance in practice and also theory.  Since the learner's prediction and action affect future observations and states during the execution of the learned policy. It obviously violates the common i.i.d. assumption made in most statistical learning approaches. \cite{Ross}.
+However, naive imitation learning may yield poor performance in practice and also theory.  Since the learner's prediction and action affect future observations and states during the execution of the learned policy, it obviously violates the common i.i.d. assumption made in most statistical learning approaches. \cite{Ross}.
 
 
 
 % The recipe (DAgger)
-Fortunately, the dataset aggregation algorithm (DAgger), proposed by Ross et al., \cite{DAgger}, can learn a stationary deterministic policy guaranteed to perform well under its induced distribution of states. This in turn serves as a remedy to the poor performance in imitation learning. Besdies, DAgger also has been proven to have stable performance and fast learning rate. \cite{DAggerCompare}
+Fortunately, the dataset aggregation algorithm (DAgger), proposed by Ross et al., \cite{DAgger}, can learn a stationary deterministic policy guaranteed to perform well under its induced distribution of states. This in turn serves as a remedy to the poor performance in naive imitation learning. Besdies, DAgger also has been proven to have stable performance and fast learning rate. \cite{DAggerCompare}
 
 Based on these results, we introduce the idea of using imitation learning to speed up the Hartree-Fock process in the present study. By extracting an illustrative trajectory from original Hartree-Fock process
 through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a set of linear combinations that can perform well under the induced distribution of states and yield more progress in each iteration as well. 
@@ -126,10 +126,10 @@ through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a set
 The main objective in the area of theoretical chemistry is to find a method that can calculate the electronic structure of any given molecular system. Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. Algorithms with sufficient accuracy are now available, and Hartree-Fock (HF) algorithm is the starting point.
 
 % What is wave function, what is density matrix, 
-In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can approximate the wave function using a set of basis functions. The basis function should meet some requirements. According to Copenhagen interpretation, the description given by the wave function is probability amplitude; thus, the function should be continuously differentiable and square-integrable. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, approximating the the basis set by a linear combinations of Gaussian functions is more computationally efficient and more commonly used. 
+In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can approximate the wave function using a set of basis functions. The basis function should meet some requirements. According to Copenhagen interpretation, the description given by the wave function is probability amplitude; thus, the function should be continuously differentiable. And also the square of the modulus of the amplitude represents the probability density. Correspondingly, the square integral should be 1. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, approximating the the basis set by a linear combinations of Gaussian functions is more computationally efficient and more commonly used. 
 
 %To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. 
-However, The larger the molecular system is, the more accurate model is desired. The more Gaussian functions are used in the basis set, the more accurate results we can attain. Both of these will make the system grow exponentially large. Consequently, speeding up the whole process is a very critical issue. \\
+Nevertheless, The larger the molecular system is, the more accurate model is desired. The more Gaussian functions are used in the basis set, the more accurate results we can attain. Both of these will make the system grow exponentially large. Consequently, speeding up the whole process is a very critical issue. \\
 
 % Why does Hartree-Fock work on density matrices instead of wave function
 % It's hard to describe multiple particles by wave function
@@ -202,7 +202,7 @@ By performing a transformation of the basis to get an orthogonal basis will make
 
 However, since F and $\rho$ are mutual dependent, this equation only can be solved iteratively. 
 
-More specifically, to solve this equation, we start with an arbitrary guess density $\rho_0$ and construct the Fock operator. After we have the Fock operator, we can solve for C by Roothann equation and update the density matrix to $\rho_1$. We will then use the density matrix $\rho_1$ to construct the next Fock operator. The process will be repeated until it meets the termination criteria. A description to the whole process is give by Algorithm \ref{alg:hf}.
+More specifically, to solve this equation, we start with an arbitrary guess density $\rho_0$ and construct the Fock operator. After we have the Fock operator, we can solve for C by Roothann equation and update the density matrix to $\rho_1$. We will then use the density matrix $\rho_1$ to construct the next Fock operator. The process will be repeated until it meets the termination criteria. A description to the whole process is given by Algorithm \ref{alg:hf}.
 
 %In other words, to get the Fock operator we need to have a density matrix $\rho$. The density matrix $\rho$ can be computed by C which is given by solving the Roothann equation. And again the equation depends on Fock operator. As a result, to solve this equation, we start with an arbitrary guess density $\rho_0$ and solve for the Fock operator. After we have the Fock operator, we can solve for C and update the density matrix to $\rho_1$. We will then use the new density which we again will use it to solve the new Fock operator.
 
@@ -222,7 +222,7 @@ More specifically, to solve this equation, we start with an arbitrary guess dens
  \While{ $i=0$ or $|E(\rho_{i}) - E(\rho_{i-1})| > \delta$ }{
 	Calculate the Fock operator  $F \leftarrow h_1 + G(\rho_i)$\\
 	Diagonalize the Fock matrix to get $\epsilon$ and $C$\\
-	$\rho_{i+1} \leftarrow C*C$\\
+	Update density matrix $\rho_{i+1}$ by $C$\\
 	$i \leftarrow i+1$ \\
  }
  \caption{Hartree-Fock algorithm}
@@ -262,11 +262,12 @@ If we think the whole n iterations of the Hartree-Fock process as a sequence, be
 
 Assume we have a set of n density matrices generated in sequence is  $\rho_0 \rightarrow  \rho_1 \rightarrow  \rho_2  \ldots  $ and finally converge at $\rho_{n}$. 
 We can build up a faster trajectory from this sequence and try to learn from it.
-One example can be a sequence which has a step size of 2 of the original trajectory just like, $\rho_0 \rightarrow \rho_2 \rightarrow  \rho_4 \rightarrow  \ldots \rightarrow  \rho_{n}$. Then for this trajectory, it only takes $\frac{n}{2}$ iteration for reaching the steady density matrix instead of $n$.
-As a choice, we can build a even greedy trajectory that no matter what the input density matrix is, it always takes only one step for returning the steady density matrix. $\rho_0 \rightarrow \rho_{n}$.
+One example can be a sequence which has a step size of 2 of the original trajectory just like, $\rho_0 \rightarrow \rho_2 \rightarrow  \rho_4 \rightarrow  \ldots \rightarrow  \rho_{n}$. Then for this trajectory, it only takes $\frac{n}{2}$ iterations for reaching the steady density matrix instead of $n$.
+As a choice, we can build a even greedy trajectory that no matter what the input density matrix is, it always takes only one step for returning the steady density matrix ($\rho_0 \rightarrow \rho_{n}$).
 
 
-This trajectory can serve as an expert's demonstration, and the extra flexibility offered by the linear combination can let us reform the Hartree-Fock process. By imitation learning, we would like to train a Hartree-Fock process with linear combination of density matrices from generated from previous iteration that mimics the expert's demonstration extracted from original Hartree-Fock trajectory. We can always try to make the output density matrix match the ideal output in the demonstration via the extra flexibility offered by coefficients of linear combination .
+This trajectory can serve as an expert's demonstration. By imitation learning, we would like to train a Hartree-Fock 
+which uses the linear combination of the density matrices generated from previous iteration to serve as input mimicking the expert's demonstration extracted from other Hartree-Fock trajectory. We can always try to make the output density matrix match the ideal output in the demonstration via the extra flexibility offered by the coefficients of linear combination .
 
 
 As a consequences, it allows more progress in one iteration, thus converged with less iterations, say half or even less iterations.  
@@ -292,16 +293,16 @@ By doing so, it is possible to offset the error made by previous learned model a
 %Thus the error may keep growing iteration by iteration.
 
 %Rough Algorithm Description
-The simplest DAgger algorithm may proceed as follows.
+The DAgger algorithm may proceed as Algorithm \ref{alg:DAgger}.
 %%% FROM Original paper
 %%% TODO 
 $\Pi$ is the class of policies the learner is considering.
 In the first iteration, it uses the expert’s policy $\pi^*$ to gather
-a dataset of trajectories $D$ and train a policy $\hat{\pi_2}$ that best mimics the expert on those trajectories. 
+a dataset of trajectories $D$ and train a policy $\hat{\pi}_2$ that best mimics the expert on those trajectories. 
 
-Then in iteration $i$, we can sample the state induced by $\hat{\pi_i}$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset $D$. We then train the next policy $\hat{\pi}_{i+1}$, the policy that best mimics the expert on the whole dataset $D$. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration $N$.
+Then in iteration $i$, we can sample the state induced by $\hat{\pi}_i$ itself and refer to expert's action on these states, forming the dataset $D_i$, which is in turn added to dataset $D$. We then train the next policy $\hat{\pi}_{i+1}$, the policy that best mimics the expert on the whole dataset $D$. The process is then repeated to further rectify the error produced by the policy learned in the previous iteration until we reach iteration $N$.
 
-In other words, DAgger proceeds by aggregating a dataset at each iteration under the current policy, then trains the next policy under the all collected datasets. 
+In other words, to solve the problem introduced from naive imitation learning that the error may grow quadratically, DAgger proceeds by aggregating a dataset at each iteration under the current policy, then trains the next policy under the all collected datasets. 
 
 
 %In general, there are two different strategies to learn the policy. Either we can try to learn a single policy that imitate the expert's demonstration under all circumstances, or we train multiple policies that approximate expert's demonstration in which each policy best mimic expert's demonstration under different scenario. It's obvious that using multiple policies gives us more flexibility, thus in the following section, we would like to introduce how we train a sequence of Hartree-Fock with embedded parameters, in which each set of parameter can best speed up a correspondent iteration.
@@ -318,6 +319,7 @@ In other words, DAgger proceeds by aggregating a dataset at each iteration under
 
 
 \begin{algorithm}[htb]
+ \label{alg:DAgger}
  \KwData{Expert's demonstration generated by expert's policy $\pi^*$}
  \KwResult{Best $\hat{\pi}_i$ on validation }
  $\pi^*$  is the expert’s policy \\
@@ -348,17 +350,17 @@ Our goal is to have the Hartree-Fock with linear combination achieve the same st
 % D is the training dataset that compose of the input density matrices and correspondent ideal output density matrices
 % 
 
-With a faster trajectories serve as the expert's demonstration, we would like to learn a policy that for each single iteration of Hartree-Fock it forms the input of next iteration from the linear combination of previous density matrices which may make the iteration more productive.   
+With a faster trajectory serving as the expert's demonstration, we would like to learn a policy that for each single iteration of Hartree-Fock it forms the input to the next iteration from the linear combination of previous output density matrices which may make the iteration more productive.   
 
-Refer to the DAgger algorithm, in our case, $\Pi$ is the policy class consist of all the Hartree-Fock with linear combination. $\pi^*$ represents the expert's policy that generates the expert's demonstration. However, we don't need to have an explicit expert's policy, instead we can build up the the expert's demonstration with any Hartree-Fock trajectory from scratch. A policy here consist of sets of coefficients which represents the linear combination to apply in each Hartree-Fock iteration. 
+Refer to the DAgger algorithm, in our case, $\Pi$ is the policy class consisting of all the Hartree-Fock with linear combination. $\pi^*$ represents the expert's policy that generates the expert's demonstration. However, we don't need to have an explicit expert's policy, instead we can build up the the expert's demonstration with any Hartree-Fock trajectory from scratch. A policy here is composed of sets of coefficients which represents the linear combination to apply in each Hartree-Fock iteration. 
 
 
 % ???????????
 %When applying DAgger to Hartree-Fock iteration $i$, we initialize $\pi_{(1)}$ equal to $\pi^*$. Then in during the DAgger iterations, we can generate a sequence of policies $\hat{\pi}_{(2)} , \hat{\pi}_{(3)}, \ldots, \hat{\pi}_{(i+1)}$, in which the output of previous policy will become the input of next policy.
 
 
-The main idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\hat{\pi}_{(i)}$ in DAgger iteration $i-1$,
-we will consider the state generated from the previous policy $\hat{\pi}_{(i-1)}$. More specifically, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ after Hartree-Fock can in turn be used to train $\hat{c}_{(i+1,j+1)}$
+The main idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\hat{\pi}_{i}$ in DAgger iteration $i-1$,
+we will consider the state generated from the previous policy $\hat{\pi}_{i-1}$. That is to say, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ after Hartree-Fock can in turn be used to train $\hat{c}_{(i+1,j+1)}$ ,the set of coefficients in the next Hartree-Fock iteration in the next policy.
 
 
 
@@ -378,12 +380,12 @@ Then for the Hartree-Fock iterations afterwards, we have to aggregate the traini
 
 In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training dataset is from the expert's demonstration, and we want to train a set of coefficient  $\hat{c}_{(2,2)}$ that best matches density matrix $(\rho_0,\rho_2) \rightarrow \rho_4$.
 
-However, in the second DAgger iteration, we can also sample the trajectories using $\hat{c}_{(1,2)}$, thus get the training dataset $\rho_i$ = $(\rho_0, \rho_2') \rightarrow \rho_4$. This new dataset then will be added into D.
+However, in the second DAgger iteration, we can also sample the trajectories using $\hat{c}_{(1,2)}$, thus get the training dataset $D_i$ = $(\rho_0, \rho_2') \rightarrow \rho_4$. This new dataset then will be added into D.
 %We then aggregate dataset that is the state induced by iteration 1,
-Next step is to train a policy that best fit the whole aggregated dataset D. Thus, not only do we want to fit the expert's demonstration $(\rho_0, \rho_2) \rightarrow \rho_4$, but also want to fit the output of the previous iteration to the true objective$ (\rho_0,\rho_{2}') \rightarrow \rho_4$. 
+Next step is to train a policy that best fits the whole aggregated dataset D. Thus, not only do we want to fit the expert's demonstration $(\rho_0, \rho_2) \rightarrow \rho_4$, but also want to fit the output of the previous iteration to the true objective $ (\rho_0,\rho_{2}') \rightarrow \rho_4$. 
 
 
-This is the key to compensating the error made by the previous iteration. It will keep aggregating the output of the previous iterations.
+This is the key to compensating the error made by the previous iterations. It will keep aggregating the output of the previous iterations.
 
 %In the Hartree-Fock iteration $i$,  we'll apply DAgger algorithm to train a policy that best fit that iteration. Thus in DAgger iteration j, $j<i$, we'll first sample the trajectories using $\hat{\pi}_{i-1,j}$. That is the result after training in Hartree-Fock iteration $i-1$, DAgger iteration $j-1$. 
 
@@ -392,28 +394,28 @@ This is the key to compensating the error made by the previous iteration. It wil
 
 
 %Then $\hat{\pi}_{(i,i+1)}$ is the last policy we can get in the Hartree-Fock iteration $i$.
+In Hartree-Fock iteration i and DAgger iteration j-1, the new dataset
+is sampled by using $\hat{c}_{(i-1,j-1)}$. This new dataset will then be added into the aggregated dataset D. We want to train a set of coefficients that best fits all the density matrices in D to the ideal training objective.
 
-We sample the trajectories using $\hat{c}_{(i-1,j-1)}$. We then add the sample into the aggregated dataset D.
-We want to train a policy that best fits all the density matrices in D to the ideal training objective.
 
-
-As a result, we will fit the expert's demonstration $(\rho_{2i})_{i=0}^{x-1} \rightarrow \rho_{2x}$, and also all the possible output state from the previous iterations 
+As a result, we will fit the expert's demonstration $(\rho_{2i})_{i=0}^{x-1} \rightarrow \rho_{2x}$, and also all the possible output states from the previous iterations 
 
 $((\rho_{2i})_{i=0}^{x-k} ,(\rho_{2i}^{[i-(x-k)]})^{x-1}_{i=x-k+1})_{k=1}^{x}$  
 to the ideal training objective $\rho_{2x}$.
 %
 
-After training, for each iteration, we will get a best set of coefficient $\hat{c}_{(i,j)}$ that not only mimics the expert's demonstration in that iteration but also offsets the error made by the previous iterations.
+After training, for each Hartree-Fock iteration, we will get a best set of coefficient $\hat{c}_{(i,j)}$ that not only mimics the expert's demonstration in that iteration but also offsets the error made by the previous iterations.
 
 % 
-Put these $n$ set of coefficient $\hat{c}_{(1,1)}, \hat{c}_{(2,2)}, \ldots  \hat{c}_{(i-1,j-1)}$ in sequence, it will form the final policy that imitate the demonstration which is built from  the original Hartree-Fock but may get steady density matrix with only half of iterations. In this new process, the output of previous policy would become the input of next policy just like a pipeline. 
+Putting these $n$ sets of coefficients $\hat{c}_{(1,1)}, \hat{c}_{(2,2)}, \ldots  \hat{c}_{(i-1,j-1)}$ in sequence will form the final policy that imitate the demonstration which is built from  the original Hartree-Fock but may get steady density matrix with only half of iterations. 
 
+%In this new process, the output of previous policy would become the input of next policy just like a pipeline. 
 
-%Feed the initial guessed density matrix $\rho_0$ into $\uppi_1$, we'll get the output density matrix $\rho_2'$. This will then be feed into $\uppi_2$.
 
 \begin{center} 
 	\begin{table*}[t]
 	\footnotesize\setlength{\tabcolsep}{2.5pt}
+	\renewcommand{\arraystretch}{1.5}
 		\caption{Applying DAgger on the Expert's demonstration with step size = 2}
 		\begin{tabular}{|l|l|l|l|l|l|l|l|}
 			\hline	& \multicolumn{7}{l|}{	Hartree-Fock iterations (with step size = 2)} \\ \hline	\multirow{10}{*}{
@@ -427,7 +429,7 @@ Put these $n$ set of coefficient $\hat{c}_{(1,1)}, \hat{c}_{(2,2)}, \ldots  \hat
 	& \multirow{2}{*}{ 3} & New objective         &                         &                          & $(\rho_0,\rho_2',\rho_4'')  \rightarrow \rho_6$    &  \ldots & $((\rho_{2i})_{i=0}^{x-3} ,(\rho_{2i}^{[i-(x-3)]})_{i=x-2}^{x-1}) \rightarrow \rho_{n}$         \\ \cline{3-8} 
 	&                 & Result &                 &                 & $(\rho_0,\rho_2',\rho_4'')  \rightarrow \rho_6'''$ &  \ldots & $((\rho_{2i})_{i=0}^{n-3} ,(\rho_{2i}^{[i-(x-3)]})_{i=x-2}^{x-1})\rightarrow \rho_{n}'''$      \\ \cline{2-8} 
 	& \vdots      & \vdots      &                &                &                & $\ddots$ &   \vdots \\ \cline{2-8} 
-	& \multirow{2}{*}{ n} & New objective         &                         &                          &                            &  & $(\rho_{2i}^{[i]})_{i=0}^{x-1} \rightarrow \rho_{n}$     \\ \cline{3-8} 
+	& \multirow{2}{*}{ x=$\frac{n}{2}$} & New objective         &                         &                          &                            &  & $(\rho_{2i}^{[i]})_{i=0}^{x-1} \rightarrow \rho_{n}$     \\ \cline{3-8} 
 	&                & Result  &                &                &                &  & $(\rho_{2i}^{[i]})_{i=0}^{x-1}\rightarrow \rho_{n}^{[x]}$ \\ \hline
 	\end{tabular}
 	\end{table*}
@@ -441,12 +443,12 @@ To evaluate the performance of different policies, we would like to apply the po
 
 In energy minimization, we are interested in discovering a geometry with a particular arrangement of the atoms that corresponds to global energy minimum. This geometry is called the equilibrium structure of a molecule.
 
-Under different electric filed, the equilibrium structure will also be different. A simple approach to this problem will be enumerating different geometries of a given molecule and calculate the energy of each geometry by Hartree-Fock. 
+Under different electric fields, the equilibrium structure will also be different. A simple approach to this problem will be enumerating different geometries of a given molecule and calculate the energy of each geometry by Hartree-Fock. 
 
  
 \subsection{Experiment Dataset}
 
-The data consist of the electronic structure of a diatomic molecules/hydrocarbon with varying geometries in a range of environments. 
+The data consists of the electronic structure of a diatomic molecules/hydrocarbon with varying geometries in a range of environments. 
 
 % 10 different geometry
 To generate different geometries,
@@ -469,13 +471,11 @@ For each pairing of a molecular configuration with an environment, we generate e
 Each dataset consists of 10 configurations in 3 environments, corresponding to 30 instances. %Ethane has eight nuclei which, along with kinetic energy and two-electron energy, leads to 1000 data points. 
 
 
-We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady density matrix and the energy of the given molecular system under different geometries. 
+We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady density matrices and the energy of the given molecular system under different geometries. 
 %Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
 
 % Define error
-We can in turn define the error $Err$ of a density matrix as the error of matrix and the error of energy. The error of the matrix is given by $norm(\rho_i-\rho_n)$. The error of energy is given by $|E(\rho_i)-E(\rho_n)|$
-
-Once we have the error function, we can optimize the coefficients by minimizing the error.
+We can in turn define the error of current density matrix as: error of matrix +  error of energy. The error of the matrix is given by $norm(\rho_i-\rho_n)$. Likewise, the error of energy is given by $|E(\rho_i)-E(\rho_n)|$. Once we have the error function, we can optimize the coefficients by minimizing the error.
 
 % 30 iterations
 
@@ -486,10 +486,7 @@ Once we have the error function, we can optimize the coefficients by minimizing 
 %Assu Coefficient (linear combination) may be similar for the same molecule \\
 Although the same molecule under different geometries and different environments will have different equilibrium structures, we assume the policy that speeds up the Hartree-Fock for a certain molecule will be very similar under different settings. 
 
-As a result, for a molecule we can train a policy under a set of instances and test it under a the other different set of instances.
-
-After the training, we will apply these Hartree-Fock with linear combination policies on testing dataset to evaluate the performance.
-
+As a result, given a molecule, we can train a policy under a set of instances, and after training we can apply the learned policy on the other set of instances to evaluate the performance.
 
 %We generate a few hundred molecules dataset and divide these between a training and a test data set.
 %1 etot 
@@ -505,18 +502,18 @@ The goal is to train the Hartree-Fock with linear combination policy that can re
 
 %MENTION THE PURE LINEAR COMBINATION
 One naive approach to build a good policy is always using all the density matrices we have to generate a linear combination that best approaches the final steady density matrix after one Hartree-Fock iteration.  For example, from guess density matrix $\rho_0$ we will find the best coefficient that makes the output best approaches the final objective. However, we may get some error thus the result of the first iteration is $\rho_1$.  In the next iteration, again we will try to find the linear combination $(\rho_0, \rho_1)$ that best approaches the final density matrix. we can keep doing this procedure until the output of the Hartree-Fock reaches the final steady density matrix.
-Because we already know the final steady density matrix, and in each iteration we aim for the final objective directly, it's possible that we can build up a trajectory that reaches final density matrix much faster then the original process. And also we will learn a policy from it. Let's call it the "Pure Linear Combination" policy.
+Because we already know the final steady density matrix, and in each iteration we aim for the final objective directly, it's possible that we can build up a trajectory that reaches final density matrix much faster then the original process. At the same time, we will learn a policy from it. Let's call it the "Pure Linear Combination" policy.
 
 %SHOULD ALSO MENTIONED TWO DIFFERENT EXPERT \\
 Though we already aim for the final objective in each iteration, we still can try to build up a faster trajectory from it and perhaps train the other policy which is faster than the pure linear combination one.
 
-In the experiment, we build up two different expert's trajectories. 
+In the experiment, we built up two different expert's trajectories. 
 One is the trajectory that has a step size of two of the "Pure Linear Combination" trajectory. The other one is the perfect trajectory which always return the final steady matrix in one iteration.
 
 % HOW TO EVALUATE
 
 %MENTION THE CASE THAT MAY NEVER CONVERGE \\
-When iterations of Hartree-Fock converge, we can get the final steady density matrix and also the energy of the system. However, the process does not always lead to convergence. Under some strong electric field, the process may keep running and never reach convergence.
+When iteration of Hartree-Fock converge, we can get the final steady density matrix and also the energy of the system. However, the process does not always lead to convergence. Under some strong electric field, the process may keep running and never reach convergence.
 
  In the experiment, we will also examine the robustness of different policies.
 
@@ -534,33 +531,45 @@ Considering DAgger trains on the dataset that aggregates new dataset iteration b
 
 %%%  
 
-We can evaluate the performance of each policy in terms of the error and robustness. 
-
-Figure \ref{fig:training} shows the error of each policy on training dataset for 12 iterations. The baseline is the policy that always use the average of the last two density matrices to serve as the input to the next iteration.  We can observe that all the policies seems to  converge within 10 iterations except the baseline fluctuates. The pure linear combination got the lowest error since it always aim for the final objective. On the other hand, DAgger keep aggregating datasets thus has a more diverse training data. Both the DAgger with different experts have similar performance in the first 6 iterations, and fall behinds pure linear combination after iteration 7. 
-
-Figure \ref{fig:testing} is the result  on the testing dataset.
-The baseline again fluctuates while all the other policies coverages still converges within 12 iteration. 
-Pure linear combination and DAgger got pretty similar error after 12 iterations. However, the performance of linear combination fluctuates during iteration 5 - 10 while both Dagger with different experts have pretty steady decreasing trending in all 12 iteration. Dagger with the expert that has step size of 2 got a smoother curve than other policies.
-
-
+We evaluated the performance of each policy in terms of the error and robustness. 
 
 \begin{figure}[h!]
   \caption{Error on training dataset}
 	\label{fig:training}
-    \includegraphics[width=220px]{Dagger_beta05_training.png}
+    \includegraphics[width=210px]{Dagger_beta05_training.jpg}
 \end{figure}
 
 \begin{figure}[h!]
 
   \caption{Error on testing dataset}
   \label{fig:testing}
-    \includegraphics[width=220px]{Dagger_beta05_testing.png}
+    \includegraphics[width=210px]{Dagger_beta05_testing.jpg}
+\end{figure}
+
+Figure \ref{fig:training} shows the error of each policy on training dataset for 12 iterations. The baseline is the policy that always use the average of the last two density matrices to serve as the input to the next iteration.  We can observe that all the policies seems to  converge within 10 iterations except the baseline fluctuates. The pure linear combination got the lowest error since it always aim for the final objective. On the other hand, DAgger keep aggregating datasets thus has a more diverse training data. Both the DAgger with different experts have similar performance in the first 6 iterations, and fall behinds pure linear combination after iteration 7. 
+
+Figure \ref{fig:testing} is the result  on the testing dataset.
+The baseline again fluctuates while all the other policies still converges within 12 iteration. 
+Pure linear combination and DAgger got pretty similar error after 12 iterations. However, the performance of linear combination fluctuates during iteration 5 - 10 while both Dagger with different experts have pretty steady decreasing trend across all 12 iterations. Dagger with the expert that has step size of 2 got a smoother curve than other policies.
+
+
+\begin{figure}[h!]
+  \caption{Absolute value of difference between iterations on training dataset}
+	\label{fig:converge_training}
+    \includegraphics[width=210px]{convergence_Training.jpg}
+\end{figure}
+
+\begin{figure}[h!]
+
+  \caption{Absolute value of difference between iterations on testing dataset}
+  \label{fig:converge_testing}
+    \includegraphics[width=210px]{convergence_Testing.jpg}
 \end{figure}
 
 
 \section{CONCLUSION}
 
-Although DAgger doesn't help to gain lower error than the pure linear combination, it does train a more robust policy which has a smooth and steady decreasing trend. It is possible that because the pure linear combination and the DAgger have the same policy spac, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecule or on the case which is hard to converge.
+Although DAgger doesn't help to gain lower error than the pure linear combination, it does train a more robust policy which has a smooth and steady decreasing trend. It is possible that because the pure linear combination and the DAgger have the same policy space, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecules or on the case which is hard to get to convergence.
 
 
 \begin{thebibliography}{9}
