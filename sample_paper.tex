@@ -128,7 +128,7 @@ Algorithms with sufficient accuracy are now available, and the Hartree-Fock (HF)
 
 
 % What is wave function, what is density matrix, 
-In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions. The basis function should meet some requirements.  The function should be continuously differentiable. And also, according to Copenhagen interpretation, the square of the modulus of the amplitude representing the probability density, the square integral should be 1. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, mixing Slater function with Gaussian functions is more computationally efficient and commonly used. 
+In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions. The basis function should meet some requirements.  The function should be continuously differentiable. And also, according to Copenhagen interpretation, the square of the modulus of the amplitude representing the probability density, the square integral should be 1. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, approximating the basis set by linear combination of Gaussian functions is more computationally efficient and commonly used. 
 
 %To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. 
 Nevertheless, the larger the molecular system is, the more accurate model is desired. The more Gaussian functions are used in the basis set, the more accurate results we can attain. Both of these will make the system grow exponentially large. Consequently, speeding up the whole process is a very critical issue. \\
@@ -173,11 +173,16 @@ By reason of constructing the wave function for a quantum many-body system is re
 %The general equation to formulate a density matrix is given by
 The density matrix is a probability matrix of the mixed states within the system, which is given by
 \[
-\rho = \sum\hat{p}_i\ket{\psi_i}\bra{\psi_i}
+\rho = \sum_i\sum_\sigma|\phi_i(\sigma)|^2
 \]
 
 
-This is an integral to find the probability of the different states, in which $\hat{p}_i$ is the density operator. 
+Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. In Restricted Hartree-Fock (RHF) which is most commonly used, the assume that all the orbitals are occupied and then the equation is describes as following:
+
+\[
+\rho = 2\sum_i|\phi_i|^2
+\]
+
 %Another approximation of Hartree-Fock is the usage of Linear Combination of Atomic Orbitals (LCAO) in which a molecular orbital is described by a sum of atomic orbitals. $\psi(r) = \sum{c_1\chi_i(r)}$
 
 With density matrix, the Hamiltonian can be approximated by Fock operator which has the following form:
@@ -462,6 +467,12 @@ In energy minimization, we are interested in discovering a geometry with a parti
 Under different electric fields, the equilibrium structure will also be different. A sub-problem of this problem will be enumerating different geometries of a given molecule and calculate the energy of each geometry by Hartree-Fock. 
 
  
+%ASSUMPTION:
+%Assu Coefficient (linear combination) may be similar for the same molecule \\
+Although the same molecule under different geometries and different environments will have different equilibrium structures, we assume the policy that speeds up Hartree-Fock for a certain molecule will be very similar under different settings. 
+
+As a result, given a molecule, we can train a policy under a set of instances, and after training we can apply the learned policy on the other set of instances to evaluate the performance. 
+ 
 \subsection{Experiment Dataset}
 
 The data consists of the electronic structure of varying 3-fluoro-3-methyl-1-butene geometries in a range of different electric field environments. The structure of the molecule is shown in figure \cite{fig:molecule}. The geometries are picked from trajectories when simulating a thermal ensemble on the molecule. This will give a good and realistic alteration of the geometries, in which the bond length, bond angle and dihedral angle are all distorted. 
@@ -488,8 +499,7 @@ Two different models of electric field environments are applied, one with a grid
 For each pair of molecular configuration within an environment, we generated expectation values of each operator that appears in the Hamiltonian (total kinetic energy, interaction of the electron density with each nucleus, and total two-electron repulsion energy).
 
 % DATA SET
-Initially the model was trained on the dataset which has point charges as environment. This data set has 20 geometry configurations, and each configuration will be put under 11 different environments (1 with no environment + 10 different environments). The second data set uses the fixed electric field environments. There are the same 20 geometry configurations under different 4 environments (1 with no environment + 3 different fields for X, Y and Z). 
-
+Initially the model was trained on the dataset which has point charges as environment. This data set has 20 geometry configurations, and each configuration will be put under 11 different environments (1 with no environment + 10 different environments). The second data set uses the fixed electric field environments. There are the same 20 geometry configurations under different 4 environments (1 with no environment + 3 different fields for X, Y and Z).  We split the whole dataset into two parts evenly. We use the first 10 geometries to serve as the training dataset, and the reaming 10 geometries as testing dataset.
 
 We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady-state density matrices and the energy of the given molecular system under different geometries. 
 %Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
@@ -497,39 +507,24 @@ We ran the original Hartree-Fock until convergence, so we have the ground truth 
 % Define error
 We can in turn define the error of current density matrix as: error of matrix +  error of energy. The error of the matrix is given by $\|\rho_i-\rho_n\|$. Likewise, the error of energy is given by $|E(\rho_i)-E(\rho_n)|$. Once we have the error function, we can optimize the coefficients by minimizing the error.
 
-% 30 iterations
-
-\subsection{Experiment settings}
 
 
-%ASSUMPTION:
-%Assu Coefficient (linear combination) may be similar for the same molecule \\
-Although the same molecule under different geometries and different environments will have different equilibrium structures, we assume the policy that speeds up Hartree-Fock for a certain molecule will be very similar under different settings. 
-
-As a result, given a molecule, we can train a policy under a set of instances, and after training we can apply the learned policy on the other set of instances to evaluate the performance.
-
-%We generate a few hundred molecules dataset and divide these between a training and a test data set.
-%1 etot 
-%2 convergence rate (L1 norm with previous iteration)
-There are twenty different geometries and three different environments. We split the whole dataset into two parts evenly. 
-We use the first ten geometries to serve as the training dataset, and the reaming ten geometries as testing dataset.
-%The odd numbered instances serve as training data, on the other hand the even numbered instances serve as testing data. \\
 
 \subsection{Approach}
 % Goal
 The goal is to train the Hartree-Fock with linear combination policy that can reach the steady-state density matrix for a given molecule faster than the original Hartree-Fock.
 
-
+In the experiment, we will testing three different policies with baseline.
 %MENTION THE PURE LINEAR COMBINATION
 %In the experiment, we built up two expert's policies.
-One naive approach to build a good policy is always using all the density matrices we have to generate a linear combination that best approaches the final steady-state density matrix after one Hartree-Fock iteration.  For example, from guess density matrix $\rho_0$ we will find the best coefficient that makes the output best approaches the final objective. However, we may get some error thus the result of the first iteration is $\rho_1$.  In the next iteration, again we will try to find the linear combination $(\rho_0, \rho_1)$ that best approaches the final density matrix. we can keep doing this procedure until the output of the Hartree-Fock reaches the final steady-state density matrix.
+One naive approach to build the first good policy is always using all the density matrices we have to generate a linear combination that best approaches the final steady-state density matrix after one Hartree-Fock iteration.  For example, from guess density matrix $\rho_0$ we will find the best coefficient that makes the output best approaches the final objective. However, we may get some error thus the result of the first iteration is $\rho_1$.  In the next iteration, again we will try to find the linear combination $(\rho_0, \rho_1)$ that best approaches the final density matrix. we can keep doing this procedure until the output of the Hartree-Fock reaches the final steady-state density matrix.
 Because we already know the final steady-state density matrix, and in each iteration we aim for the final objective directly, it's possible that we can build up a trajectory that reaches final density matrix much faster then the original process. At the same time, we will learn a policy from it. Let's call it the ``Pure Linear Combination'' policy.
 
 %SHOULD ALSO MENTIONED TWO DIFFERENT EXPERT \\
 Though we already aim for the final objective in each iteration, we still can try to build up a better expert's demonstration from it and perhaps train the other policy which is faster than the pure linear combination one.
 
-In the experiment, we built up two different expert's trajectories. 
-One is the trajectory that has a step size of two of the ``Pure Linear Combinatio'' trajectory. The other one is the perfect trajectory which always return the final steady-state matrix in one iteration.
+In the experiment, we built up two different expert's policies. 
+One is from the trajectory that has a step size of two of the ``Pure Linear Combinatio'' trajectory. The other one is from the perfect trajectory which always return the final steady-state matrix in one iteration.
 
 % HOW TO EVALUATE
 
@@ -593,10 +588,9 @@ Pure linear combination and DAgger got pretty similar error after 12 iterations.
 
 
 \section{CONCLUSION}
+In the experiment, we first proposed the pure linear combination policy. It is easy to train and already can yield much lower error comparing to the baseline. However, it tend to somewhat over-fit the training data and performance fluctuates on testing data accordingly. 
 
-Dagger does train a more robust policy which has a smooth and steady decreasing trend, and also being consistent from training to testing dataset.
- However, DAgger does not help to gain lower error than the pure linear combination.
- It is possible that because the pure linear combination and the DAgger have the same policy space, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecules or on the case which is hard to get to convergence.
+On the other hand, Dagger does train a more robust policy which has a smooth and steady decreasing trend, and also being consistent from training to testing dataset. However, DAgger does not help to gain lower error than the pure linear combination. It is possible that because the pure linear combination and the DAgger have the same policy space, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecules or on the case which is hard to get to convergence.
 
 
 \begin{thebibliography}{9}
