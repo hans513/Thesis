@@ -161,35 +161,23 @@ The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function $\
 
 Since there is no analytical solution to the quantum many-body problem, Hartree-Fock (HF) is a numerical method for finding approximate solutions to the time invariant Schr\"{o}dinger equation. 
 
-%In HF, the wave-function is described with a density matrix, which is a probability matrix of the mixed states within the system. 
-
-%Although the wave function contains more information regarding the particle or system, it is really difficult to construct it for a many-body system. 
-By reason of constructing the wave function for a quantum many-body system is really difficult, in Hartree-Fock, to make the whole computation simpler, the wave function is described with density matrix . 
-
-%in Hartree-Fock the wave-function is described with a density matrix, which 
-% and enable us to solve Schr\"{o}dinger equation by Hartree-Fock method. \\  
-
-
-%The general equation to formulate a density matrix is given by
-The density matrix is a probability matrix of the mixed states within the system, which is given by
+HF uses a linear combination of orbital wave-functions to define the wave-function of the system. The algorithm uses the density operator represented as a density matrix, derived from the wave-functions. The density matrix is a probability matrix of the molecular orbitals within the system, which is given by
 \[
 \rho = \sum_i\sum_\sigma|\phi_i(\sigma)|^2
 \]
 
 
-Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. In Restricted Hartree-Fock (RHF) which is most commonly used, the assume that all the orbitals are fully occupied, each orbital will carry two electrons given the Pauli exclusion principle and then the equation is describes as following:
+Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. In Restricted Hartree-Fock (RHF) which is most commonly used model of HF, which assumes that all the orbitals are fully occupied. Given the Pauli exclusion principle each orbital will carry two electrons. Thus the equations is formulated to the following:
 
 \[
 \rho = 2\sum_i|\phi_i|^2
 \]
 
-%Another approximation of Hartree-Fock is the usage of Linear Combination of Atomic Orbitals (LCAO) in which a molecular orbital is described by a sum of atomic orbitals. $\psi(r) = \sum{c_1\chi_i(r)}$
-
-With density matrix, the Hamiltonian can be approximated by Fock operator which has the following form:
+With the density matrix, the Hamiltonian can be approximated to the Fock operator as shown below.
 \[
 \hat{F}(\rho) = \hat{h}_1 + \hat{G}(\rho)
 \]
-where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation. $\rho$ is the density matrix. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator. With a finite set of basis functions the Fock operator is approximated to the Fock matrix:
+where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation, here accounted for as an average interaction. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator. With a finite set of basis functions the Fock operator is approximated to the Fock matrix:
 \[
 F_{ij} = \int \phi_i^*\hat{F}\phi_j dx
 \]
