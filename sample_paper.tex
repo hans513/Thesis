@@ -177,7 +177,7 @@ The density matrix is a probability matrix of the mixed states within the system
 \]
 
 
-Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. In Restricted Hartree-Fock (RHF) which is most commonly used, the assume that all the orbitals are occupied and then the equation is describes as following:
+Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. In Restricted Hartree-Fock (RHF) which is most commonly used, the assume that all the orbitals are fully occupied, each orbital will carry two electrons given the Pauli exclusion principle and then the equation is describes as following:
 
 \[
 \rho = 2\sum_i|\phi_i|^2
@@ -189,12 +189,15 @@ With density matrix, the Hamiltonian can be approximated by Fock operator which 
 \[
 \hat{F}(\rho) = \hat{h}_1 + \hat{G}(\rho)
 \]
-where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation. $\rho$ is the density matrix. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator. %There are more develop methods based on HF that use a different models for the $\hat{G}$ operator to approximate more accurate electron correlation.  \\ 
-
-
-Once we have the Fock operator, the time invariant Schr\"{o}dinger equation can be turned into the Roothaan equation which is shown below
+where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation. $\rho$ is the density matrix. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator. With a finite set of basis functions the Fock operator is approximated to the Fock matrix:
 \[
-FC = SC\epsilon
+F_{ij} = \int \phi_i^*\hat{F}\phi_j dx
+\]
+
+
+Using the Fock matrix, the time invariant Schr\"{o}dinger equation is approximated into the Restricted Hartree-Fock Roothaan equation which is shown below
+\[
+FC_{occ} = SC_{occ}\epsilon
 \]
 
 %Geoff's comment
@@ -203,21 +206,18 @@ FC = SC\epsilon
 
 
 
-where F is the Fock operator and S is the overlap matrix which will reduce to the identity matrix if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. C is a matrix of coefficients which can be used to update the density matrix $\rho$.
+where F is the Fock matrix and S is the overlap matrix which will reduce to the identity matrix if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. C is the coefficient matrix of the occupied states, this is used to get the new  density matrix $\rho$ =  $C_{occ}$*$C_{occ}$.
 
-by picking the least-energetic k eigenvalues/vectors
+%by picking the least-energetic k eigenvalues/vectors
 
-
-%By performing a transformation of the basis to get an orthogonal basis will make S vanish leading to eigenvalue equation problem. 
-The Roothaan equation is a generalized eigen problem.
-
-%However, 
-
-Since F and $\rho$ are mutual dependent, we can only approach the final density matrix iteratively.
+By performing a transformation of the basis to get an
+orthogonal basis will make S vanish leading to eigenvalue
+equation problem.
+However, since F and $\rho$ are mutual dependent, we can only approach the final density matrix iteratively.
 
 More specifically, to solve this equation, 
 we start with an arbitrary guess density $\rho_0$ as an input and construct the Fock operator. 
-After we have the Fock operator, we can solve for C by Roothann equation and update the density matrix to $\rho_1$. The procedure for updating $\rho_0$ to $\rho_1$ is the first iteration. Then in the iteration $i$, the previous output density matrix $\rho_{i-1}$ will serve as the input to the current iteration.
+After we have the Fock operator, we can solve for $C_{occ}$ by Roothann equation and update the density matrix to $\rho_1$. The procedure for updating $\rho_0$ to $\rho_1$ is the first iteration. Then in the iteration $i$, the previous output density matrix $\rho_{i-1}$ will serve as the input to the current iteration.
 
 We will keep doing this procedure until the difference of the energy given by the input density matrix in the iteration $n$, $\rho_{n-1}$,  and the output density matrix $\rho_n$ is less than a threshold, say $10^{-6}$.  A description to the whole process is given by Algorithm \ref{alg:hf}.
 
@@ -240,8 +240,8 @@ We will keep doing this procedure until the difference of the energy given by th
 	Pick $\delta$ to be a small value (termination criteria) \\
  \While{ $i=0$ or $|E(\rho_{i}) - E(\rho_{i-1})| > \delta$ }{
 	Calculate the Fock operator  $F \leftarrow h_1 + G(\rho_i)$\\
-	Using Roothaan equation for Solving $\epsilon$ and $C$\\
-	Update density matrix $\rho_{i+1}$ by $C$\\
+	Using Roothaan equation for Solving $\epsilon$ and $C_{occ}$\\
+	Update density matrix $\rho_{i+1}$ = $C_{occ}$*$C_{occ}$\\
 	$i \leftarrow i+1$ \\
  }
  \caption{Hartree-Fock algorithm}
@@ -614,6 +614,10 @@ On the other hand, Dagger does train a more robust policy which has a smooth and
 learning.} Proceedings of the 13th International
 Conference on Artificial Intelligence and Statistics (AISTATS),
 2010.
+
+ \bibitem{ChelpG}
+	Breneman, Curt M. and Wiberg, Kenneth B.
+  \emph{ atom-centered monopoles from molecular electrostatic potentials. The need for high sampling density in formamide conformational analysis.} J. Comput. Chem. 11, 361-373 (1990)
 
   \bibitem{Pulay1980}
    P\'{e}ter Pulay,
