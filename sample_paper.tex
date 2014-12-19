@@ -161,26 +161,53 @@ The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function $\
 
 Since there is no analytical solution to the quantum many-body problem, Hartree-Fock (HF) is a numerical method for finding approximate solutions to the time invariant Schr\"{o}dinger equation. 
 
-HF uses a linear combination of orbital wave-functions to define the wave-function of the system. The algorithm uses the density operator represented as a density matrix, derived from the wave-functions. The density matrix is a probability matrix of the molecular orbitals within the system, which is given by
+
+
+%density matrix doesn’t make computation simpler.  The density operator allows multiple eigenvalues to be present at once, which (by Pauli exclusion principle) allows more than one electron.  Density matrix is the representation of the density operator in our basis.
+
+HF uses a linear combination of orbital wave-functions to define the wave-function of the molecular system. 
+
+%The algorithm uses
+The wave function can be described by the density matrix in Hartree-Fock
+%The density operator is represented as a density matrix, which is derived from the wave-functions. 
+
+which is a probability matrix of the molecular orbitals within the system given by
 \[
 \rho = \sum_i\sum_\sigma|\phi_i(\sigma)|^2
 \]
 
 
-Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. In Restricted Hartree-Fock (RHF) which is most commonly used model of HF, which assumes that all the orbitals are fully occupied. Given the Pauli exclusion principle each orbital will carry two electrons. Thus the equations is formulated to the following:
+Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. The Restricted Hartree-Fock (RHF) which is the most commonly used model of HF, assumes all the orbitals are fully occupied. Given the Pauli exclusion principle, each orbital will carry two electrons. The equations thus can be simplified as the following:
 
 \[
 \rho = 2\sum_i|\phi_i|^2
 \]
 
-With the density matrix, the Hamiltonian can be approximated to the Fock operator as shown below.
+
+With the density matrix and under the assumption that all of the terms of Hamiltonian except the nuclear-nuclear repulsion can be expressed as the sum of one-electron operators. This gives out the Fock operator which is given by , 
+
+%The Hartree-Fock (HF) approach relies on assuming that the ground state of a many-fermion system can be uniquely characterized by the one-body density matrix (59). There are many ways of deriving the HF equations; the simplest one is to use the variational principle together with the following approximation of the two-body density matrix 
+
+%the Hamiltonian can be approximated by the Fock operator as shown below.
 \[
 \hat{F}(\rho) = \hat{h}_1 + \hat{G}(\rho)
 \]
-where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation, here accounted for as an average interaction. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator. With a finite set of basis functions the Fock operator is approximated to the Fock matrix:
+where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation, here accounted for as an average interaction. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator. 
+
+Then with a finite set of basis functions, Hamiltonian can be approximated by the Fock matrix which is defined by the Fock operator as
+%the Fock operator is approximated to the Fock matrix:
 \[
 F_{ij} = \int \phi_i^*\hat{F}\phi_j dx
 \]
+
+
+%The Fock operator doesn’t directly approximate the Hamiltionian.  There are two steps here: 
+
+%one is to approximate the Schroedinger equation by a single-electron problem (accounting for other electrons by an average interaction or field).  
+
+%Second is to approximate this approximation by moving to a finite basis (density matrix instead of density operator).  The Fock operator is the first step, and the Fock matrix is the second.
+
+%The Hartree-Fock (HF) approach relies on assuming that the ground state of a many-fermion system can be uniquely characterized by the one-body density matrix (59). There are many ways of deriving the HF equations; the simplest one is to use the variational principle together with the following approximation of the two-body density matrix (60): 
 
 
 Using the Fock matrix, the time invariant Schr\"{o}dinger equation is approximated into the Restricted Hartree-Fock Roothaan equation which is shown below
@@ -194,7 +221,7 @@ FC_{occ} = SC_{occ}\epsilon
 
 
 
-where F is the Fock matrix and S is the overlap matrix which will reduce to the identity matrix if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. C is the coefficient matrix of the occupied states, this is used to get the new  density matrix $\rho$ =  $C_{occ}$*$C_{occ}$.
+where F is the Fock matrix and S is the overlap matrix which will reduce to the identity matrix if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. C is the coefficient matrix of the occupied states. It can be used to get the density matrix $\rho$ =  $C_{occ}$*$C_{occ}$.
 
 %by picking the least-energetic k eigenvalues/vectors
 
@@ -346,6 +373,29 @@ In other words, to solve the problem introduced from naive imitation learning th
 
 \section{LEARNING THE POLICY}
 
+\begin{center} 
+	\begin{table*}[t]
+	\footnotesize\setlength{\tabcolsep}{2.5pt}
+	\renewcommand{\arraystretch}{1.5}
+		\caption{Applying DAgger on the Expert's demonstration with step size = 2}
+		\begin{tabular}{|l|l|l|l|l|l|l|l|}
+			\hline	& \multicolumn{7}{l|}{	Hartree-Fock iterations (with step size = 2)} \\ \hline	\multirow{10}{*}{
+				\begin{tabular}[c]{@{}l@{}}DAgger\\ iterations\end{tabular}}	 
+	&      iter          &                &  iter 1         & iter 2          & iter 3         & \ldots         & iter x = $\frac{n}{2}$         
+	\\ \cline{2-8} 	& \multirow{2}{*}{ 1} 
+	& Objective & $(\rho_0) \rightarrow \rho_2$ & $(\rho_0,\rho_2) \rightarrow \rho_4$ & $(\rho_0,\rho_2,\rho_4) \rightarrow \rho_6$ &  \ldots & $(\rho_{2i})_{i=0}^{x-1} \rightarrow \rho_{n}$ \\ \cline{3-8} 
+	&                 & Result & ($\rho_0) \rightarrow \rho_2'$ & $(\rho_0,\rho_2)  \rightarrow \rho_4'$   & $(\rho_0,\rho_2,\rho_4) \rightarrow \rho_6'$    &  \ldots & $(\rho_{2i})_{i=0}^{x-1} \rightarrow \rho_{n}'$          \\ \cline{2-8} 
+	& \multirow{2}{*}{ 2} & New objective         &                         & $(\rho_0,\rho_2')  \rightarrow \rho_4$   & $(\rho_0,\rho_2,\rho_4') \rightarrow \rho_6$     &  \ldots & $((\rho_{2i})_{i=0}^{x-2} ,\rho_{2(x-1)}')\rightarrow \rho_{n}$          \\ \cline{3-8} 
+	&                 & Result &                 & $(\rho_0,\rho_2') \rightarrow \rho_4''$ & $(\rho_0,\rho_2,\rho_4') \rightarrow \rho_6''$   & \ldots & $((\rho_{2i})_{i=0}^{x-2} ,\rho_{2(x-1)}') \rightarrow \rho_{n}''$        \\ \cline{2-8} 
+	& \multirow{2}{*}{ 3} & New objective         &                         &                          & $(\rho_0,\rho_2',\rho_4'')  \rightarrow \rho_6$    &  \ldots & $((\rho_{2i})_{i=0}^{x-3} ,(\rho_{2i}^{[i-(x-3)]})_{i=x-2}^{x-1}) \rightarrow \rho_{n}$         \\ \cline{3-8} 
+	&                 & Result &                 &                 & $(\rho_0,\rho_2',\rho_4'')  \rightarrow \rho_6'''$ &  \ldots & $((\rho_{2i})_{i=0}^{n-3} ,(\rho_{2i}^{[i-(x-3)]})_{i=x-2}^{x-1})\rightarrow \rho_{n}'''$      \\ \cline{2-8} 
+	& \vdots      & \vdots      &                &                &                & $\ddots$ &   \vdots \\ \cline{2-8} 
+	& \multirow{2}{*}{ x=$\frac{n}{2}$} & New objective         &                         &                          &                            &  & $(\rho_{2i}^{[i]})_{i=0}^{x-1} \rightarrow \rho_{n}$     \\ \cline{3-8} 
+	&                & Result  &                &                &                &  & $(\rho_{2i}^{[i]})_{i=0}^{x-1}\rightarrow \rho_{n}^{[x]}$ \\ \hline
+	\end{tabular}
+	\end{table*}
+\end{center} 
+
 %Our goal is to have the Hartree-Fock with linear combination achieve the same steady-state density matrix with less iterations, say, half or even less.  
 
 
@@ -370,7 +420,6 @@ Referring to the DAgger algorithm, in our case, $\Pi$ is the policy class consis
 
 The main idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\hat{\pi}_{i}$ in DAgger iteration $i-1$,
 we will consider states generated from the previous policy $\hat{\pi}_{i-1}$. That is to say, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ after Hartree-Fock can in turn be used to train $\hat{c}_{(i+1,j+1)}$, the set of coefficients in the next Hartree-Fock iteration in the next policy.
-
 
 
 We can visualize the whole process as a two-dimensional table. If we use a trajectory which has a step size of two of the original trajectory to serve as the expert's demonstration, we can refer to table 1 for the training procedure.
@@ -419,31 +468,6 @@ After training, for each Hartree-Fock iteration, we will get a best set of coeff
 Putting these $n$ sets of coefficients $\hat{c}_{(1,1)}, \hat{c}_{(2,2)}, \ldots  \hat{c}_{(i-1,j-1)}$ in sequence will form the final policy that imitate the demonstration which is built from  the original Hartree-Fock but may get steady-state density matrix with only half of iterations. 
 
 %In this new process, the output of previous policy would become the input of next policy just like a pipeline. 
-
-
-\begin{center} 
-	\begin{table*}[t]
-	\footnotesize\setlength{\tabcolsep}{2.5pt}
-	\renewcommand{\arraystretch}{1.5}
-		\caption{Applying DAgger on the Expert's demonstration with step size = 2}
-		\begin{tabular}{|l|l|l|l|l|l|l|l|}
-			\hline	& \multicolumn{7}{l|}{	Hartree-Fock iterations (with step size = 2)} \\ \hline	\multirow{10}{*}{
-				\begin{tabular}[c]{@{}l@{}}DAgger\\ iterations\end{tabular}}	 
-	&      iter          &                &  iter 1         & iter 2          & iter 3         & \ldots         & iter x = $\frac{n}{2}$         
-	\\ \cline{2-8} 	& \multirow{2}{*}{ 1} 
-	& Objective & $(\rho_0) \rightarrow \rho_2$ & $(\rho_0,\rho_2) \rightarrow \rho_4$ & $(\rho_0,\rho_2,\rho_4) \rightarrow \rho_6$ &  \ldots & $(\rho_{2i})_{i=0}^{x-1} \rightarrow \rho_{n}$ \\ \cline{3-8} 
-	&                 & Result & ($\rho_0) \rightarrow \rho_2'$ & $(\rho_0,\rho_2)  \rightarrow \rho_4'$   & $(\rho_0,\rho_2,\rho_4) \rightarrow \rho_6'$    &  \ldots & $(\rho_{2i})_{i=0}^{x-1} \rightarrow \rho_{n}'$          \\ \cline{2-8} 
-	& \multirow{2}{*}{ 2} & New objective         &                         & $(\rho_0,\rho_2')  \rightarrow \rho_4$   & $(\rho_0,\rho_2,\rho_4') \rightarrow \rho_6$     &  \ldots & $((\rho_{2i})_{i=0}^{x-2} ,\rho_{2(x-1)}')\rightarrow \rho_{n}$          \\ \cline{3-8} 
-	&                 & Result &                 & $(\rho_0,\rho_2') \rightarrow \rho_4''$ & $(\rho_0,\rho_2,\rho_4') \rightarrow \rho_6''$   & \ldots & $((\rho_{2i})_{i=0}^{x-2} ,\rho_{2(x-1)}') \rightarrow \rho_{n}''$        \\ \cline{2-8} 
-	& \multirow{2}{*}{ 3} & New objective         &                         &                          & $(\rho_0,\rho_2',\rho_4'')  \rightarrow \rho_6$    &  \ldots & $((\rho_{2i})_{i=0}^{x-3} ,(\rho_{2i}^{[i-(x-3)]})_{i=x-2}^{x-1}) \rightarrow \rho_{n}$         \\ \cline{3-8} 
-	&                 & Result &                 &                 & $(\rho_0,\rho_2',\rho_4'')  \rightarrow \rho_6'''$ &  \ldots & $((\rho_{2i})_{i=0}^{n-3} ,(\rho_{2i}^{[i-(x-3)]})_{i=x-2}^{x-1})\rightarrow \rho_{n}'''$      \\ \cline{2-8} 
-	& \vdots      & \vdots      &                &                &                & $\ddots$ &   \vdots \\ \cline{2-8} 
-	& \multirow{2}{*}{ x=$\frac{n}{2}$} & New objective         &                         &                          &                            &  & $(\rho_{2i}^{[i]})_{i=0}^{x-1} \rightarrow \rho_{n}$     \\ \cline{3-8} 
-	&                & Result  &                &                &                &  & $(\rho_{2i}^{[i]})_{i=0}^{x-1}\rightarrow \rho_{n}^{[x]}$ \\ \hline
-	\end{tabular}
-	\end{table*}
-\end{center} 
-
 
 
 \section{EXPERIMENTS}
