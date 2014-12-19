@@ -168,21 +168,17 @@ Since there is no analytical solution to the quantum many-body problem, Hartree-
 HF uses a linear combination of orbital wave-functions to define the wave-function of the molecular system. 
 
 %The algorithm uses
-The wave function can be described by the density matrix in Hartree-Fock
-%The density operator is represented as a density matrix, which is derived from the wave-functions. 
-
-which is a probability matrix of the molecular orbitals within the system given by
+The wave function can be described by the density matrix in Hartree-Fock. The probability matrix is of the molecular orbitals within the system given by
 \[
 \rho = \sum_i\sum_\sigma|\phi_i(\sigma)|^2
 \]
 
 
-Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. The Restricted Hartree-Fock (RHF) which is the most commonly used model of HF, assumes all the orbitals are fully occupied. Given the Pauli exclusion principle, each orbital will carry two electrons. The equations thus can be simplified as the following:
+Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. The Restricted Hartree-Fock (RHF) which is the most commonly used model of HF, assumes all the orbitals are fully occupied. Given the Pauli exclusion principle, each orbital will carry two electrons. The equation can thus be simplified as the following:
 
 \[
 \rho = 2\sum_i|\phi_i|^2
 \]
-
 
 With the density matrix and under the assumption that all of the terms of Hamiltonian except the nuclear-nuclear repulsion can be expressed as the sum of one-electron operators. This gives out the Fock operator which is given by , 
 
