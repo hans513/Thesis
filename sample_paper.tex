@@ -128,7 +128,7 @@ Algorithms with sufficient accuracy are now available, and the Hartree-Fock (HF)
 
 
 % What is wave function, what is density matrix, 
-In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions. The basis function should meet some requirements.  The function should be continuously differentiable. And also, according to Copenhagen interpretation, the square of the modulus of the amplitude representing the probability density, the square integral should be 1. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, approximating the basis set by linear combination of Gaussian functions is more computationally efficient and commonly used. 
+In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions. The basis function should meet some requirements.  The function should be continuously differentiable. And also, according to Copenhagen interpretation, the square of the modulus of the amplitude representing the probability density, the square integral should be 1. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, approximating the Slater exponent by linear combination of Gaussian functions is more computationally efficient and commonly used. 
 
 %To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. 
 Nevertheless, the larger the molecular system is, the more accurate model is desired. The more Gaussian functions are used in the basis set, the more accurate results we can attain. Both of these will make the system grow exponentially large. Consequently, speeding up the whole process is a very critical issue. \\
@@ -165,22 +165,19 @@ Since there is no analytical solution to the quantum many-body problem, Hartree-
 
 %density matrix doesn’t make computation simpler.  The density operator allows multiple eigenvalues to be present at once, which (by Pauli exclusion principle) allows more than one electron.  Density matrix is the representation of the density operator in our basis.
 
-HF uses a linear combination of orbital wave-functions to define the wave-function of the molecular system. 
-
-%The algorithm uses
-The wave function can be described by the density matrix in Hartree-Fock. The probability matrix is of the molecular orbitals within the system given by
+A linear combination of the basis functions can be used to define the wave-function of the molecular system. Describing a multi-particle system with a wave-function will require increasing the size of the system in every single combination leading to increase in dimensions. A easier method to describe the multi-particle system is to aquire the density function or even a density matrix. This is a probability matrix of the molecular orbitals within the system given by
 \[
 \rho = \sum_i\sum_\sigma|\phi_i(\sigma)|^2
 \]
 
 
-Where $\phi_i$ is the molecular orbital dependent on $\sigma$, the spin coordinate. The Restricted Hartree-Fock (RHF) which is the most commonly used model of HF, assumes all the orbitals are fully occupied. Given the Pauli exclusion principle, each orbital will carry two electrons. The equation can thus be simplified as the following:
+Where $\phi_i$ is the ith molecular orbital dependent on $\sigma$, the spin coordinate. The Restricted Hartree-Fock (RHF) which is the most commonly used model of HF, assumes all the orbitals are fully occupied. Given the Pauli exclusion principle, each orbital will carry two electrons, one of each spin. The equation can thus be simplified as the following:
 
 \[
 \rho = 2\sum_i|\phi_i|^2
 \]
 
-With the density matrix and under the assumption that all of the terms of Hamiltonian except the nuclear-nuclear repulsion can be expressed as the sum of one-electron operators. This gives out the Fock operator which is given by , 
+In HF the  multi-electron density matrix is simplified to a one electron density matrix and under the assumption that all of the terms of Hamiltonian except the nuclear-nuclear repulsion can be expressed as the sum of one-electron operators. This one-electron operator is named the Fock operator which is given by , 
 
 %The Hartree-Fock (HF) approach relies on assuming that the ground state of a many-fermion system can be uniquely characterized by the one-body density matrix (59). There are many ways of deriving the HF equations; the simplest one is to use the variational principle together with the following approximation of the two-body density matrix 
 
@@ -188,10 +185,20 @@ With the density matrix and under the assumption that all of the terms of Hamilt
 \[
 \hat{F}(\rho) = \hat{h}_1 + \hat{G}(\rho)
 \]
-where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation, here accounted for as an average interaction. The nuclear-nuclear interaction is approximated to constant so not accounted for in the Fock operator. 
+where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation, here accounted for as an average interaction. The nuclear-nuclear interaction is a constant so not accounted for in the Fock operator. 
 
-Then with a finite set of basis functions, Hamiltonian can be approximated by the Fock matrix which is defined by the Fock operator as
-%the Fock operator is approximated to the Fock matrix:
+In RHF the time invariant Schr\"{o}dinger equation is approximated into the Restricted Hartree-Fock Roothaan equation which is shown below
+\[
+FC_{occ} = SC_{occ}\epsilon
+\]
+
+%Geoff's comment
+
+% We might not need to talk about how we get fock operator other than that is an function of the density matrix (Put it into Appendix) [too much details and distract]
+
+where F is the Fock matrix and S is the overlap matrix which will reduce to the identity matrix if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. $C_{occ}$ is the coefficient matrix of the occupied states. It can be used to get the density matrix $\rho$ =  $C_{occ}$*$C_{occ}$.
+
+The Fock matrix is described with the Fock operator and a finite set of basis functions,
 \[
 F_{ij} = \int \phi_i^*\hat{F}\phi_j dx
 \]
@@ -205,29 +212,12 @@ F_{ij} = \int \phi_i^*\hat{F}\phi_j dx
 
 %The Hartree-Fock (HF) approach relies on assuming that the ground state of a many-fermion system can be uniquely characterized by the one-body density matrix (59). There are many ways of deriving the HF equations; the simplest one is to use the variational principle together with the following approximation of the two-body density matrix (60): 
 
-
-Using the Fock matrix, the time invariant Schr\"{o}dinger equation is approximated into the Restricted Hartree-Fock Roothaan equation which is shown below
-\[
-FC_{occ} = SC_{occ}\epsilon
-\]
-
-%Geoff's comment
-
-% We might not need to talk about how we get fock operator other than that is an function of the density matrix (Put it into Appendix) [too much details and distract]
-
-
-
-where F is the Fock matrix and S is the overlap matrix which will reduce to the identity matrix if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. C is the coefficient matrix of the occupied states. It can be used to get the density matrix $\rho$ =  $C_{occ}$*$C_{occ}$.
-
 %by picking the least-energetic k eigenvalues/vectors
 
-By performing a transformation of the basis to get an
-orthogonal basis will make S vanish leading to eigenvalue
-equation problem.
-However, since F and $\rho$ are mutual dependent, we can only approach the final density matrix iteratively.
+By performing a transformation of the basis to get an orthogonal basis will make S vanish leading to eigenvalue
+equation problem. However, since F and $\rho$ are mutual dependent, we can only approach the final density matrix iteratively.
 
-More specifically, to solve this equation, 
-we start with an arbitrary guess density $\rho_0$ as an input and construct the Fock operator. 
+More specifically, to solve this equation, we start with an arbitrary guess density $\rho_0$ as an input and construct the Fock operator. 
 After we have the Fock operator, we can solve for $C_{occ}$ by Roothann equation and update the density matrix to $\rho_1$. The procedure for updating $\rho_0$ to $\rho_1$ is the first iteration. Then in the iteration $i$, the previous output density matrix $\rho_{i-1}$ will serve as the input to the current iteration.
 
 We will keep doing this procedure until the difference of the energy given by the input density matrix in the iteration $n$, $\rho_{n-1}$,  and the output density matrix $\rho_n$ is less than a threshold, say $10^{-6}$.  A description to the whole process is given by Algorithm \ref{alg:hf}.
