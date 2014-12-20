@@ -404,7 +404,7 @@ Referring to the DAgger algorithm, in our case, $\Pi$ is the policy class consis
 %When applying DAgger to Hartree-Fock iteration $i$, we initialize $\pi_{(1)}$ equal to $\pi^*$. Then in during the DAgger iterations, we can generate a sequence of policies $\hat{\pi}_{(2)} , \hat{\pi}_{(3)}, \ldots, \hat{\pi}_{(i+1)}$, in which the output of previous policy will become the input of next policy.
 
 
-The main idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, when training policy $\hat{\pi}_{i}$ in DAgger iteration $i-1$,
+The main idea of DAgger is to train the policy under the induced state of the previous policy. Therefore, refer to the Dagger algorithm, when training policy $\hat{\pi}_{i}$ in DAgger iteration $i-1$,
 we will consider states generated from the previous policy $\hat{\pi}_{i-1}$. That is to say, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ after Hartree-Fock can in turn be used to train $\hat{c}_{(i+1,j+1)}$, the set of coefficients in the next Hartree-Fock iteration in the next policy.
 
 
@@ -412,21 +412,22 @@ We can visualize the whole process as a two-dimensional table. If we use a traje
 %,$\rho_0 \rightarrow \rho_2 \rightarrow  \rho_4 \rightarrow  \ldots \rightarrow  \rho_{2n}$. 
 In the table, each row represents the proceeding of Hartree-Fock and each column represents the aggregating learning process of DAgger. We use $(\rho_a, \rho_b, ....)$ to represents the linear combination of the density matrices within the parenthesis, and the arrow sign ``$\rightarrow$'' represents the outcome of taking a single step of Hartree-Fock starting from a linear combination of previous density matrices. We denote the output of the density matrix from DAgger iteration $m$ as $\rho_x^{[m]}$. m can also be denoted as the same amount of the prime mark. For example: $\rho_x^{3} = \rho_x^{'''}$.
 
-In the first iteration of Hartree-Fock, we only have one DAgger iteration, since there is no previous Hartree-Fock iteration. Our only objective here is to find a coefficient that best approaches the objective density matrix $\rho_2$ from  $\rho_0$ after this Hartree-Fock iteration. The objective can be denoted as $\rho_0 \rightarrow \rho_2$. 
+Again, for simplicity, if we think of each single Hartree-Fock iteration in isolation, in the first iteration of Hartree-Fock and first iteration of DAgger, the only objective is to find a coefficient that best approaches the objective density matrix $\rho_2$ from  $\rho_0$. The objective can be denoted as $\rho_0 \rightarrow \rho_2$. 
+
+We only list one DAgger iteration here, since the objective after first DAgger iteration will be all the same. This is because DAgger aggregates the new training dataset induced by the previous trained policy and also previous Hartree-Fock iteration in our scenario. Since there is no previous Hartree-Fock iteration, we will not have new dataset other than the one we have in the first DAgger iteration. As a result, the training dataset and also the best coefficient $\hat{c}_{(1,j)}$ for j>2 in Hatree-Fock iteration 1 will always be the same as $\hat{c}_{(1,2)}$. For the same reason, in the Hartree-Fock iteration $i$, we will only list $i$ DAgger iterations, since there will be no new dataset after $i$ DAgger iterations. Thus, the best coefficient $\hat{c}_{(i,j)}$ for j>i+1 in Hatree-Fock iteration $i$ will always be the same as $\hat{c}_{(i,i+1)}$.
 
 %TODO: Error of density matrix
 % Geoff: define d2' in terms of pi hat(1,2)
 Say, after training, we got the coefficient $\hat{c}_{(1,2)}$: $\rho_0 \rightarrow \rho_{2}'$ which $\rho_2'$ is the best density matrix we can get after Hartree-Fock.
 %which in turn can map density matrix 
 
-Then for the Hartree-Fock iterations afterwards, we have to aggregate the training datasets in each DAgger iteration. Since the induced state may not only be from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: 1.) but also
- may be from the state which is induced by the previous learned policy. (The new objective which is generated after the first DAgger iteration), DAgger can thus help to learn a best set of coefficient that perform well under the state distribution induced by previous policy.
+%Then for the Hartree-Fock iterations afterwards, we have to aggregate the training datasets in each DAgger iteration. Since the induced state may not only be from the expert's demonstration (All the objective listed in the first row of the DAgger iteration: 1.) but also may be from the state which is induced by the previous learned policy. (The new objective which is generated after the first DAgger iteration), DAgger can thus help to learn a best set of coefficient that perform well under the state distribution induced by previous policy.
 
 In the second iteration of Hatree-Fock, we'll have two DAgger iterations. In the first DAgger iteration, the only training dataset is from the expert's demonstration, and we want to train a set of coefficient  $\hat{c}_{(2,2)}$ that best matches density matrix $(\rho_0,\rho_2) \rightarrow \rho_4$.
 
-However, in the second DAgger iteration, we can also sample the trajectories using $\hat{c}_{(1,2)}$, thus get the training dataset $D_i$ = $(\rho_0, \rho_2') \rightarrow \rho_4$. This new dataset then will be added into D.
+However, in the second DAgger iteration, we will aggregate a new dataset using $\hat{c}_{(1,2)}$, thus get the training dataset $D_i$ = $(\rho_0, \rho_2') \rightarrow \rho_4$. This new dataset then will be added into the whole aggregated dataset D.
 %We then aggregate dataset that is the state induced by iteration 1,
-Next step is to train a policy that best fits the whole aggregated dataset D. Thus, not only do we want to fit the expert's demonstration $(\rho_0, \rho_2) \rightarrow \rho_4$, but also want to fit the output of the previous iteration to the true objective $ (\rho_0,\rho_{2}') \rightarrow \rho_4$. 
+Next step is to train a policy that best fits the whole aggregated dataset D. Thus, not only we do want to fit the expert's demonstration $(\rho_0, \rho_2) \rightarrow \rho_4$, but also want to fit the output of the previous iteration to the true objective $ (\rho_0,\rho_{2}') \rightarrow \rho_4$. 
 
 
 This is the key to compensating the error made by the previous iterations. It will keep aggregating the output of the previous iterations.
@@ -438,8 +439,7 @@ This is the key to compensating the error made by the previous iterations. It wi
 
 
 %Then $\hat{\pi}_{(i,i+1)}$ is the last policy we can get in the Hartree-Fock iteration $i$.
-In Hartree-Fock iteration i and DAgger iteration j-1, the new dataset
-is sampled by using $\hat{c}_{(i-1,j-1)}$. This new dataset will then be added into the aggregated dataset D. We want to train a set of coefficients that best fits all the density matrices in D to the ideal training objective.
+%In Hartree-Fock iteration i and DAgger iteration j-1, the new dataset is sampled by using $\hat{c}_{(i-1,j-1)}$. This new dataset will then be added into the aggregated dataset D. We want to train a set of coefficients that best fits all the density matrices in D to the ideal training objective.
 
 
 As a result, we will fit the expert's demonstration $(\rho_{2i})_{i=0}^{x-1} \rightarrow \rho_{2x}$, and also all the possible output states from the previous iterations 
