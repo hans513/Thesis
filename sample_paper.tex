@@ -55,14 +55,11 @@ In quantum mechanics, Hartree-Fock is an important method for approximating the 
 In the field of computational chemistry, Hartree-Fock is a method used to approximate the electron distribution and the energy of the system. 
 
 
-Electron distribution is considered the cornerstone of quantum computation, since the information of the entire quantum system can be induced from it. For example, if we can calculate the electron distribution of a molecule under different geometries, we can solve an important issue in quantum chemistry: the energy minimization problem in which we want to discover the equilibrium geometry of a molecular system given by a position distribution of nuclei and electrons that gives the global minimal energy. 
+Electron distribution is considered the cornerstone of quantum computation, since many important properties of the quantum system can be induced from it. For example, if we can calculate the electron distribution of a molecule under different geometries, we can solve an important issue in quantum chemistry: the energy minimization problem in which we want to discover the equilibrium geometry of a molecular system given by a position distribution of nuclei and electrons that gives the global minimal energy. 
 
  
  
-The electron distribution of a system is expressed by a density matrix in Hartree-Fock.
-% Explain density matrix
-%The density matrix represents the expected value of the number of electron we will find between any pair of orbitals
-Hartree-Fock is an iterative process. In each iteration, we will input a density matrix and get another density matrix which approaches final density matrix after computation. This process will be repeated until convergence.
+The electron distribution of a system is expressed by a density matrix in Hartree-Fock. Hartree-Fock is an iterative process. In each iteration, we will input a density matrix and get another density matrix. This process will be repeated until convergence.
 
 % The importance of speeding up Hartree-Fock
 Since Hartree-Fock is a numerical method and the computation time increases exponentially in the number of atoms, the whole process can easily become excessively time-consuming or even turns out to be infeasible very quickly.
@@ -128,7 +125,8 @@ Algorithms with sufficient accuracy are now available, and the Hartree-Fock (HF)
 
 
 % What is wave function, what is density matrix, 
-In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions. The basis function should meet some requirements.  The function should be continuously differentiable. And also, according to Copenhagen interpretation, the square of the modulus of the amplitude representing the probability density, the square integral should be 1. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, approximating the Slater exponent by linear combination of Gaussian functions is more computationally efficient and commonly used. 
+In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions. The basis function should meet some requirements.  The function should be continuously differentiable. And also, according to Copenhagen interpretation, the square of the modulus of the amplitude representing the probability density, the square integral should be 1. Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, approximating the basis set by linear combination of Gaussian functions is more computationally efficient and commonly used. 
+
 
 %To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. 
 Nevertheless, the larger the molecular system is, the more accurate model is desired. The more Gaussian functions are used in the basis set, the more accurate results we can attain. Both of these will make the system grow exponentially large. Consequently, speeding up the whole process is a very critical issue. \\
@@ -165,7 +163,9 @@ Since there is no analytical solution to the quantum many-body problem, Hartree-
 
 %density matrix doesn’t make computation simpler.  The density operator allows multiple eigenvalues to be present at once, which (by Pauli exclusion principle) allows more than one electron.  Density matrix is the representation of the density operator in our basis.
 
-A linear combination of the basis functions can be used to define the wave-function of the molecular system. Describing a multi-particle system with a wave-function will require increasing the size of the system in every single combination leading to increase in dimensions. A easier method to describe the multi-particle system is to aquire the density function or even a density matrix. This is a probability matrix of the molecular orbitals within the system given by
+A linear combination of the basis functions can be used to define the wave-function of the molecular system. 
+However, it's really difficult to describe a multi-particle system with a wave-function since there are interactions between each pair of particles. A easier method to describe the multi-particle system is to use the density matrix which is a probability matrix of the molecular orbitals within the system given by
+
 \[
 \rho = \sum_i\sum_\sigma|\phi_i(\sigma)|^2
 \]
