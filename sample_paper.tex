@@ -517,7 +517,7 @@ We ran the original Hartree-Fock until convergence, so we have the ground truth 
 %Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
 
 % Define error
-Our goal is to find a policy which quickly produces a density matrix with low error, defined as error of matrix + error of energy. The error of the matrix is given by $\|\rho_i-\rho_n\|$. Likewise, the error of energy is given by $E(\rho_i)-E(\rho_n)$. Once we have the error function, we can optimize the coefficients by minimizing the square error.
+Our goal is to find a policy which quickly produces a density matrix with low square error. The error is defined as error of matrix + error of energy. The error of the matrix is given by $\|\rho_i-\rho_n\|$. Likewise, the error of energy is given by $|E(\rho_i)-E(\rho_n)|$. Once we have the error function, we can optimize the coefficients by minimizing the square error.
 
 % Goal
 %The goal is to train the Hartree-Fock with linear combination policy that can reach the steady-state density matrix for a given molecule faster than the original Hartree-Fock.
