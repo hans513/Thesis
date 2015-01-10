@@ -46,7 +46,7 @@
 ]
 
 \begin{abstract}
-In quantum mechanics, Hartree-Fock is an important method for approximating the electron distribution and energy of a given molecular system. However, Hartree-Fock is excessively time-consuming or even infeasible when applied to large molecules. Besides, depending on input, it is not always guaranteed to converge to a solution. Speeding up Hartree-Fock and making it more robust would thus enable scientists to deal with more complicated molecules and study chemical reactions with larger systems. In the present work, we attempt to improve on Hartree-Fock by imitation learning: from the trajectory produced by the original Hartree-Fock, we extract an (expensive to evaluate) expert policy which converges to a solution quickly and reliably, and attempt to imitate this policy with a less-expensive policy class.  To solve the imitation learning problem, we apply the Dataset Aggregation algorithm (DAgger), which learns a policy that is guaranteed to perform well under its induced distribution of states. In the experiment, we shows that after applying one iteration of DAgger, we got a faster convergence. With multiple iterations, the performance becomes smoother and less over-fit. 
+In quantum mechanics, Hartree-Fock is an important method for approximating the electron distribution and energy of a given molecular system. However, Hartree-Fock is excessively time-consuming or even infeasible when applied to large molecules. Besides, depending on input, it is not always guaranteed to converge to a solution. Speeding up Hartree-Fock and making it more robust would thus enable scientists to deal with more complicated molecules and study chemical reactions with larger systems. In the present work, we attempt to improve on Hartree-Fock by imitation learning: from the trajectory produced by the original Hartree-Fock, we extract an (expensive to evaluate) expert policy which converges to a solution quickly and reliably, and attempt to imitate this policy with a less-expensive policy class.  To solve the imitation learning problem, we apply the Dataset Aggregation algorithm (DAgger), which learns a policy that is guaranteed to perform well under its induced distribution of states. In the experiment, we show that after applying one iteration of DAgger, we got a faster convergence. With multiple iterations, the performance becomes smoother and less over-fit. 
 \end{abstract}
 
 \section{INTRODUCTION}
@@ -62,10 +62,10 @@ Electron distribution is considered the cornerstone of quantum computation, sinc
 The electron distribution of a system is expressed by a density matrix in Hartree-Fock. Hartree-Fock is an iterative process. In each iteration, we will input a density matrix and get another density matrix. This process will be repeated until convergence.
 
 % The importance of speeding up Hartree-Fock
-Since Hartree-Fock is a numerical method and the most straightforward way to get accurate result may cause the computation time to increase exponentially with the number of atoms, the whole process can easily become excessively time-consuming or even turn out to be infeasible very quickly.
+Since Hartree-Fock is a numerical method and the most straightforward implementation yields computation times that scale as the number of atoms to the fourth power, the process can become excessively time-consuming and computationally nonfeasible. .
 
 
-This grows into the bottleneck of all the computation in quantum chemistry which limits not only the accuracy of the results but also the size of the molecules we can deal with.
+Since more advanced computational schemes typically start with a Hartree-Fock solution, this leads to a bottleneck in quantum chemistry which may limit the accuracy of the results but also the size of the molecules we can deal with.
 
 
 %The most straightforward way to choose a basis (as a product of per-atom bases) results in a basis set that grows exponentially with the number of atoms.  We can try to choose a smaller basis if desired, but by doing so we risk missing important effects.  (E.g.,  we would often skip the interaction between two atoms that are very far apart, or replace it with a less-detailed one; but to prevent the basis from growing too large we may have to skip interactions too aggressively to maintain accuracy.)
@@ -81,7 +81,7 @@ This grows into the bottleneck of all the computation in quantum chemistry which
 %With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration make more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
 %[+++ No Embedded parameter now!!! +++ ] \\
 
-Accelerating Hartree-Fock hence becomes a very popular research topic among quantum chemists. For instance, Pulay \cite{Pulay1980} proposed that using the linear combination of few density matrices generated from previous iterations of Hartree-Fock may lead to faster convergence with less iteration. However, how to generate the best linear combination that may lead to the fastest convergence remains an open question. This raises our interests in finding a promising linear combination which accelerates the process. In particular, with the extra flexibility given by the linear combination of previous density matrices, we would like to make single iteration of Hartree-Fock achieve as much progress as two or even more iterations of the original Hartree-Fock.
+Accelerating Hartree-Fock hence becomes a very popular research topic among quantum chemists. For instance, Pulay \cite{Pulay1980} proposed that using a linear combination of few density matrices generated from previous iterations of Hartree-Fock may lead to faster convergence with less iteration. However, how to generate the best linear combination that may lead to the fastest convergence remains an open question. \cite{Konstantin2002}\cite{Thorsten2011}\cite{Alejandro2012}  This raises our interests in finding a promising linear combination which accelerates the process. In particular, with the extra flexibility given by the linear combination of previous density matrices, we would like to make a single iteration of Hartree-Fock achieve as much progress as two or even more iterations of the original Hartree-Fock.
 
 
 %With the extra flexibility given by the linear combination of previous density matrices, it is possible for us to let Hartree-Fock make more progress in each iteration. 
@@ -92,7 +92,7 @@ Accelerating Hartree-Fock hence becomes a very popular research topic among quan
 %With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration make more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
 
 % How to do that? (Imitation learning)
-This idea can be realized through imitation learning, a paradigm also called learning from demonstration that is designated to learn a policy from imitating an expert's demonstrations so as to become capable of performing the same tasks. 
+This idea can be realized through imitation learning, a paradigm also called learning from demonstration that is designed to learn a policy from imitating an expert's demonstrations so as to become capable of performing the same tasks. 
 
 To achieve this goal, we can generate an illustrative trajectory from the base Hartree-Fock trajectory as the expert's demonstrations. Then, we can apply supervised learning to train a policy that mimics the demonstration. 
 
@@ -136,7 +136,7 @@ For computational efficiency, it is common to choose our basis functions to be l
 
 
 %To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. 
-Nevertheless, the larger the molecular system is, the more accurate model is desired. The more Gaussian functions are used in the basis set, the more accurate results we can attain. Both of these will make the system grow exponentially large. Consequently, speeding up the whole process is a very critical issue. \\
+The more Gaussian functions are used in the basis set, the more accurate results we can attain. Both of these will make the system grow exponentially large. Consequently, speeding up the whole process is a very critical issue. \\
 
 % Why does Hartree-Fock work on density matrices instead of wave function
 % It's hard to describe multiple particles by wave function
@@ -631,6 +631,18 @@ Conference on Artificial Intelligence and Statistics (AISTATS),
    P\'{e}ter Pulay,
   \emph{Convergence acceleration of iterative sequences. The case of SCF iteration.} Chem. Phys. Lett. 73, 393 (1980).
 
+  \bibitem{Konstantin2002}
+   Konstantin N. Kudin, Gustavo E. Scuseria, Eric Canc\'{e}s
+  \emph{A black-box self-consistent field convergence algorithm: One step closer.} J. Chem. Phys. 116, 8255 (2002).
+
+  \bibitem{Thorsten2011}
+  Thorsten Rohwedder, Reinhold Schneider
+  \emph{An analysis for the DIIS acceleration method used in quantum chemistry calculations.} Journal of Mathematical Chemistry
+October 2011, Volume 49, Issue 9, pp 1889-1914.
+  
+  \bibitem{Alejandro2012}
+  Alejandro J. Garza, Gustavo E. Scuseria
+  \emph{Comparison of self-consistent field convergence acceleration techniques.} J. Chem. Phys. 137, 054110 (2012).
 \end{thebibliography}
 
 \end{document}
