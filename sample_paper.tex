@@ -563,14 +563,14 @@ We evaluated the performance of each policy in terms of error and robustness. We
 \begin{figure}[h!]
   \caption{Error on training dataset}
 	\label{fig:training}
-    \includegraphics[width=210px]{Dagger_beta05_training.jpg}
+    \includegraphics[width=210px]{Dagger_beta05_training.png}
 \end{figure}
 
 \begin{figure}[h!]
 
   \caption{Error on testing dataset}
   \label{fig:testing}
-    \includegraphics[width=210px]{Dagger_beta05_testing.jpg}
+    \includegraphics[width=210px]{Dagger_beta05_testing.png}
 \end{figure}
 
 %Figure \ref{fig:training} shows the error of each policy on training dataset for 12 iterations. The baseline is the policy that always uses the average of the last two density matrices to serve as the input to the next iteration.  We can observe that all the policies seems to  converge within 10 iterations except the baseline fluctuates. The pure linear combination got the lowest error since it always aim for the final objective. On the other hand, DAgger keep aggregating datasets thus has a more diverse training data. Both the DAgger with different experts have similar performance in the first 6 iterations, and fall behinds pure linear combination after iteration 7. 
@@ -588,14 +588,14 @@ Compare to the result on the training dataset (Figure \ref{fig:training}), the c
 \begin{figure}[h!]
   \caption{Absolute value of difference between iterations on training dataset}
 	\label{fig:converge_training}
-    \includegraphics[width=210px]{convergence_Training.jpg}
+    \includegraphics[width=210px]{convergence_Training.png}
 \end{figure}
 
 \begin{figure}[h!]
 
   \caption{Absolute value of difference between iterations on testing dataset}
   \label{fig:converge_testing}
-    \includegraphics[width=210px]{convergence_Testing.jpg}
+    \includegraphics[width=210px]{convergence_Testing.png}
 \end{figure}
 
 
