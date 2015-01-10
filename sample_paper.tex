@@ -511,7 +511,7 @@ Two different models of electric field environments are applied, one with a grid
 Our goal is to train a modified Hartree-Fock procedure that accurately predicts the density matrix and the energy expectation values. Therefore, for each pair of molecular configuration with an environment, we generated expectation values of each operator that appears in the Hamiltonian (total kinetic energy, interaction of the electron density with each nucleus, and total two-electron repulsion energy) to serve as the ground truth. 
 
 % DATA SET
-Initially the model was trained on the dataset which has point charges as environment. This data set has 20 geometry configurations, and each configuration will be put under 11 different environments (1 with no environment + 10 different environments). The second data set uses the fixed electric field environments. There are the same 20 geometry configurations under different 4 environments (1 with no environment + 3 different fields for X, Y and Z).  We split the whole dataset into two parts evenly. We use the first 10 geometries to serve as the training dataset, and the remaining 10 geometries as testing dataset.
+Initially the model was trained on the dataset which has different electric fields as environment. This data set has 20 geometry configurations, and each configuration will be put under 4 different environments (1 with no environment + 3 different fields for X, Y and Z).  We split the whole dataset into two parts evenly. We use the first 10 geometries to serve as the training dataset, and the remaining 10 geometries as testing dataset.
 
 We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady-state density matrices and the energy of the given molecular system under different geometries. 
 %Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
@@ -543,9 +543,7 @@ One is from the trajectory that has a step size of two of the ``Pure Linear Comb
 %MENTION THE CASE THAT MAY NEVER CONVERGE \\
 When iteration of Hartree-Fock converge, we can get the final steady-state density matrix and also the energy of the system. However, the process does not always lead to convergence. For example, under some strong electric fields, the process may keep running and never reach convergence.
 
-In the experiment, we will also examine the robustness of different policies.
-We can plot the difference between the iterations to examine the rate of convergence and also the smoothness of the plot can stand for the robustness of different policies.
-%by the smoothness of the plot.
+In the experiment, we will also examine the robustness of different policies by the smoothness of the plot.
 
 
 %What is convergence rate \\
@@ -559,7 +557,7 @@ We can plot the difference between the iterations to examine the rate of converg
 
 \subsection{Experiment result}
 
-We evaluated the performance of each policy in terms of error and robustness. We will find that DAgger converges faster and get lower error in the same amount of iterations, since it tries to imitate a better expert's demonstration. Also, considering DAgger trains on the dataset that aggregates new dataset iteration by iteration. As the dataset growing, it adds more diversity to the dataset and may lead to a more robust policy which in turn will be a smoother plot.
+We evaluated the performance of each policy in terms of error and robustness. We will find that pure linear combination already converges pretty fast and get much lower error in the same amount of iterations compare to the baseline, since it always tries to reaches final density matrix in each iteration. However, considering DAgger trains on the dataset that aggregates new dataset iteration by iteration. As the dataset growing, it adds more diversity to the dataset and lead to a more robust policy which results a smoother plot.
 
 
 \begin{figure}[h!]
@@ -604,7 +602,7 @@ Compare to the result on the training dataset (Figure \ref{fig:training}), the c
 \section{CONCLUSION}
 In the experiment, we first proposed the pure linear combination policy. It is easy to train and already can yield much lower error comparing to the baseline. However, it tend to somewhat over-fit the training data and performance fluctuates on testing data accordingly. 
 
-On the other hand, Dagger does train a more robust policy which has a smooth and steady decreasing trend, and also being consistent from training to testing dataset. However, DAgger does not help to gain lower error than the pure linear combination. It is possible that because the pure linear combination and the DAgger have the same policy space, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecules or on the case which is hard to get to convergence.
+On the other hand, DAgger does train a more robust policy which has a smooth and steady decreasing trend, and also being consistent from training to testing dataset. However, DAgger does not help to gain lower error than the pure linear combination. It is possible that because the pure linear combination and the DAgger have the same policy space, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecules or on the case which is hard to get to convergence.
 
 
 \begin{thebibliography}{9}
