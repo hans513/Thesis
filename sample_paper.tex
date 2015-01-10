@@ -167,42 +167,31 @@ The time-invariant Schro\"{o}dinger equation is an eigenvalue problem; in genera
 Since there is no analytical solution to the quantum many-body problem, Hartree-Fock (HF) is a numerical method for finding approximate solutions to the time invariant Schr\"{o}dinger equation. 
 
 
-
 %density matrix doesn’t make computation simpler.  The density operator allows multiple eigenvalues to be present at once, which (by Pauli exclusion principle) allows more than one electron.  Density matrix is the representation of the density operator in our basis.
 
 %Density matrices are exactly and only to solve the problem that wave functions cannot represent classical uncertainty (like coin flips).
 
-A linear combination of the basis functions can be used to define the wave-function of the molecular system. However, since wave functions cannot represent classical uncertainty or particle counts, we move instead to density operators.  If $\Psi_1, \Psi_2, \ldots$ are wave functions, and if $\alpha_1, \alpha_2, \ldots$ are positive real numbers, then
-$$\rho = \sum_i \alpha_i \Psi_i\Psi_i^*$$
-is a density operator, representing a system in which (on average) there are $\alpha_1$ particles that occupy wave function $\Psi_1$,  $\alpha_2$ that occupy $\Psi_2$, and so forth.
-
-We approximate the density operator by its representation in our finite basis: 
-$$\rho \approx \sum_{ij} \rho_{ij}\psi_i\psi_j^*$$
-
-%======TODOTODO
- Molecular orbitals are orbitals created when two or more elements interact and are usually described using a linear combination of atomic orbitals. Density matrix is a probability matrix of the molecular orbitals within the system and is given by
-\[
-\rho = \sum_{i,j}\sum_\sigma|\phi_{i,j}(\sigma)|^2
-\]
-Where $\phi_{i,j}$ is the $i,j$th molecular orbital which is a wave function describing the behavior of an electron in a molecule.
-$\sigma$ is the spin coordinate of the electron. 
-%==============
-
-The Restricted Hartree-Fock (RHF) which is the most commonly used model of HF, assumes all the lowest-energy orbitals are fully occupied. Given the Pauli exclusion principle, each orbital will carry two electrons, one of each spin. The equation can thus be simplified as the following:
+The molecular orbitals, $\phi_a$, are given by:
 
 \[
-\rho = 2\sum_{i,j}|\phi_{i,j}|^2
+\phi_a = \sum_i c_{i,a} \chi_i
 \]
 
-In HF the  multi-electron density matrix is simplified to a one electron density matrix under the assumption that all of the terms of Hamiltonian except the nuclear-nuclear repulsion can be expressed as the sum of one-electron operators. This one-electron operator is named the Fock operator which is given by
+where $\chi_i$ are the atomic orbitals. We assume restricted Hartree-Fock theory, in which each orbital is doubly occupied (containing one electron with up and one down spin). The density matrix captures the distribution of electrons in a molecule and is given by :
 
-%The Hartree-Fock (HF) approach relies on assuming that the ground state of a many-fermion system can be uniquely characterized by the one-body density matrix (59). There are many ways of deriving the HF equations; the simplest one is to use the variational principle together with the following approximation of the two-body density matrix 
+\[
+\rho_{i,j} = 2 \sum_{a} c_{i,a}c_{j,a}
+\]
+
+where the sum is over all filled orbitals,a.
+
+In HF, the many-electron Hamiltonian is simplified to a one-electron operator, named the Fock operator, which is given by
 
 %the Hamiltonian can be approximated by the Fock operator as shown below.
 \[
 \hat{F}(\rho) = \hat{h}_1 + \hat{G}(\rho)
 \]
-where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for electron correlation, here accounted for as an average interaction. The nuclear-nuclear interaction is a constant so not accounted for in the Fock operator. 
+where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for interaction between electrons, here accounted for as an average interaction. The nuclear-nuclear interaction is a constant so not accounted for in the Fock operator. 
 
 In HF the time invariant Schr\"{o}dinger equation is approximated into the Roothaan equation which has the following form
 \[
@@ -214,14 +203,18 @@ FC = SC\epsilon
 % We might not need to talk about how we get fock operator other than that is an function of the density matrix (Put it into Appendix) [too much details and distract]
 
 where $F$ is the Fock matrix which is described with the Fock operator and a finite set of basis functions,
+
 \[
 F_{ij} = \int \phi_i^*\hat{F}\phi_j
 \]
+
 And $S$ is the overlap matrix given by
+
 \[
 S_{ij} = \int \phi_i^*\phi_j
 \]
-This matrix will reduce to the identity  if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. $C$ is the coefficient matrix of all the states. In RHF it can be used to get the density matrix $\rho$ =  $C_{occ}{C_{occ}}^*$ in which $C_{occ}$ is the coefficient matrix of all the occupied states.
+
+This matrix will reduce to the identity  if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. $C$ is the coefficient matrix of all the molecular orbitals, $c_{i,a}$ . In RHF it can be used to get the density matrix $\rho$ =  $C_{occ}{C_{occ}}^*$ in which $C_{occ}$ is the coefficient matrix of all the occupied orbitals.
 
 %The Fock operator doesn’t directly approximate the Hamiltionian.  There are two steps here: 
 
