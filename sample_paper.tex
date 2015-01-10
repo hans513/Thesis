@@ -226,12 +226,15 @@ This matrix will reduce to the identity  if we have an orthonormal basis set. $\
 
 %by picking the least-energetic k eigenvalues/vectors
 
-By performing a transformation of the basis to get an orthogonal basis will make $S$ vanish leading to eigenvalue equation problem. However, as we mentioned before, since $F$ depends on $\rho$ and $\rho$ can be updated by $C$ which is again depends on $F$, we can only approach the final density matrix iteratively.
+% DELETE BY DAVE
+%By performing a transformation of the basis to get an orthogonal basis will make $S$ vanish leading to eigenvalue equation problem. However, a
+
+As we mentioned before, since $F$ depends on $\rho$ and $\rho$ can be updated by $C$ which is again depends on $F$, we can only approach the final density matrix iteratively.
 
 More specifically, to solve this equation, we start with an arbitrary guess density $\rho_0$ as an input and construct the Fock operator. 
 After we have the Fock operator, we can solve for $C_{occ}$ by Roothann equation and update the density matrix to $\rho_1$. The procedure for updating $\rho_0$ to $\rho_1$ is the first iteration. Then in the iteration $i$, the previous output density matrix $\rho_{i-1}$ will serve as the input to the current iteration.
 
-We will keep doing this procedure until the difference of the energy given by the input density matrix in the iteration $n$, $\rho_{n-1}$,  and the output density matrix $\rho_n$ is less than a threshold, say $10^{-6}$.  A description to the whole process is given by Algorithm \ref{alg:hf}.
+We will keep doing this procedure until the difference of the energy given by the input density matrix in the iteration $n$, $\rho_{n-1}$,  and the output density matrix $\rho_n$ is less than a threshold, say $10^{-6}$.  A description of the whole process is given by Algorithm \ref{alg:hf}.
 
 %The process will be repeated until it meets the termination criteria. 
 
@@ -259,8 +262,8 @@ We will keep doing this procedure until the difference of the energy given by th
  \caption{Hartree-Fock algorithm}
 \end{algorithm}
 
-In large molecular system, the process is extremely time consuming and each iteration may take hours or even days of computation thus become infeasible. 
-As a result, how to speed up the Hartree-Fock process becomes an critical issue in quantum chemistry.
+In large molecular system, the process is extremely time consuming and each iteration may take hours or even days of computation and thus become infeasible. 
+As a result, a means to accelerate convergence of the Hartree-Fock process becomes an critical issue in quantum chemistry.
 
 
 
