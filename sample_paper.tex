@@ -62,7 +62,7 @@ Electron distribution is considered the cornerstone of quantum computation, sinc
 The electron distribution of a system is expressed by a density matrix in Hartree-Fock. Hartree-Fock is an iterative process. In each iteration, we will input a density matrix and get another density matrix. This process will be repeated until convergence.
 
 % The importance of speeding up Hartree-Fock
-Since Hartree-Fock is a numerical method and the most straightforward implementation yields computation times that scale as the number of atoms to the fourth power, the process can become excessively time-consuming and computationally nonfeasible. .
+Since Hartree-Fock is a numerical method and the most straightforward implementation yields computation times that scale as the number of atoms to the fourth power, the process can become excessively time-consuming and computationally infeasible.
 
 
 Since more advanced computational schemes typically start with a Hartree-Fock solution, this leads to a bottleneck in quantum chemistry which may limit the accuracy of the results but also the size of the molecules we can deal with.
@@ -123,20 +123,17 @@ through dataset aggregation algorithm (DAgger) \cite{DAgger}, we can train a set
 % We also care about the sub-region energy and electron density directly
 % The goal is to calculate the properties of the molecule such as the energy and density
 
-The main objective in the area of theoretical chemistry is to find a method that can efficiently calculate the electronic distribution of any given molecular system. %Through the electronic distribution we can approximate the whole molecule structure.
+A main objective in the area of theoretical chemistry is to find a method that can efficiently calculate the electronic distribution of any given molecular system. %Through the electronic distribution we can approximate the whole molecule structure.
 %Efficiently computing the energy of a molecule as a function of its structure, E(R), is one of the most fundamental challenges in computational chemistry. 
 Algorithms with sufficient accuracy are now available, and the Hartree-Fock (HF) algorithm is the starting point.
 
 
 
 % What is wave function, what is density matrix, 
-In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions which should be continuously differentiable. And also, the square of the modulus of the wave function representing the probability density, the square integral of the wave function should be 1.
+In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions $\phi_a$ which should be continuously differentiable. And also, the square of the modulus of the wave function representing the probability density, the square integral of the wave function should be 1.
 %Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, choosing the basis set to have linear combination of Gaussian functions is more computationally efficient and commonly used. 
-For computational efficiency, it is common to choose our basis functions to be linear combinations of Gaussian radial basis functions
-
-
-%To computationally describe the atomic orbitals, basis functions are used and collectively they are called a basis set. 
-The more Gaussian functions are used in the basis set, the more accurate results we can attain. Both of these will make the system grow exponentially large. Consequently, speeding up the whole process is a very critical issue. \\
+For computational efficiency, it is common to choose our basis functions to be linear combinations of Gaussian radial basis functions.
+The more Gaussian functions are used in the basis set, the more accurate results we can attain. To increase the accuracy, speeding up the whole process is a very critical issue. \\
 
 % Why does Hartree-Fock work on density matrices instead of wave function
 % It's hard to describe multiple particles by wave function
@@ -155,7 +152,10 @@ The time invariant Schr\"{o}dinger equation can be represented as:
 				\hat{H}\Psi = E\Psi
 \]
 The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function $\Psi$ providing the result equal to the energy E times the wave-function $\Psi$. The Hamiltonian operator is given by the sum of two operators as: $\hat{H} = \hat{T} + \hat{V}$,  where $\hat{T}$ and $\hat{V}$ are the kinetic energy operator and the potential energy operator respectively. 
-The time-invariant Schro\"{o}dinger equation is an eigenvalue problem; in general, it will have multiple solutions $(E_1, \Psi_1), (E_2,\Psi_2), \ldots$ of different energies.  Each solution is called a (molecular) orbital, and represents a time-invariant wave function which a particle (in our case an electron) can occupy.
+The time-invariant Schro\"{o}dinger equation is an eigenvalue problem; in general, it will have multiple solutions $(E_1, \Psi_1), (E_2,\Psi_2), \ldots$ of different energies.  
+
+%DELETED BY GEOFF
+%ach solution is called a (molecular) orbital, and represents a time-invariant wave function which a particle (in our case an electron) can occupy.
 
 %The integrals of the these basis functions are viewed as matrices when solving the HF algorithm.
 
@@ -171,19 +171,20 @@ Since there is no analytical solution to the quantum many-body problem, Hartree-
 
 %Density matrices are exactly and only to solve the problem that wave functions cannot represent classical uncertainty (like coin flips).
 
-The molecular orbitals, $\phi_a$, are given by:
 
-\[
-\phi_a = \sum_i c_{i,a} \chi_i
-\]
+%The molecular orbitals, $\phi_a$, are given by:
 
-where $\chi_i$ are the atomic orbitals. We assume restricted Hartree-Fock theory, in which each orbital is doubly occupied (containing one electron with up and one down spin). The density matrix captures the distribution of electrons in a molecule and is given by :
+%\[
+%\phi_a = \sum_i c_{i,a} \chi_i
+%\]
 
-\[
-\rho_{i,j} = 2 \sum_{a} c_{i,a}c_{j,a}
-\]
+%where $\chi_i$ are the atomic orbitals. We assume restricted Hartree-Fock theory, in which each orbital is doubly occupied (containing one electron with up and one down spin). The density matrix captures the distribution of electrons in a molecule and is given by :
 
-where the sum is over all filled orbitals,a.
+%\[
+%\rho_{i,j} = 2 \sum_{a} c_{i,a}c_{j,a}
+%\]
+
+%where the sum is over all filled orbitals, $a$.
 
 In HF, the many-electron Hamiltonian is simplified to a one-electron operator, named the Fock operator, which is given by
 
@@ -193,7 +194,7 @@ In HF, the many-electron Hamiltonian is simplified to a one-electron operator, n
 \]
 where $\hat{h}_1$ is the one electron Hamiltonian containing the kinetic energy operator and the electron-nuclear interaction operator. $\hat{G}$ is the approximation of the two electron interaction which accounts for interaction between electrons, here accounted for as an average interaction. The nuclear-nuclear interaction is a constant so not accounted for in the Fock operator. 
 
-In HF the time invariant Schr\"{o}dinger equation is approximated into the Roothaan equation which has the following form
+In HF the time invariant Schr\"{o}dinger equation is approximated into the Roothaan equation which has the form of a generalized eigenvalue problem:
 \[
 FC = SC\epsilon
 \]
@@ -202,7 +203,7 @@ FC = SC\epsilon
 
 % We might not need to talk about how we get fock operator other than that is an function of the density matrix (Put it into Appendix) [too much details and distract]
 
-where $F$ is the Fock matrix which is described with the Fock operator and a finite set of basis functions,
+where $F$ is the Fock matrix which is described with the Fock operator and our set of basis functions,
 
 \[
 F_{ij} = \int \phi_i^*\hat{F}\phi_j
@@ -214,7 +215,16 @@ And $S$ is the overlap matrix given by
 S_{ij} = \int \phi_i^*\phi_j
 \]
 
-This matrix will reduce to the identity  if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. $C$ is the coefficient matrix of all the molecular orbitals, $c_{i,a}$ . In RHF it can be used to get the density matrix $\rho$ =  $C_{occ}{C_{occ}}^*$ in which $C_{occ}$ is the coefficient matrix of all the occupied orbitals.
+
+
+
+This matrix will reduce to the identity if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. 
+Solutions to Roothaan equation are called molecular orbitals, are represented in our basis as $\sum_i c_{ia}\phi_a$, and can be used to get density matrix $\rho = CC^*$ (or 2 $CC^*$ depending on which convention you want to use for $C_{occ}$) by using the assumption of 2 electrons per molecular orbital starting from the lowest-energy one.
+
+
+%$C$ is the coefficient matrix of all the molecular orbitals, $c_{i,a}$ . In RHF it can be used to get the density matrix $\rho$ =  $C_{occ}{C_{occ}}^*$ in which $C_{occ}$ is the coefficient matrix of all the occupied orbitals.
+
+
 
 %The Fock operator doesn’t directly approximate the Hamiltionian.  There are two steps here: 
 
@@ -248,8 +258,7 @@ We will keep doing this procedure until the difference of the energy given by th
  \label{alg:hf}
  \KwData{ 3D coordinates of atomic nucleus}
  \KwResult{Density matrix which gives minimum energy}
-	Set up the size of the basis set/ Set up number of basis functions\\%can perhaps delete this
-	Calculate one electron Hamiltonian($h_1$) by input data  \\% can maybe delete this too, I think that is what Geoff wanted
+	Set up the size of the basis set \\
 	Initialize $i \leftarrow	 0$ \\	
 	Pick a guess density $\rho_0$ \\
 	Pick $\delta$ to be a small value (termination criteria) \\
@@ -418,8 +427,8 @@ Referring to the DAgger algorithm, in our case, $\Pi$ is the policy class consis
 %When applying DAgger to Hartree-Fock iteration $i$, we initialize $\pi_{(1)}$ equal to $\pi^*$. Then in during the DAgger iterations, we can generate a sequence of policies $\hat{\pi}_{(2)} , \hat{\pi}_{(3)}, \ldots, \hat{\pi}_{(i+1)}$, in which the output of previous policy will become the input of next policy.
 
 
-The main idea of DAgger is to train the policy under the induced state of the previous policies. Therefore, refer to the Dagger algorithm, when training policy $\hat{\pi}_{i}$ in DAgger iteration $i-1$,
-we will consider states generated from the previous policy $\hat{\pi}_{i-1}$. That is to say, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ after Hartree-Fock can in turn be used to train $\hat{c}_{(i+1,j+1)}$, the set of coefficients in the next Hartree-Fock iteration in the next policy.
+The main idea of DAgger is to train the policy under the induced state of the previous policies. Therefore, refer to the DAgger algorithm, when training policy $\hat{\pi}_{i}$ in DAgger iteration $i-1$,
+we will consider states generated from the previous policy $\hat{\pi}_{i-1}$ and all earlier policies. That is to say, if we think of each single Hartree-Fock iteration in isolation, we can denote $\hat{c}_{(i,j)}$ the set of coefficients trained in the Hartree-Fock iteration $i$ and DAgger iteration $j-1$. Then the output of the density matrices generated from $\hat{c}_{(i,j)}$ after Hartree-Fock can in turn be used to train $\hat{c}_{(i+1,j+1)}$, the set of coefficients in the next Hartree-Fock iteration in the next policy.
 
 
 We can visualize the whole process as a two-dimensional table. If we use a trajectory which has a step size of two of the original trajectory to serve as the expert's demonstration, we can refer to table 1 for the training procedure.
@@ -485,7 +494,7 @@ As a result, given a molecule, we can train a policy under a set of instances, a
  
 \subsection{Experiment Dataset}
 
-The data consists of the electronic structure of varying 3-fluoro-3-methyl-1-butene geometries in a range of different electric field environments. The structure of the molecule is shown in figure \ref{fig:molecule}. The geometries are picked from trajectories when simulating a thermal ensemble on the molecule. This will give a good and realistic distribution over geometries, in which the bond length, bond angle and dihedral angle are all distorted. 
+The data consists of the electronic structure of varying 3-fluoro-3-methyl-1-butene geometries in different fixed electric field environments in X, Y and Z direction. The structure of the molecule is shown in figure \ref{fig:molecule}. The geometries are picked from trajectories when simulating a thermal ensemble on the molecule. This will give a good and realistic distribution over geometries, in which the bond length, bond angle and dihedral angle are all distorted. 
 
 \begin{figure}[h!]
   \caption{3-fluoro-3-methyl-1-butene molecule}
@@ -495,7 +504,7 @@ The data consists of the electronic structure of varying 3-fluoro-3-methyl-1-but
 
 
 %Environment
-Two different models of electric field environments are applied, one with a grid of point charges and one with a fixed electric fields in X, Y and Z direction. The point charge model is similar to the ChelpG model \cite{ChelpG} where random point charges are placed around the molecule at a certain distance. In this dataset, we set the number of point charges to 100.
+%Two different models of electric field environments are applied, one with a grid of point charges and one with a fixed electric fields in X, Y and Z direction. The point charge model is similar to the ChelpG model \cite{ChelpG} where random point charges are placed around the molecule at a certain distance. In this dataset, we set the number of point charges to 100.
  
 
 %This includes perturbations from external electrostatic potentials, due to other portions of the molecule or from solvent, and inductive effects from acceptors and donors. 
@@ -529,7 +538,7 @@ One naive approach to build the first good policy is always using all the densit
 Because we already know the final steady-state density matrix, and in each iteration we aim for the final objective directly, it's possible that we can build up a trajectory that reaches final density matrix much faster then the original process. At the same time, we will learn a policy from it. Let's call it the ``Pure Linear Combination'' policy.
 
 %SHOULD ALSO MENTIONED TWO DIFFERENT EXPERT \\
-Though we already aim for the final objective in each iteration, we still can try to build up a better expert's demonstration from it and perhaps train the other policy which is faster than the pure linear combination one.
+Though we already aim for the final objective in each iteration, we still can try to build up a better expert's demonstration from it and perhaps train another policy which is faster than the pure linear combination one.
 
 In the experiment, we built up two different expert's policies. 
 One is from the trajectory that has a step size of two of the ``Pure Linear Combination'' trajectory. The other one is from the perfect trajectory which always return the final steady-state matrix in one iteration.
@@ -539,7 +548,7 @@ One is from the trajectory that has a step size of two of the ``Pure Linear Comb
 %MENTION THE CASE THAT MAY NEVER CONVERGE \\
 When iteration of Hartree-Fock converge, we can get the final steady-state density matrix and also the energy of the system. However, the process does not always lead to convergence. For example, under some strong electric fields, the process may keep running and never reach convergence.
 
-In the experiment, we will also examine the robustness of different policies by the smoothness of the plot.
+%In the experiment, we will also examine the robustness of different policies by the smoothness of the plot.
 
 
 %What is convergence rate \\
@@ -553,7 +562,7 @@ In the experiment, we will also examine the robustness of different policies by 
 
 \subsection{Experiment result}
 
-We evaluated the performance of each policy in terms of error and robustness. We will find that pure linear combination already converges pretty fast and get much lower error in the same amount of iterations compare to the baseline, since it always tries to reaches final density matrix in each iteration. However, considering DAgger trains on the dataset that aggregates new dataset iteration by iteration. As the dataset growing, it adds more diversity to the dataset and lead to a more robust policy which results a smoother plot.
+We evaluated the performance of each policy in terms of error and robustness. We will find that pure linear combination already converges pretty fast and get much lower error in the same amount of iterations compare to the baseline, since it always tries to reaches final density matrix in each iteration. However, considering DAgger trains on the dataset that aggregates new dataset iteration by iteration. As the dataset growing, it adds more diversity to the dataset and lead to a more robust policy. %which results a smoother plot.
 
 
 \begin{figure}[h!]
@@ -576,9 +585,9 @@ Figure \ref{fig:testing} shows the error of each policy on testing dataset for 1
 %The baseline again fluctuates while all the other policies still converges within 12 iteration. 
 Pure linear combination and DAgger got pretty similar error after 12 iterations.
 
-However, the performance of linear combination fluctuates during iteration 5 - 10 while both Dagger with different experts have pretty steady decreasing trend across all 12 iterations. 
+However, the performance of linear combination fluctuates during iteration 5 - 10 while both DAgger with different experts have a more steady decreasing trend across all 12 iterations. 
 
-Compare to the result on the training dataset (Figure \ref{fig:training}), the curves are similar for DAgger and baseline, but is pretty different for the pure linear combination. Pure linear combination performs the best and has a smooth result on training dataset while it fluctuate on testing dataset. It is possible because of the pure linear combination over-fit the training dataset. On the contrary, DAgger with the expert that has step size of 2 got a smoother curve than other policies both on training and testing dataset.
+Compare to the result on the training dataset (Figure \ref{fig:training}), the curves are similar for DAgger and baseline, but is pretty different for the pure linear combination. Pure linear combination performs the best and has a smooth result on training dataset while it fluctuates on testing dataset. It is possible because of the pure linear combination over-fit the training dataset. On the contrary, DAgger with the expert that has step size of 2 got more consistent results between training and testing dataset.
 
 
 \begin{figure}[h!]
