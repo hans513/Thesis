@@ -101,7 +101,7 @@ To achieve this goal, we can generate an illustrative trajectory from the base H
 
 
 % Problem encountered   %%%%%
-However, naive supervised learning may yield poor performance in practice and also theory.  Since the learner's prediction and action affect future observations and states during the execution of the learned policy, it obviously violates the common i.i.d. assumption made in most statistical learning approaches \cite{Ross}.
+However, naive supervised learning may yield poor performance in practice and also in theory.  Since the learner's prediction and action affect future observations and states during the execution of the learned policy, it obviously violates the common i.i.d. assumption made in most statistical learning approaches \cite{Ross}.
 
 
 
@@ -151,7 +151,7 @@ The time invariant Schr\"{o}dinger equation can be represented as:
 \[
 				\hat{H}\Psi = E\Psi
 \]
-The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function $\Psi$ providing the result equal to the energy E times the wave-function $\Psi$. The Hamiltonian operator is given by the sum of two operators as: $\hat{H} = \hat{T} + \hat{V}$,  where $\hat{T}$ and $\hat{V}$ are the kinetic energy operator and the potential energy operator respectively. 
+The $\hat{H}$ is the Hamiltonian operator which operates on the wave-function $\Psi$ providing the result equal to the energy $E$ times the wave-function $\Psi$. The Hamiltonian operator is given by the sum of two operators as: $\hat{H} = \hat{T} + \hat{V}$,  where $\hat{T}$ and $\hat{V}$ are the kinetic energy operator and the potential energy operator respectively. 
 The time-invariant Schro\"{o}dinger equation is an eigenvalue problem; in general, it will have multiple solutions $(E_1, \Psi_1), (E_2,\Psi_2), \ldots$ of different energies.  
 
 %DELETED BY GEOFF
@@ -219,7 +219,8 @@ S_{ij} = \int \phi_i^*\phi_j
 
 
 This matrix will reduce to the identity if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. 
-Solutions to Roothaan equation are called molecular orbitals, are represented in our basis as $\sum_i c_{ia}\phi_a$, and can be used to get density matrix $\rho = CC^*$ (or 2 $CC^*$ depending on which convention you want to use for $C_{occ}$) by using the assumption of 2 electrons per molecular orbital starting from the lowest-energy one.
+Solutions to Roothaan equation are called molecular orbitals, are represented as a linear combination in our basis as $\sum_i c_{i}\phi_i$, and can be used to get density matrix $\rho = CC^*$ 
+%(or 2 $CC^*$ depending on which convention you want to use for $C_{occ}$) by using the assumption of 2 electrons per molecular orbital starting from the lowest-energy one.
 
 
 %$C$ is the coefficient matrix of all the molecular orbitals, $c_{i,a}$ . In RHF it can be used to get the density matrix $\rho$ =  $C_{occ}{C_{occ}}^*$ in which $C_{occ}$ is the coefficient matrix of all the occupied orbitals.
@@ -516,7 +517,7 @@ The data consists of the electronic structure of varying 3-fluoro-3-methyl-1-but
 Our goal is to train a modified Hartree-Fock procedure that accurately predicts the density matrix and the energy expectation values. Therefore, for each pair of molecular configuration with an environment, we generated expectation values of each operator that appears in the Hamiltonian (total kinetic energy, interaction of the electron density with each nucleus, and total two-electron repulsion energy) to serve as the ground truth. 
 
 % DATA SET
-Initially the model was trained on the dataset which has different electric fields as environment. This data set has 20 geometry configurations, and each configuration will be put under 4 different environments (1 with no environment + 3 different fields for X, Y and Z).  We split the whole dataset into two parts evenly. We use the first 10 geometries to serve as the training dataset, and the remaining 10 geometries as testing dataset.
+The model was trained on the dataset which has different electric fields as environment. This data set has 20 geometry configurations, and each configuration will be put under 4 different environments (1 with no environment + 3 different fields for X, Y and Z).  We split the whole dataset into two parts evenly. We use the first 10 geometries to serve as the training dataset, and the remaining 10 geometries as testing dataset.
 
 We ran the original Hartree-Fock until convergence, so we have the ground truth of the steady-state density matrices and the energy of the given molecular system under different geometries. 
 %Since we have the energy of each configuration in the dataset, we can to evaluate the computation time and also the accuracy of the result in each iteration.
