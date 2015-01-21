@@ -46,7 +46,9 @@
 ]
 
 \begin{abstract}
-In quantum mechanics, Hartree-Fock is an important method for approximating the electron distribution and energy of a given molecular system. However, Hartree-Fock is excessively time-consuming or even infeasible when applied to large molecules. Besides, depending on input, it is not always guaranteed to converge to a solution. Speeding up Hartree-Fock and making it more robust would thus enable scientists to deal with more complicated molecules and study chemical reactions with larger systems. In the present work, we attempt to improve on Hartree-Fock by imitation learning: from the trajectory produced by the original Hartree-Fock, we extract an (expensive to evaluate) expert policy which converges to a solution quickly and reliably, and attempt to imitate this policy with a less-expensive policy class.  To solve the imitation learning problem, we apply the Dataset Aggregation algorithm (DAgger), which learns a policy that is guaranteed to perform well under its induced distribution of states. In the experiment, we show that after applying one iteration of DAgger, we got a faster convergence. With multiple iterations, the performance becomes smoother and less over-fit. 
+In quantum mechanics, Hartree-Fock is an important method for approximating the electron distribution and energy of a given molecular system. However, Hartree-Fock is excessively time-consuming or even infeasible when applied to large molecules. Besides, depending on input, it is not always guaranteed to converge to a solution. Speeding up Hartree-Fock and making it more robust would thus enable scientists to deal with more complicated molecules and study chemical reactions with larger systems. In the present work, we attempt to improve on Hartree-Fock by imitation learning: from the trajectory produced by the original Hartree-Fock, we extract an (expensive to evaluate) expert policy which converges to a solution quickly and reliably, and attempt to imitate this policy with a less-expensive policy class.  To solve the imitation learning problem, we apply the Dataset Aggregation algorithm (DAgger), which learns a policy that is guaranteed to perform well under its induced distribution of states. In the experiment, we show that after 
+%applying one iteration of DAgger, we got a faster convergence. 
+ multiple iterations of DAgger, the performance becomes smoother and less over-fit. 
 \end{abstract}
 
 \section{INTRODUCTION}
@@ -81,7 +83,7 @@ Since more advanced computational schemes typically start with a Hartree-Fock so
 %With these embedded parameters,  we have the extra flexibility to change the behaviour of the Hartree-Fock method. This extra flexibility allows us to let each of the Hartree-Fock iteration make more progress. In particular, we would like to make single iteration of Hartree-Fock with embedded parameters achieve as much progress as two or even more iterations of the original Hartree-Fock.
 %[+++ No Embedded parameter now!!! +++ ] \\
 
-Accelerating Hartree-Fock hence becomes a very popular research topic among quantum chemists. For instance, Pulay \cite{Pulay1980} proposed that using a linear combination of few density matrices generated from previous iterations of Hartree-Fock may lead to faster convergence with less iteration. However, how to generate the best linear combination that may lead to the fastest convergence remains an open question. \cite{Konstantin2002}\cite{Thorsten2011}\cite{Alejandro2012}  This raises our interests in finding a promising linear combination which accelerates the process. In particular, with the extra flexibility given by the linear combination of previous density matrices, we would like to make a single iteration of Hartree-Fock achieve as much progress as two or even more iterations of the original Hartree-Fock.
+Accelerating Hartree-Fock hence becomes a very popular research topic among quantum chemists. For instance, Pulay \cite{Pulay1980} proposed that using a linear combination of few density matrices generated from previous iterations of Hartree-Fock may lead to faster convergence with fewer iterations. However, how to generate the best linear combination that may lead to the fastest convergence remains an open question \cite{Konstantin2002}\cite{Thorsten2011}\cite{Alejandro2012}. This raises our interests in finding a promising linear combination which accelerates the process. In particular, with the extra flexibility given by the linear combination of previous density matrices, we would like to make a single iteration of Hartree-Fock achieve as much progress as two or even more iterations of the original Hartree-Fock.
 
 
 %With the extra flexibility given by the linear combination of previous density matrices, it is possible for us to let Hartree-Fock make more progress in each iteration. 
@@ -133,7 +135,7 @@ Algorithms with sufficient accuracy are now available, and the Hartree-Fock (HF)
 In quantum mechanics, all particles can exhibit not only particle-like but also wave-like properties. Accordingly, the quantum state of the whole system can be described by a wave function $\Psi$, which contains all the information about the system considered in isolation. Since the wave function for a given system does not have a unique representation, in general, we can represent the wave function using a set of basis functions $\phi_a$ which should be continuously differentiable. And also, the square of the modulus of the wave function representing the probability density, the square integral of the wave function should be 1.
 %Basis functions are best described using Slater functions/exponent. However, because of the computational difficulty of calculating the integral, choosing the basis set to have linear combination of Gaussian functions is more computationally efficient and commonly used. 
 For computational efficiency, it is common to choose our basis functions to be linear combinations of Gaussian radial basis functions.
-The more Gaussian functions are used in the basis set, the more accurate results we can attain. To increase the accuracy, speeding up the whole process is a very critical issue. \\
+The more Gaussian functions are used in the basis set, the more accurate results we can attain, but the slower the computation.. To increase the accuracy, speeding up the whole process is a very critical issue. \\
 
 % Why does Hartree-Fock work on density matrices instead of wave function
 % It's hard to describe multiple particles by wave function
@@ -216,10 +218,11 @@ S_{ij} = \int \phi_i^*\phi_j
 \]
 
 
-
-
 This matrix will reduce to the identity if we have an orthonormal basis set. $\epsilon$ is a diagonal matrix of the orbital energies. 
-Solutions to Roothaan equation are called molecular orbitals, are represented as a linear combination in our basis as $\sum_i c_{i}\phi_i$, and can be used to get density matrix $\rho = CC^*$ 
+Solutions to Roothaan equation are called molecular orbitals, are represented as a linear combination in our basis as $\sum_i c_{a,i}\phi_i$, where $c_{a}$ is the a-th column of $C$. 
+Though there are many matrices $C$ that satisfy the Roothaan equation, 
+we'll only pick the one that conforms the the Pauli exclusion principle.
+That is the solution which has double occupancy of each molecular orbital (one electron with up and one with down spin) starting from lowest energy orbital. These molecular orbitals can then be used to get density matrix $\rho = CC^*$ 
 %(or 2 $CC^*$ depending on which convention you want to use for $C_{occ}$) by using the assumption of 2 electrons per molecular orbital starting from the lowest-energy one.
 
 
@@ -243,7 +246,7 @@ Solutions to Roothaan equation are called molecular orbitals, are represented as
 As we mentioned before, since $F$ depends on $\rho$ and $\rho$ can be updated by $C$ which is again depends on $F$, we can only approach the final density matrix iteratively.
 
 More specifically, to solve this equation, we start with an arbitrary guess density $\rho_0$ as an input and construct the Fock operator. 
-After we have the Fock operator, we can solve for $C_{occ}$ by Roothann equation and update the density matrix to $\rho_1$. The procedure for updating $\rho_0$ to $\rho_1$ is the first iteration. Then in the iteration $i$, the previous output density matrix $\rho_{i-1}$ will serve as the input to the current iteration.
+After we have the Fock operator, we can solve for $C$ by Roothann equation and update the density matrix to $\rho_1$. The procedure for updating $\rho_0$ to $\rho_1$ is the first iteration. Then in the iteration $i$, the previous output density matrix $\rho_{i-1}$ will serve as the input to the current iteration.
 
 We will keep doing this procedure until the difference of the energy given by the input density matrix in the iteration $n$, $\rho_{n-1}$,  and the output density matrix $\rho_n$ is less than a threshold, say $10^{-6}$.  A description of the whole process is given by Algorithm \ref{alg:hf}.
 
@@ -265,8 +268,8 @@ We will keep doing this procedure until the difference of the energy given by th
 	Pick $\delta$ to be a small value (termination criteria) \\
  \While{ $i=0$ or $|E(\rho_{i}) - E(\rho_{i-1})| > \delta$ }{
 	Calculate the Fock operator  $F \leftarrow h_1 + G(\rho_i)$\\
-	Solve for $\epsilon$ and $C_{occ}$ using Roothaan equation \\
-	Update density matrix $\rho_{i+1}$ = $C_{occ}{C_{occ}}^*$\\
+	Solve for $\epsilon$ and $C$ using Roothaan equation \\
+	Update density matrix $\rho_{i+1}$ = $CC^*$\\
 	$i \leftarrow i+1$ \\
  }
  \caption{Hartree-Fock algorithm}
@@ -532,7 +535,7 @@ Our goal is to find a policy which quickly produces a density matrix with low sq
 \subsection{Approach}
 
 
-In the experiment, we will testing three different policies with baseline.
+In the experiment, we will compare three different policies with baseline.
 %MENTION THE PURE LINEAR COMBINATION
 %In the experiment, we built up two expert's policies.
 One naive approach to build the first good policy is always using all the density matrices we have to generate a linear combination that best approaches the final steady-state density matrix after one Hartree-Fock iteration.  For example, from guess density matrix $\rho_0$ we will find the best coefficient that makes the output best approaches the final objective. However, we may get some error thus the result of the first iteration is $\rho_1$.  In the next iteration, again we will try to find the linear combination $(\rho_0, \rho_1)$ that best approaches the final density matrix. We can keep doing this procedure until the output of the Hartree-Fock reaches the final steady-state density matrix.
@@ -608,7 +611,7 @@ Compare to the result on the training dataset (Figure \ref{fig:training}), the c
 \section{CONCLUSION}
 In the experiment, we first proposed the pure linear combination policy. It is easy to train and already can yield much lower error comparing to the baseline. However, it tend to somewhat over-fit the training data and performance fluctuates on testing data accordingly. 
 
-On the other hand, DAgger does train a more robust policy which has a smooth and steady decreasing trend, and also being consistent from training to testing dataset. However, DAgger does not help to gain lower error than the pure linear combination. It is possible that because the pure linear combination and the DAgger have the same policy space, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecules or on the case which is hard to get to convergence.
+On the other hand, DAgger does train a more robust policy which has a smooth and steady decreasing trend, and also being consistent from training to testing dataset. However, DAgger does not help to gain lower error than the pure linear combination in this experiment. It is possible that because the pure linear combination and the DAgger have the same policy space, both using the linear combination to speed up the whole process, thus DAgger can't gain much benefit from it easily. However, during the training process in DAgger, it keeps aggregating the dataset hence has a more diverse training instances. This can prevent the policy from over-fitting the training dataset thus produces a more stable and smooth decreasing trend. This is a great property when dealing with large molecules or on the case which is hard to get to convergence.
 
 
 \begin{thebibliography}{9}
